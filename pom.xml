@@ -58,7 +58,7 @@
         </dependency>
         
         <dependency>
-            <groupId>${project.groupId}</groupId>
+            <groupId>org.tiny</groupId>
             <artifactId>tiny-wicket-onelogin</artifactId>
             <version>1.0.0</version>
         </dependency>
@@ -137,9 +137,9 @@
         
         <repository>
             <id>Apache Nexus</id>
-            <url>https://repository.apache.org/content/repositories/snapshots/</url>
+            <url>https://repository.apache.org/content/repositories/releases/</url>
             <releases>
-                <enabled>false</enabled>
+                <enabled>true</enabled>
             </releases>
             <snapshots>
                 <enabled>false</enabled>
@@ -147,15 +147,13 @@
         </repository>
         
         <repository>
-            <id>tiny-datawrapper</id>
-            <name>tiny-datawrapper</name>
-            <url>https://github.com/dtmoyaji/tiny-datawrapper/packages/</url>
+            <id>tiny-onelogin</id>
+            <url>https://maven.pkg.github.com/dtmoyaji/tiny-onelogin</url>
         </repository>
         
         <repository>
-            <id>tiny-onelogin</id>
-            <name>tiny-onelogin</name>
-            <url>https://github.com/dtmoyaji/tiny-onelogin/packages/</url>
+            <id>tiny-datawrapper</id>
+            <url>https://maven.pkg.github.com/dtmoyaji/tiny-datawrapper</url>
         </repository>
         
     </repositories>
