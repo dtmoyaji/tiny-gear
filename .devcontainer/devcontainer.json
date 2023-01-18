@@ -1,0 +1,13 @@
+{
+    "name": "Hello",
+    "dockerFile": "Dockerfile",
+    "forwardPorts": [9090],
+    "workspaceFolder": "/opt/project",
+    "mounts": [
+      "source=${localWorkspaceFolder},target=/opt/project,type=bind,consistency=cached"
+    ],
+    "extensions": [
+      "adashen.vscode-tomcat",
+      "vscjava.vscode-java-pack"
+    ]
+  }
