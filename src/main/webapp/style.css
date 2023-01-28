@@ -1,32 +1,81 @@
+html{
+    font-size: 16px;
+}
+
 * {
     padding: 0;
     margin:0;
-    font-size: 18pt;
+    box-sizing: border-box;
+}
+
+div{
+/*    border-style: solid; 
+    border-width: thin;
+    background-color: rgba(50, 50, 50, 0.2); */
+}
+
+.row{
+    display: inline-block;
+    width: 100%;
+}
+
+.row div{
+    display: inline-block;
+    height: 100%;
+    vertical-align: middle;
 }
 
 .content.header{
-    background-color: #2980b9;
-    position: absolute;
-
-    top:0;
-    left:0;
-    right:0;
-    height: 56px;
-    color: white;
-    display: inline-block;
+    display: none;
 }
 
 .content.header div{
-    vertical-align: middle;
-    display: inline-block;
 }
 
-.content.header title{
+.title{
+}
+
+.content.body{
+    position: absolute;
+    top: 0;
+    bottom: 0;
+    left: 0;
+    right: 0;
+}
+
+.content.left{
+    position: fixed;
+    left: 0;
+    width: 300px;
+    height: 100%;
+    background-color: #343131;
+}
+
+.nav{
+}
+
+.content.footer{
+}
+
+
+.content.left div{
+    color: white;
+}
+
+.content.center{
+    position: absolute;
+    left: 300px;
+    right: 0;
+    height: 100%;
+}
+
+.content.right{
 }
 
 .humberger{
-    height: 54px;
-    width: 54px;
+    pointer-events: absolute;
+    height: 32px;
+    width: 32px;
     background-image: url('img/kkrn_icon_menu_11.png');
     background-size: contain;
     background-repeat: no-repeat;
@@ -42,97 +91,17 @@
 }
 
 .signControlPanel form{
-    position: absolute;
-    right:0;
-    top:0;
-    height: 100%;
-    display:inline;
 }
 
 button{
-    border: none;
-    border-radius: 3px;
-    background-color: #2980b9;
-    color: white;
-    padding: 2px 8px;
-    text-decoration: underline;
 }
 
 button:hover{
-    background-color: #49a0c9;
-    color:black;
 }
 
 .wicket-onelogin.panel *{
-    height: 100%;
-    vertical-align: middle;
-    display: table;
 }
 
 .wicket-onelogin.panel label{
-    display: table-cell;
-    vertical-align: middle;
-    padding: 0 4px;
 }
-
-.content.body{
-    position: absolute;
-    top: 56px;
-    left: 0;
-    right: 0;
-    bottom: 0;
-
-    background-color: lightgray;
-}
-
-.content.left{
-    position: absolute;
-    left: 0;
-    top: 0;
-    bottom: 0;
-    width: 320px;
-    background-color: #343131;
-    color:white;
-}
-
-
-.content.footer{
-    position: absolute;
-    left: 0;
-    right: 0;
-    bottom:0;
-    height: 3%;
-    background-color: #2980b9;
-    color: white;
-}
-
-.content.left.nav{
-    position: absolute;
-    left: 0;
-    top: 4%;
-    bottom: 4%;
-    width: 320px;
-}
-
-.content.left div{
-    padding: 2px 0;
-}
-
-.content.center{
-    background-color: white;
-    position: absolute;
-    top: 0;
-    left: 320px;
-    right: 0;
-}
-
-.content.right{
-    position: absolute;
-    right:0;
-    max-width: 50%;
-    top: 0;
-    bottom: 0;
-    background-color: lightgray;
-}
-
 
