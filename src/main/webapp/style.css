@@ -1,5 +1,6 @@
 html{
     font-size: 16px;
+    height: 100%;
 }
 
 * {
@@ -9,18 +10,19 @@ html{
 }
 
 div{
-/*    border-style: solid; 
-    border-width: thin;
-    background-color: rgba(50, 50, 50, 0.2); */
+    /*    border-style: solid; 
+        border-width: thin;
+        background-color: rgba(50, 50, 50, 0.2); */
 }
 
-.row{
-    display: inline-block;
+.eyecache .row{
+    display: table;
+    text-align: center;
     width: 100%;
 }
 
 .row div{
-    display: inline-block;
+    display: table-cell;
     height: 100%;
     vertical-align: middle;
 }
@@ -33,6 +35,7 @@ div{
 }
 
 .title{
+    font-weight: 700;
 }
 
 .content.body{
@@ -55,6 +58,14 @@ div{
 }
 
 .content.footer{
+    display: table-cell;
+    text-align: center;
+    vertical-align: middle;
+    position: absolute;
+    bottom: 0;
+    background: #2980b9;
+    left: 0;
+    right: 0;
 }
 
 
@@ -90,13 +101,77 @@ div{
     filter: brightness(1) invert(0);
 }
 
-.signControlPanel form{
+.signControlPanel{
+    display: table-cell;
+    text-align: center;
+    vertical-align: middle;
+}
+
+.signControlPanel label{
+    padding: 0 0.5em;
+}
+
+.eyecache{
+    background: #2980b9;
+    padding: .809em;
+    color: #fcfcfc;
+    padding-bottom: 1em;
+}
+
+.eyecache input{
+    width: 75%;
+    border-width: 0;
+    border-radius: 1em;
+    padding: 0.4em 1.2em;
+}
+
+.eyecache a{
+    text-decoration: none;
+}
+
+.title_link{
+    display: inline;
+    position: relative;
+    text-align: center;
+}
+
+
+.title_link *{
+}
+
+.title{
+    text-align: center;
+    padding-bottom: 3px;
+    vertical-align: middle;
+}
+
+.icon_home{
+    height: 1.2em;
+    vertical-align: top;
+}
+
+.searchPanel{
+    text-align: center;
+    vertical-align: middle;
+}
+
+.wicket-onelogin{
+    display: table-cell;
+    text-align: center;
 }
 
 button{
+    margin: 0 0.2em;
+    padding:0 0.5em;
+    color: #fcfcfc;
+    background-color: #3990C9;
+    border-style: none;
+    border-width: 0;
+    border-radius: 3px;
 }
 
-button:hover{
+.wicket-onelogin button{
+    font-size: 0.7em;
 }
 
 .wicket-onelogin.panel *{
