@@ -11,8 +11,14 @@
     <body>
         <wicket:panel>
             <div>
-                UserInfo
+                <h3>現在のユーザー</h3>
             </div>
+            <ul>
+                <li class="userinfo item">
+                    ユーザーアカウント:
+                    <span wicket:id="samlNameId">samlNameId</span>
+                </li>
+            </ul>
             <div wicket:id="userInfoLabel"></div>
 
         </wicket:panel>
