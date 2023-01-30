@@ -16,13 +16,14 @@ div{
 }
 
 .eyecache .row{
-    display: table;
+    display: inline-block;
     text-align: center;
     width: 100%;
+    padding-bottom: 3px;
 }
 
 .row div{
-    display: table-cell;
+    display: inline-block;
     height: 100%;
     vertical-align: middle;
 }
@@ -138,6 +139,7 @@ li {
 }
 
 .eyecache a{
+    display: inline-block;
     text-decoration: none;
 }
 
@@ -158,13 +160,16 @@ li {
 }
 
 .icon_home{
-    height: 1.2em;
-    vertical-align: top;
+    height: 1em;
+    display: inline;
 }
 
 .searchPanel{
+    display: inline-block;
     text-align: center;
     vertical-align: middle;
+    width: 100%;
+    padding-top: 3px;
 }
 
 .wicket-onelogin{
