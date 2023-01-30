@@ -3,8 +3,9 @@ package org.tiny.gear;
 import java.util.HashMap;
 import org.apache.wicket.markup.html.panel.Panel;
 import org.apache.wicket.request.mapper.parameter.PageParameters;
-import org.tiny.gear.scene.UserControlView;
-import org.tiny.gear.scene.View;
+import org.tiny.gear.panels.NavigationPanel;
+import org.tiny.gear.scene.UserControlScene;
+import org.tiny.gear.scene.Scene;
 import org.tiny.wicket.SamlMainPage;
 
 public class Index extends SamlMainPage {
@@ -13,24 +14,30 @@ public class Index extends SamlMainPage {
 
     private final Panel currentPanel;
     
-    private HashMap<String, View> scenes;
+    private final NavigationPanel nav;
+    
+    private HashMap<String, Scene> scenes;
     
     public Index(final PageParameters parameters) {
         super(parameters);
         
         // いずれリゾルバに置換するけど、暫定処理
         this.scenes = getScenes();
-        HashMap<String, Panel> panels = this.scenes.get(UserControlView.class.getName()).getPanels();
-        this.currentPanel = (Panel) this.scenes.get(UserControlView.class.getName())
+        HashMap<String, Panel> panels = this.scenes.get(UserControlScene.class.getName()).getPanels();
+        this.currentPanel = (Panel) this.scenes.get(UserControlScene.class.getName())
                 .getPanels()
-                .get(View.DEFAULT_VIEW);
+                .get(Scene.DEFAULT_VIEW);
         this.add(this.currentPanel);
+        
+        this.nav = new NavigationPanel("menus");
+        this.add(this.nav);
+        this.nav.showMenus(this.scenes.get(UserControlScene.class.getName()));
         
     }
     
-    protected HashMap<String, View> getScenes(){
-        HashMap<String, View> scenemap = new HashMap<>();
-        scenemap.put(UserControlView.class.getName(), new UserControlView());
+    protected HashMap<String, Scene> getScenes(){
+        HashMap<String, Scene> scenemap = new HashMap<>();
+        scenemap.put(UserControlScene.class.getName(), new UserControlScene());
         return scenemap;
     }
 

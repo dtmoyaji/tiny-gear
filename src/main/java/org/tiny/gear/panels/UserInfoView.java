@@ -33,6 +33,7 @@ public class UserInfoView extends Panel {
             this.userInfoLabel.setDefaultModelObject(ssession.getSamlAuthInfo().toString());
             
         }
+        
     }
 
     public void show(SamlAuthInfo userInfo) {

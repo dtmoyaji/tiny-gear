@@ -23,7 +23,7 @@ import org.apache.wicket.markup.html.panel.Panel;
  * 
  * @author bythe
  */
-public class View {
+public class Scene {
     
     public static String DEFAULT_VIEW="default_view";
     
@@ -31,7 +31,7 @@ public class View {
     
     private HashMap<String, Panel> panels;
     
-    public View(){
+    public Scene(){
         this.menus = new ArrayList<>();
         this.panels = new HashMap<>();
     }

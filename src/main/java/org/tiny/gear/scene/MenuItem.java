@@ -15,6 +15,9 @@
  */
 package org.tiny.gear.scene;
 
+import org.apache.wicket.authroles.authorization.strategies.role.Roles;
+
+
 /**
  *
  * @author bythe
@@ -24,6 +27,14 @@ public class MenuItem {
     private String text;
     
     private String url;
+    
+    private Roles allowed;
+    
+    public MenuItem(String text, String url, Roles allowed){
+        this.text = text;
+        this.url = url;
+        this.allowed = allowed;
+    }
 
     /**
      * @return the text
@@ -51,6 +62,20 @@ public class MenuItem {
      */
     public void setUrl(String url) {
         this.url = url;
+    }
+
+    /**
+     * @return the allowed
+     */
+    public Roles getAllowed() {
+        return allowed;
+    }
+
+    /**
+     * @param allowed the allowed to set
+     */
+    public void setAllowed(Roles allowed) {
+        this.allowed = allowed;
     }
     
 }
