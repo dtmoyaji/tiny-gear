@@ -19,38 +19,55 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import org.apache.wicket.authroles.authorization.strategies.role.Roles;
 import org.apache.wicket.markup.html.panel.Panel;
+import org.tiny.gear.RoleController;
 
 /**
  *
  * @author bythe
  */
 public class Scene {
+    
+    private int ordinal = -1;
+    
+    private String title;
 
     public static String DEFAULT_VIEW = "default_view";
 
     private ArrayList<MenuItem> menus;
 
     private HashMap<String, Panel> panels;
+    
+    private final Roles allowed;
 
-    public Scene() {
+    public Scene(Roles allowed) {
+        
+        this.allowed = allowed;
+        
         this.menus = new ArrayList<>();
         this.panels = new HashMap<>();
 
-        this.menus.add(new MenuItem("ホーム", "./", getUserRoles()));
+    }
+    
+    public boolean isAllowed(Roles role){
+        return RoleController.isRolesMatched(this.allowed, role);
+    }
+    
+    public void setOrdinal(int order){
+        this.ordinal = order;
+    }
+    
+    public int getOrdinal(){
+        return this.ordinal;
+    }
+    
+    public String getTitle(){
+        return this.title;
+    }
+    
+    public void setTitle(String title){
+        this.title = title;
     }
 
-    public Roles getUserRoles() {
-        Roles generalRoles = new Roles();
-        generalRoles.add("user");
-        generalRoles.add("admin");
-        return generalRoles;
-    }
-
-    public Roles getAdminRoles() {
-        Roles adminRoles = new Roles();
-        adminRoles.add("admin");
-        return adminRoles;
-    }
 
     /**
      * @return the menus

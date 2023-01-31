@@ -1,5 +1,6 @@
 package org.tiny.gear;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 import org.apache.wicket.markup.html.panel.Panel;
 import org.apache.wicket.request.mapper.parameter.PageParameters;
@@ -13,31 +14,30 @@ public class Index extends SamlMainPage {
     private static final long serialVersionUID = 1L;
 
     private final Panel currentPanel;
-    
+
     private final NavigationPanel nav;
-    
-    private HashMap<String, Scene> scenes;
-    
+
+    private ArrayList<Scene> scenes;
+
     public Index(final PageParameters parameters) {
         super(parameters);
-        
+
         // いずれリゾルバに置換するけど、暫定処理
         this.scenes = getScenes();
-        Scene scene = this.scenes.get(UserControlScene.class.getName());
+        Scene scene = this.scenes.get(0);
         HashMap<String, Panel> panels = scene.getPanels();
         this.currentPanel = (Panel) scene
                 .getPanels()
                 .get(Scene.DEFAULT_VIEW);
         this.add(this.currentPanel);
-        
-        this.nav = new NavigationPanel("menus",scene);
+
+        this.nav = new NavigationPanel("menus", this);
         this.add(this.nav);
-        
     }
-    
-    protected HashMap<String, Scene> getScenes(){
-        HashMap<String, Scene> scenemap = new HashMap<>();
-        scenemap.put(UserControlScene.class.getName(), new UserControlScene());
+
+    public ArrayList<Scene> getScenes() {
+        ArrayList<Scene> scenemap = new ArrayList<>();
+        scenemap.add(new UserControlScene(RoleController.getUserRoles()));
         return scenemap;
     }
 

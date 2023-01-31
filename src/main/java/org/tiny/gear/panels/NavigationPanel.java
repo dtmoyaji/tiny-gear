@@ -20,7 +20,7 @@ import org.apache.wicket.markup.html.link.ExternalLink;
 import org.apache.wicket.markup.html.list.ListItem;
 import org.apache.wicket.markup.html.list.ListView;
 import org.apache.wicket.markup.html.panel.Panel;
-import org.tiny.gear.scene.MenuItem;
+import org.tiny.gear.Index;
 import org.tiny.gear.scene.Scene;
 
 /**
@@ -30,55 +30,29 @@ import org.tiny.gear.scene.Scene;
 public class NavigationPanel extends Panel {
 
     //private Label menuMoc;
-    private ListView<MenuItem> menuList;
+    private ListView<Scene> scenes;
+    
+    private Roles currentRoles;
 
-    public NavigationPanel(String id, Scene scene) {
+    public NavigationPanel(String id, Index index) {
         super(id);
 
-        this.menuList = new ListView<MenuItem>("menus", scene.getMenus()) {
+        this.scenes = new ListView<Scene>("menus", index.getScenes()) {
 
             @Override
-            protected void populateItem(ListItem<MenuItem> item) {
-                MenuItem menu = item.getModelObject();
-                ExternalLink link = new ExternalLink("menuItem", menu.getUrl(), menu.getText());
+            protected void populateItem(ListItem<Scene> item) {
+                Scene scene = item.getModelObject();
+                ExternalLink link = new ExternalLink("menuItem",
+                        "?scene=" +
+                        scene.getClass().getName(), scene.getTitle());
                 item.add(link);
             }
         };
 
-        this.add(this.menuList);
+        this.add(this.scenes);
 
-//        this.menuMoc = new Label("menus", Model.of(""));
-//        this.add(this.menuMoc);
     }
 
-    /*
-    public void showMenus(Scene view) {
-
-        Roles currentRoles = ((SamlSession) this.getSession()).getRoles();
-
-        ArrayList<MenuItem> menus = view.getMenus();
-        String list = "";
-        for (MenuItem menu : menus) {
-            if (this.isRolesMatched(currentRoles, menu.getAllowed())) {
-                list += "," + menu.getText();
-            }
-        }
-        if (list.length() > 0) {
-            list = list.substring(1);
-        }
-        this.menuMoc.setDefaultModelObject(list);
-    }*/
-    public boolean isRolesMatched(Roles userRole, Roles menuRole) {
-        boolean rvalue = false;
-        for (String usrrole : userRole) {
-            for (String menurole : menuRole) {
-                if (menurole.equals(usrrole)) {
-                    rvalue = true;
-                    break;
-                }
-            }
-        }
-        return rvalue;
-    }
+  
 
 }
