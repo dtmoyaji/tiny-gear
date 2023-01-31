@@ -28,12 +28,11 @@
                     </div>
                     <div class="row">
                         <div class="searchPanel">
-                            <input type="text" placeholder="検索"/>
+                            <input type="text" placeholder="検索" class="eyecache-input"/>
                         </div>
                     </div>
                 </div>
                 <div class="nav">
-                    メニュー
                     <div wicket:id="menus" />
                 </div>
                 <div class="content footer">
@@ -41,11 +40,19 @@
                 </div>
             </div>
             <div class="content center">
-                <div wicket:id="scenePanel" />
-                <div class="content right">
-                    サブメニュー
+                <div class="document_path">
+                    ドキュメントパス
+                </div>
+                <hr />
+                <div class="mainPanel">
+                    <div wicket:id="scenePanel" />
+                </div>
+                <hr />
+                <div class="footer" >
+                    メインのフッター
                 </div>
             </div>
+            <div class="content right">右バー</div>
         </div>
 
 

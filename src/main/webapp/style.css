@@ -22,6 +22,10 @@ div{
     padding-bottom: 3px;
 }
 
+.eyecache-input{
+    color: #343131;
+}
+
 .row div{
     display: inline-block;
     height: 100%;
@@ -55,7 +59,7 @@ div{
     color: #fcfcfc;
 }
 
-.content.left *{
+.content.left div{
     color: #fcfcfc;
     text-decoration: none;
 }
@@ -63,11 +67,20 @@ div{
 li {
     margin-left: 1em;
     list-style-type: none;
-    font-size: 0.95em;
+}
+
+hr{
+    display: block;
+    height: 1px;
+    border: 0;
+    border-top: 1px solid #e1e4e5;
+    margin: 12px 0;
+    padding: 0;
 }
 
 .nav{
     padding: 1em;
+    font-size: 85%;
 }
 
 .nav *{
@@ -89,7 +102,7 @@ li {
     position: absolute;
     left: 300px;
     right: 0;
-    height: 100%;
+    height: 100%; 
     padding: 1.2em;
 }
 
@@ -132,7 +145,7 @@ li {
 }
 
 .eyecache input{
-    width: 75%;
+    width: 90%;
     border-width: 0;
     border-radius: 1em;
     padding: 0.4em 1.2em;
@@ -171,6 +184,7 @@ li {
     width: 100%;
     padding-top: 3px;
 }
+
 
 .wicket-onelogin{
     display: table-cell;

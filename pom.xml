@@ -149,11 +149,23 @@
         <repository>
             <id>tiny-onelogin</id>
             <url>https://maven.pkg.github.com/dtmoyaji/tiny-onelogin</url>
+            <releases>
+                <enabled>true</enabled>
+            </releases>
+            <snapshots>
+                <enabled>true</enabled>
+            </snapshots>
         </repository>
         
         <repository>
             <id>tiny-datawrapper</id>
             <url>https://maven.pkg.github.com/dtmoyaji/tiny-datawrapper</url>
+            <releases>
+                <enabled>true</enabled>
+            </releases>
+            <snapshots>
+                <enabled>true</enabled>
+            </snapshots>
         </repository>
         
     </repositories>

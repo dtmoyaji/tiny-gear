@@ -15,6 +15,7 @@
  */
 package org.tiny.gear.scene;
 
+import java.io.Serializable;
 import org.apache.wicket.authroles.authorization.strategies.role.Roles;
 import org.tiny.gear.panels.UserInfoView;
 
@@ -23,7 +24,8 @@ import org.tiny.gear.panels.UserInfoView;
  *
  * @author bythe
  */
-public class UserControlScene extends Scene{
+public class UserControlScene extends Scene implements Serializable{
+    
     
     public UserControlScene(){
         super();
