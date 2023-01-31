@@ -16,30 +16,27 @@
 package org.tiny.gear.scene;
 
 import org.apache.wicket.authroles.authorization.strategies.role.Roles;
-import org.tiny.gear.RoleController;
-import org.tiny.gear.panels.UserInfoPanel;
+import org.tiny.gear.panels.PrimaryPanel;
 
 /**
  *
  * @author bythe
  */
-public class UserControlScene extends AbstractScene {
+public class PrimaryScene extends AbstractScene {
 
-    public UserControlScene(Roles allowed) {
+    public PrimaryScene(Roles allowed) {
         super(allowed);
 
-        Roles generalRoles = RoleController.getUserRoles();
-        Roles adminRoles = RoleController.getAdminRoles();
+        this.getPanels().put(
+                AbstractScene.DEFAULT_VIEW, 
+                new PrimaryPanel("scenePanel")
+        );
 
-        this.getPanels().put(AbstractScene.DEFAULT_VIEW, new UserInfoPanel("scenePanel"));
-        this.getMenus().add(new MenuItem("現在のユーザー", "?menu=menu0", generalRoles));
-        this.getMenus().add(new MenuItem("同期設定", "?menu=menu1", adminRoles));
-        this.getMenus().add(new MenuItem("ユーザー一覧", "?menu=menu2", adminRoles));
     }
-    
+
     @Override
-    public String getSceneName(){
-        return "ユーザー情報";
+    public String getSceneName() {
+        return "はじめに";
     }
 
 }

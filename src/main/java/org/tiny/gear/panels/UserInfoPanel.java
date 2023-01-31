@@ -1,22 +1,22 @@
 package org.tiny.gear.panels;
 
 import org.apache.wicket.markup.html.basic.Label;
-import org.apache.wicket.markup.html.panel.Panel;
 import org.apache.wicket.model.Model;
 import org.tiny.wicket.onelogin.SamlAuthInfo;
 import org.tiny.wicket.onelogin.SamlSession;
 
 /**
- *
+ * 
  * @author bythe
  */
-public class UserInfoView extends Panel {
+public class UserInfoPanel extends AbstractMainPanel {
 
     private final Label samlNameId;
     
     private final Label userInfoLabel;
 
-    public UserInfoView(String id) {
+    public UserInfoPanel(String id) {
+        
         super(id);
         
         this.samlNameId = new Label("samlNameId", Model.of(""));
@@ -34,6 +34,11 @@ public class UserInfoView extends Panel {
             
         }
         
+    }
+    
+    @Override
+    public String getTitle(){
+        return "ユーザー情報";
     }
 
     public void show(SamlAuthInfo userInfo) {

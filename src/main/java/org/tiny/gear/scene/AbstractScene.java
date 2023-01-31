@@ -15,6 +15,7 @@
  */
 package org.tiny.gear.scene;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.HashMap;
 import org.apache.wicket.authroles.authorization.strategies.role.Roles;
@@ -25,11 +26,13 @@ import org.tiny.gear.RoleController;
  *
  * @author bythe
  */
-public class Scene {
+public class AbstractScene implements Serializable {
     
     private int ordinal = -1;
     
-    private String title;
+    private String sceneName;
+    
+    private String sceneKey;
 
     public static String DEFAULT_VIEW = "default_view";
 
@@ -39,7 +42,7 @@ public class Scene {
     
     private final Roles allowed;
 
-    public Scene(Roles allowed) {
+    public AbstractScene(Roles allowed) {
         
         this.allowed = allowed;
         
@@ -60,14 +63,17 @@ public class Scene {
         return this.ordinal;
     }
     
-    public String getTitle(){
-        return this.title;
+    public String getSceneName(){
+        return this.sceneName;
     }
     
-    public void setTitle(String title){
-        this.title = title;
+    public String getSceneKey(){
+        return this.getClass().getName();
     }
-
+    
+    public boolean isSceneKeyMatch(String key){
+        return key.equals(this.getSceneKey());
+    }
 
     /**
      * @return the menus
@@ -99,6 +105,10 @@ public class Scene {
      */
     public void setPanels(HashMap<String, Panel> panels) {
         this.panels = panels;
+    }
+    
+    public boolean isPrimary(){
+        return false;
     }
 
 }

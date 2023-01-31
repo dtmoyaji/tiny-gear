@@ -21,7 +21,9 @@ import org.apache.wicket.markup.html.list.ListItem;
 import org.apache.wicket.markup.html.list.ListView;
 import org.apache.wicket.markup.html.panel.Panel;
 import org.tiny.gear.Index;
-import org.tiny.gear.scene.Scene;
+import org.tiny.gear.RoleController;
+import org.tiny.gear.scene.AbstractScene;
+import org.tiny.wicket.onelogin.SamlSession;
 
 /**
  *
@@ -30,29 +32,37 @@ import org.tiny.gear.scene.Scene;
 public class NavigationPanel extends Panel {
 
     //private Label menuMoc;
-    private ListView<Scene> scenes;
-    
+    private ListView<AbstractScene> scenes;
+
     private Roles currentRoles;
 
     public NavigationPanel(String id, Index index) {
         super(id);
 
-        this.scenes = new ListView<Scene>("menus", index.getScenes()) {
+        SamlSession session = (SamlSession) this.getSession();
+        this.currentRoles = session.getRoles();
+        if (this.currentRoles.size() < 1) {
+            this.currentRoles = RoleController.getGuestRoles();
+        }
+
+        this.scenes = new ListView<AbstractScene>("menus", index.getScenes()) {
 
             @Override
-            protected void populateItem(ListItem<Scene> item) {
-                Scene scene = item.getModelObject();
+            protected void populateItem(ListItem<AbstractScene> item) {
+                AbstractScene scene = item.getModelObject();
+
                 ExternalLink link = new ExternalLink("menuItem",
-                        "?scene=" +
-                        scene.getClass().getName(), scene.getTitle());
+                        "?scene="
+                        + scene.getClass().getName(), scene.getSceneName());
                 item.add(link);
+                if (!scene.isAllowed(currentRoles)) {
+                    item.setVisible(false);
+                }
             }
         };
 
         this.add(this.scenes);
 
     }
-
-  
 
 }

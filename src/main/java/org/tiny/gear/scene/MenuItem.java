@@ -15,6 +15,7 @@
  */
 package org.tiny.gear.scene;
 
+import java.io.Serializable;
 import org.apache.wicket.authroles.authorization.strategies.role.Roles;
 
 
@@ -22,7 +23,7 @@ import org.apache.wicket.authroles.authorization.strategies.role.Roles;
  *
  * @author bythe
  */
-public class MenuItem {
+public class MenuItem implements Serializable{
     
     private String text;
     

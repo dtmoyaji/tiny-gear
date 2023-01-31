@@ -32,8 +32,19 @@ public class RoleController {
                     break;
                 }
             }
+            if(rvalue){
+                break;
+            }
         }
         return rvalue;
+    }
+    
+    public static Roles getAllRoles(){
+        Roles generalRoles = new Roles();
+        generalRoles.add("guest");
+        generalRoles.add("user");
+        generalRoles.add("admin");
+        return generalRoles;
     }
 
     public static Roles getUserRoles() {
@@ -46,6 +57,12 @@ public class RoleController {
     public static Roles getAdminRoles() {
         Roles adminRoles = new Roles();
         adminRoles.add("admin");
+        return adminRoles;
+    }
+    
+    public static Roles getGuestRoles(){
+        Roles adminRoles = new Roles();
+        adminRoles.add("guest");
         return adminRoles;
     }
 }

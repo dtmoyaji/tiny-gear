@@ -10,17 +10,10 @@
     </head>
     <body>
         <wicket:panel>
-            <div>
-                <h3>現在のユーザー</h3>
-            </div>
-            <ul>
-                <li class="userinfo item">
-                    ユーザーアカウント:
-                    <span wicket:id="samlNameId">samlNameId</span>
-                </li>
-            </ul>
-            <div wicket:id="userInfoLabel"></div>
-
+            <h3 wicket:id="panelTitle" class="panelTitle">
+                AbstractMainPanel
+            </h3>
+            <wicket:child/>
         </wicket:panel>
     </body>
 </html>
