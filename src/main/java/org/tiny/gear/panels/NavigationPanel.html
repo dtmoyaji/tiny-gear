@@ -10,10 +10,12 @@
     </head>
     <body>
         <wicket:panel>
-            <div>
-                <h3>メニュー</h3>
-            </div>
-            <div wicket:id="menus"></div>
+            <label class="menuTitle">
+                メニュー
+            </label>
+            <ul >
+                <li wicket:id="menus"><a wicket:id="menuItem">メニュー</a></li>
+            </ul>
 
         </wicket:panel>
     </body>

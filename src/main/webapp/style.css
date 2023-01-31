@@ -78,13 +78,23 @@ hr{
     padding: 0;
 }
 
+.menuTitle{
+    font-weight: 600;
+    color: #2980b9;
+}
+
 .nav{
     padding: 1em;
     font-size: 85%;
 }
 
-.nav *{
+.nav a{
+    text-decoration: none;
     color: #fcfcfc;
+}
+
+.nav li{
+    margin: 0.5em;
 }
 
 .content.footer{

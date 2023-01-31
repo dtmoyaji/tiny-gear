@@ -17,23 +17,39 @@ package org.tiny.gear.scene;
 
 import java.util.ArrayList;
 import java.util.HashMap;
+import org.apache.wicket.authroles.authorization.strategies.role.Roles;
 import org.apache.wicket.markup.html.panel.Panel;
 
 /**
- * 
+ *
  * @author bythe
  */
 public class Scene {
-    
-    public static String DEFAULT_VIEW="default_view";
-    
+
+    public static String DEFAULT_VIEW = "default_view";
+
     private ArrayList<MenuItem> menus;
-    
+
     private HashMap<String, Panel> panels;
-    
-    public Scene(){
+
+    public Scene() {
         this.menus = new ArrayList<>();
         this.panels = new HashMap<>();
+
+        this.menus.add(new MenuItem("ホーム", "./", getUserRoles()));
+    }
+
+    public Roles getUserRoles() {
+        Roles generalRoles = new Roles();
+        generalRoles.add("user");
+        generalRoles.add("admin");
+        return generalRoles;
+    }
+
+    public Roles getAdminRoles() {
+        Roles adminRoles = new Roles();
+        adminRoles.add("admin");
+        return adminRoles;
     }
 
     /**
@@ -56,8 +72,8 @@ public class Scene {
     public HashMap<String, Panel> getPanels() {
         return panels;
     }
-    
-    public Panel getPanel(String key){
+
+    public Panel getPanel(String key) {
         return this.panels.get(key);
     }
 
@@ -67,5 +83,5 @@ public class Scene {
     public void setPanels(HashMap<String, Panel> panels) {
         this.panels = panels;
     }
-    
+
 }

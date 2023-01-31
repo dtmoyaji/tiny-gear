@@ -15,14 +15,13 @@
  */
 package org.tiny.gear.panels;
 
-import java.util.ArrayList;
 import org.apache.wicket.authroles.authorization.strategies.role.Roles;
-import org.apache.wicket.markup.html.basic.Label;
+import org.apache.wicket.markup.html.link.ExternalLink;
+import org.apache.wicket.markup.html.list.ListItem;
+import org.apache.wicket.markup.html.list.ListView;
 import org.apache.wicket.markup.html.panel.Panel;
-import org.apache.wicket.model.Model;
 import org.tiny.gear.scene.MenuItem;
 import org.tiny.gear.scene.Scene;
-import org.tiny.wicket.onelogin.SamlSession;
 
 /**
  *
@@ -30,15 +29,29 @@ import org.tiny.wicket.onelogin.SamlSession;
  */
 public class NavigationPanel extends Panel {
 
-    private Label menuMoc;
+    //private Label menuMoc;
+    private ListView<MenuItem> menuList;
 
-    public NavigationPanel(String id) {
+    public NavigationPanel(String id, Scene scene) {
         super(id);
 
-        this.menuMoc = new Label("menus", Model.of(""));
-        this.add(this.menuMoc);
+        this.menuList = new ListView<MenuItem>("menus", scene.getMenus()) {
+
+            @Override
+            protected void populateItem(ListItem<MenuItem> item) {
+                MenuItem menu = item.getModelObject();
+                ExternalLink link = new ExternalLink("menuItem", menu.getUrl(), menu.getText());
+                item.add(link);
+            }
+        };
+
+        this.add(this.menuList);
+
+//        this.menuMoc = new Label("menus", Model.of(""));
+//        this.add(this.menuMoc);
     }
 
+    /*
     public void showMenus(Scene view) {
 
         Roles currentRoles = ((SamlSession) this.getSession()).getRoles();
@@ -54,8 +67,7 @@ public class NavigationPanel extends Panel {
             list = list.substring(1);
         }
         this.menuMoc.setDefaultModelObject(list);
-    }
-
+    }*/
     public boolean isRolesMatched(Roles userRole, Roles menuRole) {
         boolean rvalue = false;
         for (String usrrole : userRole) {
