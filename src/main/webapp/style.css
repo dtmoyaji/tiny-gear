@@ -211,6 +211,28 @@ button{
     border-radius: 3px;
 }
 
+.table{
+    display: table;
+    border-collapse: separate;
+    border-spacing: 0.3em;
+}
+
+.tablerow{
+    display: table-row;
+}
+
+.tablecell{
+    display: table-cell;
+    padding: 0.3em;
+    margin: 1em;
+    border-bottom: 1px solid #e1e4e5;
+}
+
+.tablecell.caption{
+    font-weight: 600;
+    background-color: #e1e4e5;
+}
+
 .wicket-onelogin button{
     font-size: 0.7em;
 }

@@ -10,13 +10,18 @@
     </head>
     <body>
         <wicket:extend>
-            <ul>
-                <li class="userinfo item">
-                    ユーザーアカウント:
-                    <span wicket:id="samlNameId">samlNameId</span>
-                </li>
-            </ul>
-            <div wicket:id="userInfoLabel"></div>
+            <div class="userAttributes">
+                <ul class="table">
+                    <li class="tablerow">
+                        <div class="tablecell caption">ユーザーアカウント</div>
+                        <div wicket:id="samlNameId" class="tablecell">samlNameId</div>
+                    </li>
+                    <li wicket:id="userAttributes" class="tablerow">
+                        <div wicket:id="userAttribute" class="tablecell caption">ATTRIBUTE</div>
+                        <div wicket:id="userAttributeValue" class="tablecell">VALUE</div>
+                    </li>
+                </ul>
+            </div>
 
         </wicket:extend>
     </body>

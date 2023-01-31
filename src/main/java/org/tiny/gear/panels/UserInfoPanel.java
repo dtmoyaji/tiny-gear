@@ -1,49 +1,66 @@
 package org.tiny.gear.panels;
 
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
 import org.apache.wicket.markup.html.basic.Label;
+import org.apache.wicket.markup.html.list.ListItem;
+import org.apache.wicket.markup.html.list.ListView;
 import org.apache.wicket.model.Model;
 import org.tiny.wicket.onelogin.SamlAuthInfo;
 import org.tiny.wicket.onelogin.SamlSession;
 
 /**
- * 
+ *
  * @author bythe
  */
 public class UserInfoPanel extends AbstractMainPanel {
 
     private final Label samlNameId;
-    
-    private final Label userInfoLabel;
+
+    private HashMap<String, List<String>> userAttributes;
+    private ListView<String> KeySet;
 
     public UserInfoPanel(String id) {
-        
+
         super(id);
-        
+
         this.samlNameId = new Label("samlNameId", Model.of(""));
         this.add(this.samlNameId);
 
-        this.userInfoLabel = new Label("userInfoLabel", Model.of(""));
-        this.add(this.userInfoLabel);
-
         SamlSession ssession = (SamlSession) this.getSession();
+
+        ArrayList<String> kset = new ArrayList<>();
         if (ssession.getSamlAuthInfo() != null) {
-            
+
             SamlAuthInfo ainfo = ssession.getSamlAuthInfo();
             this.samlNameId.setDefaultModelObject(ainfo.getNameId());
-            this.userInfoLabel.setDefaultModelObject(ssession.getSamlAuthInfo().toString());
-            
+
+            this.userAttributes = (HashMap<String, List<String>>) ainfo.getAttributes();
+            kset = new ArrayList(this.userAttributes.keySet());
         }
-        
-    }
-    
-    @Override
-    public String getTitle(){
-        return "ユーザー情報";
+
+        this.KeySet = new ListView<>("userAttributes", kset) {
+            @Override
+            protected void populateItem(ListItem<String> item) {
+                String key = item.getModelObject();
+                item.add(new Label("userAttribute", Model.of(key)));
+                ArrayList<String> attrs = (ArrayList<String>) userAttributes.get(key);
+                String value = "";
+                for (String v : attrs) {
+                    value += ", " + v;
+                }
+                value = value.substring(2);
+                item.add(new Label("userAttributeValue", Model.of(value)));
+            }
+        };
+        this.add(this.KeySet);
+
     }
 
-    public void show(SamlAuthInfo userInfo) {
-        System.out.println(userInfo.toString());
-        this.userInfoLabel.setDefaultModelObject(userInfo.toString());
+    @Override
+    public String getTitle() {
+        return "ユーザー情報";
     }
 
 }

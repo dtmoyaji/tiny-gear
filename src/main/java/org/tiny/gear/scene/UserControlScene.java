@@ -33,13 +33,13 @@ public class UserControlScene extends AbstractScene {
 
         this.getPanels().put(AbstractScene.DEFAULT_VIEW, new UserInfoPanel("scenePanel"));
         this.getMenus().add(new MenuItem("現在のユーザー", "?menu=menu0", generalRoles));
-        this.getMenus().add(new MenuItem("同期設定", "?menu=menu1", adminRoles));
+        this.getMenus().add(new MenuItem("KeyCloak同期設定", "?menu=menu1", adminRoles));
         this.getMenus().add(new MenuItem("ユーザー一覧", "?menu=menu2", adminRoles));
     }
     
     @Override
     public String getSceneName(){
-        return "ユーザー情報";
+        return "ユーザー管理";
     }
 
 }
