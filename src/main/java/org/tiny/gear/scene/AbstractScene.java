@@ -19,8 +19,8 @@ import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.HashMap;
 import org.apache.wicket.authroles.authorization.strategies.role.Roles;
-import org.apache.wicket.markup.html.panel.Panel;
 import org.tiny.gear.RoleController;
+import org.tiny.gear.panels.AbstractMainPanel;
 
 /**
  *
@@ -38,7 +38,7 @@ public class AbstractScene implements Serializable {
 
     private ArrayList<MenuItem> menus;
 
-    private HashMap<String, Panel> panels;
+    private HashMap<String, AbstractMainPanel> panels;
     
     private final Roles allowed;
 
@@ -92,18 +92,18 @@ public class AbstractScene implements Serializable {
     /**
      * @return the panels
      */
-    public HashMap<String, Panel> getPanels() {
+    public HashMap<String, AbstractMainPanel> getPanels() {
         return panels;
     }
 
-    public Panel getPanel(String key) {
+    public AbstractMainPanel getPanel(String key) {
         return this.panels.get(key);
     }
 
     /**
      * @param panels the panels to set
      */
-    public void setPanels(HashMap<String, Panel> panels) {
+    public void setPanels(HashMap<String, AbstractMainPanel> panels) {
         this.panels = panels;
     }
     

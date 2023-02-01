@@ -79,12 +79,12 @@ hr{
 }
 
 .menuTitle{
+    display: table-row;
     font-weight: 600;
     color: #2980b9;
 }
 
 .nav{
-    padding: 1em;
     font-size: 85%;
 }
 
@@ -93,8 +93,32 @@ hr{
     color: #fcfcfc;
 }
 
+.nav ul{
+    margin: 0.5em 0;
+    padding: 0;
+}
+
 .nav li{
-    margin: 0.5em;
+    margin: 0;
+    padding-left: 0.5em;
+    padding-top: 0.3em;
+    padding-bottom: 0.1em;
+}
+
+.nav li a{
+    width: 100%;
+}
+
+.nav li[current="true"]{
+    background-color: rgba(255,255,255,0.2);
+}
+
+.nav .subMenuItem[current="true"]{
+    font-weight: 700;
+}
+
+.nav .subMenu[current="true"]{
+    background-color: rgba(255,255,255,0.2);
 }
 
 .content.footer{
@@ -112,7 +136,7 @@ hr{
     position: absolute;
     left: 300px;
     right: 0;
-    height: 100%; 
+    height: 100%;
     padding: 1.2em;
 }
 

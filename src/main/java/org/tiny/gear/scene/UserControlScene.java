@@ -32,14 +32,14 @@ public class UserControlScene extends AbstractScene {
         Roles adminRoles = RoleController.getAdminRoles();
 
         this.getPanels().put(AbstractScene.DEFAULT_VIEW, new UserInfoPanel("scenePanel"));
-        this.getMenus().add(new MenuItem("現在のユーザー", "?menu=menu0", generalRoles));
+        this.getMenus().add(new MenuItem("ユーザー情報", UserControlScene.class, UserInfoPanel.class, generalRoles));
         this.getMenus().add(new MenuItem("KeyCloak同期設定", "?menu=menu1", adminRoles));
-        this.getMenus().add(new MenuItem("ユーザー一覧", "?menu=menu2", adminRoles));
+//        this.getMenus().add(new MenuItem("ユーザー一覧", "?menu=menu2", adminRoles));
     }
-    
+
     @Override
-    public String getSceneName(){
-        return "ユーザー管理";
+    public String getSceneName() {
+        return "アカウント";
     }
 
 }

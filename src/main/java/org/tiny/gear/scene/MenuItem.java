@@ -17,6 +17,7 @@ package org.tiny.gear.scene;
 
 import java.io.Serializable;
 import org.apache.wicket.authroles.authorization.strategies.role.Roles;
+import org.tiny.gear.panels.AbstractMainPanel;
 
 
 /**
@@ -31,10 +32,32 @@ public class MenuItem implements Serializable{
     
     private Roles allowed;
     
+    private Class<? extends AbstractScene> scene;
+    private Class<? extends AbstractMainPanel> panel;
+    
     public MenuItem(String text, String url, Roles allowed){
         this.text = text;
         this.url = url;
         this.allowed = allowed;
+    }
+    
+    public MenuItem(String text, Class<? extends AbstractScene> scene, Class<? extends AbstractMainPanel> view, Roles allowed){
+        this.text = text;
+        this.scene = scene;
+        this.panel = view;
+        this.setUrl(scene, view);
+        this.allowed = allowed;
+    }
+    
+    public boolean isMatchedScene(Class<? extends AbstractScene> scene){
+        return this.scene.getName().equals(scene.getName());
+    }
+    
+    public boolean isMatchedMainPanel(Class<? extends AbstractMainPanel> panel){
+        if(this.panel==null){
+            return false;
+        }
+        return this.panel.getName().equals(panel.getName());
     }
 
     /**
@@ -63,6 +86,16 @@ public class MenuItem implements Serializable{
      */
     public void setUrl(String url) {
         this.url = url;
+    }
+    
+    public final void setUrl(Class scene, Class mainPanel){
+        String urlTemplate = "?scene=%s&view=%s";
+        urlTemplate = String.format(
+                urlTemplate,
+                scene.getName(),
+                mainPanel.getName()
+        );
+        this.url = urlTemplate;
     }
 
     /**

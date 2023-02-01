@@ -1,6 +1,4 @@
-/src/main/resources/onelogin.saml.properties
-/src/main/resources/onelogin.saml.keycloak.properties
-/src/main/resources/onelogin.saml.lineworks.properties
+/src/main/resources/*.properties
 /target
 
 jshell.history
