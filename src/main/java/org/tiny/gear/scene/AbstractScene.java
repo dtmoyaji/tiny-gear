@@ -19,19 +19,21 @@ import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.HashMap;
 import org.apache.wicket.authroles.authorization.strategies.role.Roles;
+import org.tiny.gear.IRoleChecker;
 import org.tiny.gear.RoleController;
+import org.tiny.gear.model.MenuItem;
 import org.tiny.gear.panels.AbstractMainPanel;
 
 /**
  *
  * @author bythe
  */
-public class AbstractScene implements Serializable {
-    
+public class AbstractScene implements Serializable, IRoleChecker {
+
     private int ordinal = -1;
-    
+
     private String sceneName;
-    
+
     private String sceneKey;
 
     public static String DEFAULT_VIEW = "default_view";
@@ -39,39 +41,40 @@ public class AbstractScene implements Serializable {
     private ArrayList<MenuItem> menus;
 
     private HashMap<String, AbstractMainPanel> panels;
-    
+
     private final Roles allowed;
 
     public AbstractScene(Roles allowed) {
-        
+
         this.allowed = allowed;
-        
+
         this.menus = new ArrayList<>();
         this.panels = new HashMap<>();
 
     }
-    
-    public boolean isAllowed(Roles role){
+
+    @Override
+    public boolean isAllowed(Roles role) {
         return RoleController.isRolesMatched(this.allowed, role);
     }
-    
-    public void setOrdinal(int order){
+
+    public void setOrdinal(int order) {
         this.ordinal = order;
     }
-    
-    public int getOrdinal(){
+
+    public int getOrdinal() {
         return this.ordinal;
     }
-    
-    public String getSceneName(){
+
+    public String getSceneName() {
         return this.sceneName;
     }
-    
-    public String getSceneKey(){
+
+    public String getSceneKey() {
         return this.getClass().getName();
     }
-    
-    public boolean isSceneKeyMatch(String key){
+
+    public boolean isSceneKeyMatch(String key) {
         return key.equals(this.getSceneKey());
     }
 
@@ -106,8 +109,8 @@ public class AbstractScene implements Serializable {
     public void setPanels(HashMap<String, AbstractMainPanel> panels) {
         this.panels = panels;
     }
-    
-    public boolean isPrimary(){
+
+    public boolean isPrimary() {
         return false;
     }
 

@@ -23,8 +23,8 @@ import org.apache.wicket.markup.html.list.ListView;
 import org.apache.wicket.markup.html.panel.Panel;
 import org.tiny.gear.Index;
 import org.tiny.gear.RoleController;
+import org.tiny.gear.model.MenuItem;
 import org.tiny.gear.scene.AbstractScene;
-import org.tiny.gear.scene.MenuItem;
 import org.tiny.wicket.onelogin.SamlSession;
 
 /**
@@ -46,7 +46,7 @@ public class NavigationPanel extends Panel {
         if (this.currentRoles.size() < 1) {
             this.currentRoles = RoleController.getGuestRoles();
         }
-        
+
         AbstractMainPanel currentPanel = index.getCurrentPanel();
         AbstractScene currentScene = index.getCurrentScene();
 
@@ -63,9 +63,9 @@ public class NavigationPanel extends Panel {
                 if (!scene.isAllowed(currentRoles)) {
                     item.setVisible(false);
                 }
-                
+
                 ListView<MenuItem> submenu = new ListView<MenuItem>("subMenu", scene.getMenus()) {
-                    
+
                     @Override
                     protected void populateItem(ListItem<MenuItem> item) {
                         MenuItem itemObject = item.getModelObject();
@@ -74,19 +74,23 @@ public class NavigationPanel extends Panel {
                                 itemObject.getText()
                         );
                         item.add(link);
-                        
-                        if(itemObject.isMatchedMainPanel(currentPanel.getClass())){
+
+                        if (itemObject.isMatchedMainPanel(currentPanel.getClass())) {
                             link.add(AttributeModifier.append("current", "true"));
                             item.add(AttributeModifier.append("current", "true"));
+                        }
+
+                        if (!itemObject.isAllowed(currentRoles)) {
+                            item.setVisible(false);
                         }
                     }
 
                 };
                 item.add(submenu);
-                
-                if(!currentScene.getClass().getName().equals(scene.getClass().getName())){
+
+                if (!currentScene.getClass().getName().equals(scene.getClass().getName())) {
                     submenu.setVisible(false);
-                }else{
+                } else {
                     item.add(AttributeModifier.append("current", "true"));
                 }
             }

@@ -7,7 +7,7 @@ import org.tiny.gear.panels.AbstractMainPanel;
 import org.tiny.gear.panels.NavigationPanel;
 import org.tiny.gear.scene.AbstractScene;
 import org.tiny.gear.scene.PrimaryScene;
-import org.tiny.gear.scene.UserControlScene;
+import org.tiny.gear.scene.SettingScene;
 import org.tiny.wicket.SamlMainPage;
 
 public class Index extends SamlMainPage {
@@ -59,7 +59,7 @@ public class Index extends SamlMainPage {
     public ArrayList<AbstractScene> getScenes() {
         ArrayList<AbstractScene> scenemap = new ArrayList<>();
         scenemap.add(new PrimaryScene(RoleController.getAllRoles()));
-        scenemap.add(new UserControlScene(RoleController.getUserRoles()));
+        scenemap.add(new SettingScene(RoleController.getUserRoles()));
         return scenemap;
     }
 

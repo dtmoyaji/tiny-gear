@@ -13,48 +13,50 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.tiny.gear.scene;
+package org.tiny.gear.model;
 
 import java.io.Serializable;
 import org.apache.wicket.authroles.authorization.strategies.role.Roles;
+import org.tiny.gear.IRoleChecker;
+import org.tiny.gear.RoleController;
 import org.tiny.gear.panels.AbstractMainPanel;
-
+import org.tiny.gear.scene.AbstractScene;
 
 /**
  *
  * @author bythe
  */
-public class MenuItem implements Serializable{
-    
+public class MenuItem implements Serializable, IRoleChecker {
+
     private String text;
-    
+
     private String url;
-    
+
     private Roles allowed;
-    
+
     private Class<? extends AbstractScene> scene;
     private Class<? extends AbstractMainPanel> panel;
-    
-    public MenuItem(String text, String url, Roles allowed){
+
+    public MenuItem(String text, String url, Roles allowed) {
         this.text = text;
         this.url = url;
         this.allowed = allowed;
     }
-    
-    public MenuItem(String text, Class<? extends AbstractScene> scene, Class<? extends AbstractMainPanel> view, Roles allowed){
+
+    public MenuItem(String text, Class<? extends AbstractScene> scene, Class<? extends AbstractMainPanel> view, Roles allowed) {
         this.text = text;
         this.scene = scene;
         this.panel = view;
         this.setUrl(scene, view);
         this.allowed = allowed;
     }
-    
-    public boolean isMatchedScene(Class<? extends AbstractScene> scene){
+
+    public boolean isMatchedScene(Class<? extends AbstractScene> scene) {
         return this.scene.getName().equals(scene.getName());
     }
-    
-    public boolean isMatchedMainPanel(Class<? extends AbstractMainPanel> panel){
-        if(this.panel==null){
+
+    public boolean isMatchedMainPanel(Class<? extends AbstractMainPanel> panel) {
+        if (this.panel == null) {
             return false;
         }
         return this.panel.getName().equals(panel.getName());
@@ -87,8 +89,8 @@ public class MenuItem implements Serializable{
     public void setUrl(String url) {
         this.url = url;
     }
-    
-    public final void setUrl(Class scene, Class mainPanel){
+
+    public final void setUrl(Class scene, Class mainPanel) {
         String urlTemplate = "?scene=%s&view=%s";
         urlTemplate = String.format(
                 urlTemplate,
@@ -111,5 +113,10 @@ public class MenuItem implements Serializable{
     public void setAllowed(Roles allowed) {
         this.allowed = allowed;
     }
-    
+
+    @Override
+    public boolean isAllowed(Roles roles) {
+        return RoleController.isRolesMatched(this.allowed, roles);
+    }
+
 }
