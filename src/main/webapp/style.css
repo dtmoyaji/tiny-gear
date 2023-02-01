@@ -3,6 +3,10 @@ html{
     height: 100%;
 }
 
+body{
+    font-family: Lato,proxima-nova,"Helvetica Neue",Arial,sans-serif
+}
+
 * {
     padding: 0;
     margin:0;
@@ -65,7 +69,6 @@ div{
 }
 
 li {
-    margin-left: 1em;
     list-style-type: none;
 }
 
@@ -85,40 +88,49 @@ hr{
 }
 
 .nav{
-    font-size: 85%;
+    font-size: 90%;
 }
 
 .nav a{
+    display: block;
     text-decoration: none;
     color: #fcfcfc;
 }
 
-.nav ul{
-    margin: 0.5em 0;
+.nav .menus{
+    margin: 0.3em 0;
     padding: 0;
 }
 
-.nav li{
-    margin: 0;
-    padding-left: 0.5em;
-    padding-top: 0.3em;
-    padding-bottom: 0.1em;
+.nav .menus a{
+    padding: 0.4em 0 0.4em 1.5em;
 }
 
-.nav li a{
-    width: 100%;
+.nav .menus .subMenu a{
+    padding: 0.4em 0 0.4em 3em;
 }
 
-.nav li[current="true"]{
-    background-color: rgba(255,255,255,0.2);
+.nav .menus[current="true"]{
+    background-color: #e3e3e3;
+    color: #404040;
+    font-weight: 600;
 }
 
-.nav .subMenuItem[current="true"]{
-    font-weight: 700;
+
+.nav .menus[current="true"] .menuItem{
+    background-color: white;
+    color: #404040;
 }
 
-.nav .subMenu[current="true"]{
-    background-color: rgba(255,255,255,0.2);
+.nav .subMenu .subMenuItem{
+    color: #404040;
+    font-weight: 400;
+}
+
+.nav .subMenu[current="true"] .subMenuItem{
+    color: #404040;
+    background-color: #c9c9c9;
+    font-weight: 600;
 }
 
 .content.footer{
