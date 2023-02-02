@@ -1,3 +1,8 @@
 #システムのタイトル
 tiny.gear.title=KeyCloak連携システム
 
+# JDBC接続：postgresqlでDBを用意し、以下にJDBCの情報を記入する。
+tiny.gear.jdbc.driver=
+tiny.gear.jdbc.url=
+tiny.gear.jdbc.user=
+tiny.gear.jdbc.password=

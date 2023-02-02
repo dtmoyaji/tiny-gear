@@ -1,7 +1,6 @@
 package org.tiny.gear;
 
 import java.io.File;
-import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.util.HashMap;
@@ -65,9 +64,11 @@ public class GearApplication extends SamlWicketApplication implements IJdbcSuppl
         }
         if (this.environments.get(PropertyName) == null) {
             try {
-                String filePath = PropertyName + ".properties";
+                File currdir = new File(".");
+                System.out.println(currdir.getAbsolutePath());
+                String filePath = "/" + PropertyName + ".properties";
                 Properties prop = new Properties();
-                prop.load(new FileInputStream(filePath));
+                prop.load(this.getClass().getResourceAsStream(filePath));
                 this.environments.put(PropertyName, prop);
             } catch (FileNotFoundException ex) {
                 Logger.getLogger(GearApplication.class.getName()).log(Level.SEVERE, null, ex);

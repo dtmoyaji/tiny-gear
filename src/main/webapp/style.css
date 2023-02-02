@@ -63,6 +63,7 @@ div{
     color: #fcfcfc;
 }
 
+
 .content.left div{
     color: #fcfcfc;
     text-decoration: none;
@@ -77,7 +78,7 @@ hr{
     height: 1px;
     border: 0;
     border-top: 1px solid #e1e4e5;
-    margin: 12px 0;
+    margin: 1px 0;
     padding: 0;
 }
 
@@ -149,10 +150,40 @@ hr{
     left: 300px;
     right: 0;
     height: 100%;
-    padding: 1.2em;
 }
 
 .content.right{
+}
+
+.content.center{
+    overflow: scroll;
+}
+
+.document_path{
+    padding: 0.5em;
+    position: absolute;
+    left: 0;
+    right: 0;
+    top: 0;
+    height: 34px;
+}
+
+.content.center .footer{
+    position: absolute;
+    bottom:0;
+    left:0;
+    right:0;
+    height:34px;
+    padding: 0 0.5em;
+}
+
+.content.center .mainPanel {    
+    padding: 1em;
+    position: absolute;
+    width: 100%;
+    top: 34px;
+    bottom: 34px;
+    overflow: scroll;
 }
 
 .humberger{
@@ -248,6 +279,7 @@ button{
 }
 
 .table{
+    max-width: 100%;
     display: table;
     border-collapse: separate;
     border-spacing: 0.3em;
@@ -257,25 +289,30 @@ button{
     display: table-row;
 }
 
+
 .tablecell{
     display: table-cell;
     padding: 0.3em;
     margin: 1em;
     border-bottom: 1px solid #e1e4e5;
+    word-break: break-all;
 }
 
 .tablecell.caption{
     font-weight: 600;
     background-color: #e1e4e5;
+    min-width: 20%;
 }
 
 .wicket-onelogin button{
     font-size: 0.7em;
 }
 
-.wicket-onelogin.panel *{
+.subPanelTitle{
+    margin-top: 1em;
 }
-
-.wicket-onelogin.panel label{
+ 
+p{
+    padding: 0.5em;
 }
 
