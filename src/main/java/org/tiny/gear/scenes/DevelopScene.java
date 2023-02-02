@@ -2,7 +2,7 @@ package org.tiny.gear.scenes;
 
 import org.apache.wicket.authroles.authorization.strategies.role.Roles;
 import org.tiny.gear.RoleController;
-import org.tiny.gear.view.PrimaryView;
+import org.tiny.gear.view.SimpleDevelopmentView;
 
 public class DevelopScene extends AbstractScene {
 
@@ -10,7 +10,7 @@ public class DevelopScene extends AbstractScene {
         super(allowed);
 
         this.putMenu(
-                "Groovy", PrimaryView.class,
+                "Groovy", SimpleDevelopmentView.class,
                 RoleController.getDevelopmentRoles(), true
         );
     }
