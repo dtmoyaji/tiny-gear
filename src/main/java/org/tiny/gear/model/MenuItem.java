@@ -19,7 +19,7 @@ import java.io.Serializable;
 import org.apache.wicket.authroles.authorization.strategies.role.Roles;
 import org.tiny.gear.IRoleChecker;
 import org.tiny.gear.RoleController;
-import org.tiny.gear.panels.AbstractMainPanel;
+import org.tiny.gear.view.AbstractView;
 import org.tiny.gear.scenes.AbstractScene;
 
 /**
@@ -35,7 +35,7 @@ public class MenuItem implements Serializable, IRoleChecker {
     private Roles allowed;
 
     private Class<? extends AbstractScene> scene;
-    private Class<? extends AbstractMainPanel> panel;
+    private Class<? extends AbstractView> panel;
 
     public MenuItem(String text, String url, Roles allowed) {
         this.text = text;
@@ -43,7 +43,7 @@ public class MenuItem implements Serializable, IRoleChecker {
         this.allowed = allowed;
     }
 
-    public MenuItem(String text, Class<? extends AbstractScene> scene, Class<? extends AbstractMainPanel> view, Roles allowed) {
+    public MenuItem(String text, Class<? extends AbstractScene> scene, Class<? extends AbstractView> view, Roles allowed) {
         this.text = text;
         this.scene = scene;
         this.panel = view;
@@ -55,7 +55,7 @@ public class MenuItem implements Serializable, IRoleChecker {
         return this.scene.getName().equals(scene.getName());
     }
 
-    public boolean isMatchedMainPanel(Class<? extends AbstractMainPanel> panel) {
+    public boolean isMatchedMainPanel(Class<? extends AbstractView> panel) {
         if (this.panel == null) {
             return false;
         }

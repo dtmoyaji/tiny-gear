@@ -16,8 +16,8 @@
 package org.tiny.gear.scenes;
 
 import org.apache.wicket.authroles.authorization.strategies.role.Roles;
-import org.tiny.gear.panels.AbstractMainPanel;
-import org.tiny.gear.panels.PrimaryPanel;
+import org.tiny.gear.view.AbstractView;
+import org.tiny.gear.view.PrimaryView;
 
 /**
  *
@@ -28,9 +28,8 @@ public class PrimaryScene extends AbstractScene {
     public PrimaryScene(Roles allowed) {
         super(allowed);
 
-        this.getPanels().put(
-                AbstractScene.DEFAULT_VIEW, 
-                new PrimaryPanel()
+        this.getPanels().put(AbstractScene.DEFAULT_VIEW, 
+                new PrimaryView()
         );
 
     }
@@ -41,8 +40,8 @@ public class PrimaryScene extends AbstractScene {
     }
 
     @Override
-    public AbstractMainPanel getDefaultPanel() {
-        return new PrimaryPanel();
+    public AbstractView getDefaultPanel() {
+        return new PrimaryView();
     }
 
 }

@@ -13,26 +13,21 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.tiny.gear.panels;
-
-import org.apache.wicket.markup.html.basic.Label;
-import org.apache.wicket.markup.html.panel.Panel;
-import org.apache.wicket.model.Model;
+package org.tiny.gear.view;
 
 /**
  *
  * @author bythe
  */
-public abstract class AbstractMainPanel extends Panel {
-   
-    private final Label title;
+public class ConnectionView extends AbstractView{
     
-    public AbstractMainPanel(){
-        super("scenePanel");
-        this.title = new Label("panelTitle", Model.of(this.getTitle()));
-        this.add(this.title);
+    public ConnectionView(){
+        super();
     }
     
-    public abstract String getTitle();
+    @Override
+    public String getTitle() {
+        return "各種接続設定";
+    }
     
 }

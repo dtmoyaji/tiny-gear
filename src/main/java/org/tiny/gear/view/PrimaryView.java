@@ -13,13 +13,13 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.tiny.gear.panels;
+package org.tiny.gear.view;
 
 /**
  *
  * @author bythe
  */
-public class PrimaryPanel extends AbstractMainPanel{
+public class PrimaryView extends AbstractView{
     
     @Override
     public String getTitle(){

@@ -25,7 +25,7 @@ import org.apache.wicket.authroles.authorization.strategies.role.Roles;
 import org.tiny.gear.IRoleChecker;
 import org.tiny.gear.RoleController;
 import org.tiny.gear.model.MenuItem;
-import org.tiny.gear.panels.AbstractMainPanel;
+import org.tiny.gear.view.AbstractView;
 
 /**
  *
@@ -43,11 +43,11 @@ public abstract class AbstractScene implements Serializable, IRoleChecker {
 
     private ArrayList<MenuItem> menus;
 
-    private HashMap<String, AbstractMainPanel> panels;
+    private HashMap<String, AbstractView> panels;
 
     private final Roles allowed;
     
-    private AbstractMainPanel defaultPanel;
+    private AbstractView defaultPanel;
 
     public AbstractScene(Roles allowed) {
 
@@ -100,18 +100,18 @@ public abstract class AbstractScene implements Serializable, IRoleChecker {
     /**
      * @return the panels
      */
-    public HashMap<String, AbstractMainPanel> getPanels() {
+    public HashMap<String, AbstractView> getPanels() {
         return panels;
     }
 
-    public AbstractMainPanel getPanel(String key) {
+    public AbstractView getPanel(String key) {
         return this.panels.get(key);
     }
 
     /**
      * @param panels the panels to set
      */
-    public void setPanels(HashMap<String, AbstractMainPanel> panels) {
+    public void setPanels(HashMap<String, AbstractView> panels) {
         this.panels = panels;
     }
 
@@ -119,10 +119,10 @@ public abstract class AbstractScene implements Serializable, IRoleChecker {
         return false;
     }
     
-    public void putMenu(String menuName, Class<? extends AbstractMainPanel> view, Roles roles, boolean primary){
+    public void putMenu(String menuName, Class<? extends AbstractView> view, Roles roles, boolean primary){
         try {
             this.getMenus().add(new MenuItem(menuName, this.getClass(), view, roles));
-            AbstractMainPanel newView = view.getConstructor().newInstance();
+            AbstractView newView = view.getConstructor().newInstance();
             this.getPanels().put(view.getName(),newView);
             if(primary){
                 this.defaultPanel = newView;
@@ -132,7 +132,7 @@ public abstract class AbstractScene implements Serializable, IRoleChecker {
         }
     }
 
-    public AbstractMainPanel getDefaultPanel(){
+    public AbstractView getDefaultPanel(){
         return this.defaultPanel;
     }
 

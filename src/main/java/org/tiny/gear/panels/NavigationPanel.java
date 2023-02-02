@@ -15,6 +15,7 @@
  */
 package org.tiny.gear.panels;
 
+import org.tiny.gear.view.AbstractView;
 import org.apache.wicket.AttributeModifier;
 import org.apache.wicket.authroles.authorization.strategies.role.Roles;
 import org.apache.wicket.markup.html.link.ExternalLink;
@@ -47,7 +48,7 @@ public class NavigationPanel extends Panel {
             this.currentRoles = RoleController.getGuestRoles();
         }
 
-        AbstractMainPanel currentPanel = index.getCurrentPanel();
+        AbstractView currentPanel = index.getCurrentPanel();
         AbstractScene currentScene = index.getCurrentScene();
 
         this.scenes = new ListView<AbstractScene>("menus", index.getScenes()) {

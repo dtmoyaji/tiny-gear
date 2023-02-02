@@ -1,4 +1,4 @@
-package org.tiny.gear.panels;
+package org.tiny.gear.view;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -14,14 +14,14 @@ import org.tiny.wicket.onelogin.SamlSession;
  *
  * @author bythe
  */
-public class UserInfoPanel extends AbstractMainPanel {
+public class UserInfoView extends AbstractView {
 
     private final Label samlNameId;
 
     private HashMap<String, List<String>> userAttributes;
     private ListView<String> KeySet;
 
-    public UserInfoPanel() {
+    public UserInfoView() {
 
         super();
 

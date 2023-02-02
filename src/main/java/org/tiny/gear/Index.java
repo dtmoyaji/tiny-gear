@@ -5,7 +5,7 @@ import java.util.HashMap;
 import org.apache.wicket.request.mapper.parameter.PageParameters;
 import org.tiny.datawrapper.IJdbcSupplier;
 import org.tiny.datawrapper.Jdbc;
-import org.tiny.gear.panels.AbstractMainPanel;
+import org.tiny.gear.view.AbstractView;
 import org.tiny.gear.panels.NavigationPanel;
 import org.tiny.gear.scenes.AbstractScene;
 import org.tiny.gear.scenes.PrimaryScene;
@@ -17,7 +17,7 @@ public class Index extends SamlMainPage implements IJdbcSupplier{
     private static final long serialVersionUID = 1L;
 
     private final AbstractScene currentScene;
-    private final AbstractMainPanel currentPanel;
+    private final AbstractView currentPanel;
 
     private final NavigationPanel nav;
 
@@ -48,7 +48,7 @@ public class Index extends SamlMainPage implements IJdbcSupplier{
             }
         }
 
-        HashMap<String, AbstractMainPanel> panels = currentScene.getPanels();
+        HashMap<String, AbstractView> panels = currentScene.getPanels();
         String panelName = parameters.get("view").toString();
         if(panelName!=null){
             this.currentPanel = panels.get(panelName);
@@ -79,7 +79,7 @@ public class Index extends SamlMainPage implements IJdbcSupplier{
         return this.currentScene;
     }
 
-    public AbstractMainPanel getCurrentPanel() {
+    public AbstractView getCurrentPanel() {
         return this.currentPanel;
     }
 
