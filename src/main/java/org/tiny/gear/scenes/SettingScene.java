@@ -19,8 +19,8 @@ public class SettingScene extends AbstractScene {
         Roles adminRoles = RoleController.getAdminRoles();
 
         this.putMenu("マイアカウント", UserInfoView.class, generalRoles, true);
-        this.putMenu("接続設定", ConnectionView.class,  adminRoles, false);
         this.getMenus().add(new MenuItem("ユーザー同期", "?menu=menu1", adminRoles));
+        this.putMenu("接続設定", ConnectionView.class,  adminRoles, false);
     }
 
     @Override

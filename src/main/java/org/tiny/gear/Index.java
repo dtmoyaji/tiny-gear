@@ -2,19 +2,23 @@ package org.tiny.gear;
 
 import java.util.ArrayList;
 import java.util.HashMap;
+import org.apache.wicket.markup.html.basic.Label;
+import org.apache.wicket.model.Model;
 import org.apache.wicket.request.mapper.parameter.PageParameters;
 import org.tiny.datawrapper.IJdbcSupplier;
 import org.tiny.datawrapper.Jdbc;
-import org.tiny.gear.view.AbstractView;
 import org.tiny.gear.panels.NavigationPanel;
 import org.tiny.gear.scenes.AbstractScene;
 import org.tiny.gear.scenes.PrimaryScene;
 import org.tiny.gear.scenes.SettingScene;
+import org.tiny.gear.view.AbstractView;
 import org.tiny.wicket.SamlMainPage;
 
 public class Index extends SamlMainPage implements IJdbcSupplier{
 
     private static final long serialVersionUID = 1L;
+    
+    private final Label serviceTitle;
 
     private final AbstractScene currentScene;
     private final AbstractView currentPanel;
@@ -25,6 +29,12 @@ public class Index extends SamlMainPage implements IJdbcSupplier{
 
     public Index(final PageParameters parameters) {
         super(parameters);
+        
+        GearApplication app = (GearApplication) this.getApplication();
+        String svtitle = (String) app.getProperties("tiny.gear").get("tiny.gear.service.title");
+        
+        this.serviceTitle = new Label("serviceTitle", Model.of(svtitle));
+        this.add(this.serviceTitle);
 
         // いずれリゾルバに置換するけど、暫定処理
         AbstractScene currentScene = new PrimaryScene(RoleController.getUserRoles());
