@@ -13,11 +13,14 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.tiny.gear.scene;
+package org.tiny.gear.scenes;
 
 import java.io.Serializable;
+import java.lang.reflect.InvocationTargetException;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import org.apache.wicket.authroles.authorization.strategies.role.Roles;
 import org.tiny.gear.IRoleChecker;
 import org.tiny.gear.RoleController;
@@ -28,7 +31,7 @@ import org.tiny.gear.panels.AbstractMainPanel;
  *
  * @author bythe
  */
-public class AbstractScene implements Serializable, IRoleChecker {
+public abstract class AbstractScene implements Serializable, IRoleChecker {
 
     private int ordinal = -1;
 
@@ -43,6 +46,8 @@ public class AbstractScene implements Serializable, IRoleChecker {
     private HashMap<String, AbstractMainPanel> panels;
 
     private final Roles allowed;
+    
+    private AbstractMainPanel defaultPanel;
 
     public AbstractScene(Roles allowed) {
 
@@ -112,6 +117,23 @@ public class AbstractScene implements Serializable, IRoleChecker {
 
     public boolean isPrimary() {
         return false;
+    }
+    
+    public void putMenu(String menuName, Class<? extends AbstractMainPanel> view, Roles roles, boolean primary){
+        try {
+            this.getMenus().add(new MenuItem(menuName, this.getClass(), view, roles));
+            AbstractMainPanel newView = view.getConstructor().newInstance();
+            this.getPanels().put(view.getName(),newView);
+            if(primary){
+                this.defaultPanel = newView;
+            }
+        } catch (NoSuchMethodException | SecurityException | InstantiationException | IllegalAccessException | IllegalArgumentException | InvocationTargetException ex) {
+            Logger.getLogger(AbstractScene.class.getName()).log(Level.SEVERE, null, ex);
+        }
+    }
+
+    public AbstractMainPanel getDefaultPanel(){
+        return this.defaultPanel;
     }
 
 }

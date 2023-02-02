@@ -20,7 +20,7 @@ import org.apache.wicket.authroles.authorization.strategies.role.Roles;
 import org.tiny.gear.IRoleChecker;
 import org.tiny.gear.RoleController;
 import org.tiny.gear.panels.AbstractMainPanel;
-import org.tiny.gear.scene.AbstractScene;
+import org.tiny.gear.scenes.AbstractScene;
 
 /**
  *

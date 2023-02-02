@@ -24,7 +24,7 @@ import org.apache.wicket.markup.html.panel.Panel;
 import org.tiny.gear.Index;
 import org.tiny.gear.RoleController;
 import org.tiny.gear.model.MenuItem;
-import org.tiny.gear.scene.AbstractScene;
+import org.tiny.gear.scenes.AbstractScene;
 import org.tiny.wicket.onelogin.SamlSession;
 
 /**

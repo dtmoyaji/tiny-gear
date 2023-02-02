@@ -3,14 +3,16 @@ package org.tiny.gear;
 import java.util.ArrayList;
 import java.util.HashMap;
 import org.apache.wicket.request.mapper.parameter.PageParameters;
+import org.tiny.datawrapper.IJdbcSupplier;
+import org.tiny.datawrapper.Jdbc;
 import org.tiny.gear.panels.AbstractMainPanel;
 import org.tiny.gear.panels.NavigationPanel;
-import org.tiny.gear.scene.AbstractScene;
-import org.tiny.gear.scene.PrimaryScene;
-import org.tiny.gear.scene.SettingScene;
+import org.tiny.gear.scenes.AbstractScene;
+import org.tiny.gear.scenes.PrimaryScene;
+import org.tiny.gear.scenes.SettingScene;
 import org.tiny.wicket.SamlMainPage;
 
-public class Index extends SamlMainPage {
+public class Index extends SamlMainPage implements IJdbcSupplier{
 
     private static final long serialVersionUID = 1L;
 
@@ -47,7 +49,12 @@ public class Index extends SamlMainPage {
         }
 
         HashMap<String, AbstractMainPanel> panels = currentScene.getPanels();
-        this.currentPanel = panels.get(AbstractScene.DEFAULT_VIEW);
+        String panelName = parameters.get("view").toString();
+        if(panelName!=null){
+            this.currentPanel = panels.get(panelName);
+        }else{
+            this.currentPanel = currentScene.getDefaultPanel();
+        }
         this.add(this.currentPanel);
 
         this.currentScene = currentScene;
@@ -74,6 +81,12 @@ public class Index extends SamlMainPage {
 
     public AbstractMainPanel getCurrentPanel() {
         return this.currentPanel;
+    }
+
+    @Override
+    public Jdbc getJdbc() {
+        GearApplication app = (GearApplication) this.getApplication();
+        return app.getJdbc();
     }
 
 }

@@ -21,9 +21,9 @@ public class UserInfoPanel extends AbstractMainPanel {
     private HashMap<String, List<String>> userAttributes;
     private ListView<String> KeySet;
 
-    public UserInfoPanel(String id) {
+    public UserInfoPanel() {
 
-        super(id);
+        super();
 
         this.samlNameId = new Label("samlNameId", Model.of(""));
         this.add(this.samlNameId);

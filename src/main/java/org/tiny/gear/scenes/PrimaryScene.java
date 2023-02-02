@@ -13,26 +13,36 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.tiny.gear.panels;
+package org.tiny.gear.scenes;
 
-import org.apache.wicket.markup.html.basic.Label;
-import org.apache.wicket.markup.html.panel.Panel;
-import org.apache.wicket.model.Model;
+import org.apache.wicket.authroles.authorization.strategies.role.Roles;
+import org.tiny.gear.panels.AbstractMainPanel;
+import org.tiny.gear.panels.PrimaryPanel;
 
 /**
  *
  * @author bythe
  */
-public abstract class AbstractMainPanel extends Panel {
-   
-    private final Label title;
-    
-    public AbstractMainPanel(){
-        super("scenePanel");
-        this.title = new Label("panelTitle", Model.of(this.getTitle()));
-        this.add(this.title);
+public class PrimaryScene extends AbstractScene {
+
+    public PrimaryScene(Roles allowed) {
+        super(allowed);
+
+        this.getPanels().put(
+                AbstractScene.DEFAULT_VIEW, 
+                new PrimaryPanel()
+        );
+
     }
-    
-    public abstract String getTitle();
-    
+
+    @Override
+    public String getSceneName() {
+        return "はじめに";
+    }
+
+    @Override
+    public AbstractMainPanel getDefaultPanel() {
+        return new PrimaryPanel();
+    }
+
 }

@@ -21,10 +21,6 @@ package org.tiny.gear.panels;
  */
 public class PrimaryPanel extends AbstractMainPanel{
     
-    public PrimaryPanel(String id) {
-        super(id);
-    }
-    
     @Override
     public String getTitle(){
         return "はじめに";

@@ -13,30 +13,21 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.tiny.gear.scene;
-
-import org.apache.wicket.authroles.authorization.strategies.role.Roles;
-import org.tiny.gear.panels.PrimaryPanel;
+package org.tiny.gear.panels;
 
 /**
  *
  * @author bythe
  */
-public class PrimaryScene extends AbstractScene {
-
-    public PrimaryScene(Roles allowed) {
-        super(allowed);
-
-        this.getPanels().put(
-                AbstractScene.DEFAULT_VIEW, 
-                new PrimaryPanel("scenePanel")
-        );
-
+public class ConnectionView extends AbstractMainPanel{
+    
+    public ConnectionView(){
+        super();
     }
-
+    
     @Override
-    public String getSceneName() {
-        return "はじめに";
+    public String getTitle() {
+        return "各種接続設定";
     }
-
+    
 }
