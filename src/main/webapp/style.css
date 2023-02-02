@@ -156,7 +156,7 @@ hr{
 }
 
 .content.center{
-    overflow: scroll;
+    overflow: auto;
 }
 
 .document_path{
@@ -173,7 +173,7 @@ hr{
     bottom:0;
     left:0;
     right:0;
-    height:34px;
+    height:32px;
     padding: 0 0.5em;
 }
 
@@ -183,7 +183,7 @@ hr{
     width: 100%;
     top: 34px;
     bottom: 34px;
-    overflow: scroll;
+    overflow: auto;
 }
 
 .humberger{

@@ -9,15 +9,16 @@ import org.tiny.datawrapper.IJdbcSupplier;
 import org.tiny.datawrapper.Jdbc;
 import org.tiny.gear.panels.NavigationPanel;
 import org.tiny.gear.scenes.AbstractScene;
+import org.tiny.gear.scenes.DevelopScene;
 import org.tiny.gear.scenes.PrimaryScene;
 import org.tiny.gear.scenes.SettingScene;
 import org.tiny.gear.view.AbstractView;
 import org.tiny.wicket.SamlMainPage;
 
-public class Index extends SamlMainPage implements IJdbcSupplier{
+public class Index extends SamlMainPage implements IJdbcSupplier {
 
     private static final long serialVersionUID = 1L;
-    
+
     private final Label serviceTitle;
 
     private final AbstractScene currentScene;
@@ -29,10 +30,10 @@ public class Index extends SamlMainPage implements IJdbcSupplier{
 
     public Index(final PageParameters parameters) {
         super(parameters);
-        
+
         GearApplication app = (GearApplication) this.getApplication();
         String svtitle = (String) app.getProperties("tiny.gear").get("tiny.gear.service.title");
-        
+
         this.serviceTitle = new Label("serviceTitle", Model.of(svtitle));
         this.add(this.serviceTitle);
 
@@ -60,9 +61,9 @@ public class Index extends SamlMainPage implements IJdbcSupplier{
 
         HashMap<String, AbstractView> panels = currentScene.getPanels();
         String panelName = parameters.get("view").toString();
-        if(panelName!=null){
+        if (panelName != null) {
             this.currentPanel = panels.get(panelName);
-        }else{
+        } else {
             this.currentPanel = currentScene.getDefaultPanel();
         }
         this.add(this.currentPanel);
@@ -77,6 +78,7 @@ public class Index extends SamlMainPage implements IJdbcSupplier{
         ArrayList<AbstractScene> scenemap = new ArrayList<>();
         scenemap.add(new PrimaryScene(RoleController.getAllRoles()));
         scenemap.add(new SettingScene(RoleController.getUserRoles()));
+        scenemap.add(new DevelopScene(RoleController.getDevelopmentRoles()));
         return scenemap;
     }
 

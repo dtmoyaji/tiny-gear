@@ -4,6 +4,7 @@ import org.apache.wicket.authroles.authorization.strategies.role.Roles;
 
 /**
  * ロールを扱うクラス
+ *
  * @author dtmoyaji
  */
 public class RoleController {
@@ -17,37 +18,46 @@ public class RoleController {
                     break;
                 }
             }
-            if(rvalue){
+            if (rvalue) {
                 break;
             }
         }
         return rvalue;
     }
-    
-    public static Roles getAllRoles(){
-        Roles generalRoles = new Roles();
-        generalRoles.add("guest");
-        generalRoles.add("user");
-        generalRoles.add("admin");
-        return generalRoles;
+
+    public static Roles getAllRoles() {
+        Roles rvalue = new Roles();
+        rvalue.add("guest");
+        rvalue.add("user");
+        rvalue.add("admin");
+        rvalue.add("developer");
+        return rvalue;
     }
 
     public static Roles getUserRoles() {
-        Roles generalRoles = new Roles();
-        generalRoles.add("user");
-        generalRoles.add("admin");
-        return generalRoles;
+        Roles rvalue = new Roles();
+        rvalue.add("user");
+        rvalue.add("admin");
+        rvalue.add("developer");
+        return rvalue;
     }
 
     public static Roles getAdminRoles() {
-        Roles adminRoles = new Roles();
-        adminRoles.add("admin");
-        return adminRoles;
+        Roles rvalue = new Roles();
+        rvalue.add("admin");
+        rvalue.add("developer");
+        return rvalue;
     }
-    
-    public static Roles getGuestRoles(){
-        Roles adminRoles = new Roles();
-        adminRoles.add("guest");
-        return adminRoles;
+
+    public static Roles getGuestRoles() {
+        Roles rvalue = new Roles();
+        rvalue.add("guest");
+        return rvalue;
+    }
+
+    public static Roles getDevelopmentRoles() {
+        Roles rvalue = new Roles();
+        rvalue.add("developer");
+        return rvalue;
     }
 }
