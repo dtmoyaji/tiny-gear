@@ -64,8 +64,8 @@ public class GearApplication extends SamlWicketApplication implements IJdbcSuppl
         }
         if (this.environments.get(PropertyName) == null) {
             try {
-                File currdir = new File(".");
-                System.out.println(currdir.getAbsolutePath());
+//                File currdir = new File(".");
+//                System.out.println(currdir.getAbsolutePath());
                 String filePath = "/" + PropertyName + ".properties";
                 Properties prop = new Properties();
                 prop.load(this.getClass().getResourceAsStream(filePath));
