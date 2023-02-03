@@ -56,6 +56,7 @@ public class SimpleGroovyExecutePanel extends AbstractPanel {
                 Binding binding = new Binding();
                 binding.setVariable("myApplication", SimpleGroovyExecutePanel.this.getApplication());
                 binding.setVariable("mySession", SimpleGroovyExecutePanel.this.getSession());
+                binding.setVariable("myPanel", SimpleGroovyExecutePanel.this);
                 GroovyShell shell = new GroovyShell(binding);
                 String rvalue = String.valueOf(shell.evaluate(script));
                 Logger.getLogger(btnRun.getClass().getName()).log(Level.INFO, rvalue);
