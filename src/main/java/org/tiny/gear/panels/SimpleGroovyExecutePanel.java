@@ -52,7 +52,7 @@ public class SimpleGroovyExecutePanel extends AbstractPanel {
             public void onSubmit(AjaxRequestTarget target) {
                 String script = (String) code.getModelObject();
 
-                if (script.length() > 0) {
+                if (script.trim().length() > 0) {
                     Logger.getLogger(btnRun.getClass().getName()).log(Level.INFO, script);
 
                     Binding binding = new Binding();
