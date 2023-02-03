@@ -15,6 +15,10 @@
  */
 package org.tiny.gear.panels;
 
+import groovy.lang.Binding;
+import groovy.lang.GroovyShell;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import org.apache.wicket.ajax.AjaxRequestTarget;
 import org.apache.wicket.ajax.markup.html.form.AjaxButton;
 import org.apache.wicket.markup.html.form.Form;
@@ -45,9 +49,16 @@ public class SimpleGroovyExecutePanel extends AbstractPanel {
         this.btnRun = new AjaxButton("btnRun", Model.of("実行")) {
 
             @Override
-            public void onSubmit(AjaxRequestTarget targe) {
+            public void onSubmit(AjaxRequestTarget target) {
                 String script = (String) code.getModelObject();
-                System.out.print(script);
+                Logger.getLogger(btnRun.getClass().getName()).log(Level.INFO, script);
+
+                Binding binding = new Binding();
+                GroovyShell shell = new GroovyShell(binding);
+                String rvalue = String.valueOf(shell.evaluate(script));
+                Logger.getLogger(btnRun.getClass().getName()).log(Level.INFO, rvalue);
+
+                target.add(editor);
             }
 
         };
