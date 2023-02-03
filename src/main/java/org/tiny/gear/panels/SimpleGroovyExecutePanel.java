@@ -51,19 +51,20 @@ public class SimpleGroovyExecutePanel extends AbstractPanel {
             @Override
             public void onSubmit(AjaxRequestTarget target) {
                 String script = (String) code.getModelObject();
+                if (script != null) {
+                    if (script.trim().length() > 0) {
+                        Logger.getLogger(btnRun.getClass().getName()).log(Level.INFO, script);
 
-                if (script.trim().length() > 0) {
-                    Logger.getLogger(btnRun.getClass().getName()).log(Level.INFO, script);
-
-                    Binding binding = new Binding();
-                    binding.setVariable("myApplication", SimpleGroovyExecutePanel.this.getApplication());
-                    binding.setVariable("mySession", SimpleGroovyExecutePanel.this.getSession());
-                    binding.setVariable("myPanel", SimpleGroovyExecutePanel.this);
-                    GroovyShell shell = new GroovyShell(binding);
-                    String rvalue = String.valueOf(shell.evaluate(script));
-                    Logger.getLogger(btnRun.getClass().getName()).log(Level.INFO, rvalue);
+                        Binding binding = new Binding();
+                        binding.setVariable("myApplication", SimpleGroovyExecutePanel.this.getApplication());
+                        binding.setVariable("mySession", SimpleGroovyExecutePanel.this.getSession());
+                        binding.setVariable("myPanel", SimpleGroovyExecutePanel.this);
+                        GroovyShell shell = new GroovyShell(binding);
+                        String rvalue = String.valueOf(shell.evaluate(script));
+                        Logger.getLogger(btnRun.getClass().getName()).log(Level.INFO, rvalue);
+                    }
+                    target.add(editor);
                 }
-                target.add(editor);
             }
 
         };
