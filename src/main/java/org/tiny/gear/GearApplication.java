@@ -83,13 +83,13 @@ public class GearApplication extends SamlWicketApplication implements IJdbcSuppl
     public Jdbc getJdbc() {
         if (this.jdbc == null) {
             
-            Properties tinygear = this.getProperties("org.tiny.gear");
+            Properties tinygear = this.getProperties("tiny.gear");
             
             this.jdbc = new Jdbc();
-            this.jdbc.setDriver(tinygear.getProperty("org.tiny.gear.Jdbc.driver"));
-            this.jdbc.setUrl(tinygear.getProperty("org.tiny.gear.Jdbc.url"));
-            this.jdbc.setUser(tinygear.getProperty("org.tiny.gear.Jdbc.user"));
-            this.jdbc.setPassword(tinygear.getProperty("org.tiny.gear.Jdbc.password"));
+            this.jdbc.setDriver(tinygear.getProperty("tiny.gear.jdbc.driver"));
+            this.jdbc.setUrl(tinygear.getProperty("tiny.gear.jdbc.url"));
+            this.jdbc.setUser(tinygear.getProperty("tiny.gear.jdbc.user"));
+            this.jdbc.setPassword(tinygear.getProperty("tiny.gear.jdbc.password"));
         }
         return this.jdbc;
     }

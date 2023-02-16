@@ -21,6 +21,7 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 import org.apache.wicket.ajax.AjaxRequestTarget;
 import org.apache.wicket.ajax.markup.html.form.AjaxButton;
+import org.apache.wicket.markup.html.basic.Label;
 import org.apache.wicket.markup.html.form.Form;
 import org.apache.wicket.markup.html.form.TextArea;
 import org.apache.wicket.model.Model;
@@ -37,13 +38,16 @@ public class SimpleGroovyExecutePanel extends AbstractPanel {
 
     private AjaxButton btnRun;
 
+    private Label result;
+
     public SimpleGroovyExecutePanel(String id) {
+
         super(id);
 
         this.editor = new Form("editor");
         this.add(this.editor);
 
-        this.code = new TextArea("code", Model.of(""));
+        this.code = new TextArea("code", Model.of("import org.tiny.gear.model.UserInfo\n\ndef jdbc = myApplication.getJdbc()\ndef uinfo = new UserInfo()\nuinfo.alterOrCreateTable(jdbc)\n\nreturn uinfo.toString()"));
         this.editor.add(this.code);
 
         this.btnRun = new AjaxButton("btnRun", Model.of("実行")) {
@@ -60,8 +64,18 @@ public class SimpleGroovyExecutePanel extends AbstractPanel {
                         binding.setVariable("mySession", SimpleGroovyExecutePanel.this.getSession());
                         binding.setVariable("myPanel", SimpleGroovyExecutePanel.this);
                         GroovyShell shell = new GroovyShell(binding);
-                        String rvalue = String.valueOf(shell.evaluate(script));
-                        Logger.getLogger(btnRun.getClass().getName()).log(Level.INFO, rvalue);
+
+                        try {
+                            String rvalue = String.valueOf(shell.evaluate(script));
+                            SimpleGroovyExecutePanel.this.result.setDefaultModelObject(rvalue);
+                            Logger.getLogger(btnRun.getClass().getName()).log(Level.INFO, rvalue);
+                        } catch (Exception ex) {
+                            String strException = ex.getMessage();
+                            
+                            strException += ex.getStackTrace().toString();
+                            SimpleGroovyExecutePanel.this.result.setDefaultModelObject(strException);
+                        }
+
                     }
                     target.add(editor);
                 }
@@ -69,6 +83,9 @@ public class SimpleGroovyExecutePanel extends AbstractPanel {
 
         };
         this.editor.add(this.btnRun);
+
+        this.result = new Label("lblResult", Model.of("よしなに。"));
+        this.editor.add(this.result);
 
     }
 
