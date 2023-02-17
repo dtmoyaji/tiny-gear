@@ -1,6 +1,5 @@
 package org.tiny.gear;
 
-import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.util.HashMap;
@@ -13,6 +12,7 @@ import org.apache.wicket.resource.FileSystemResource;
 import org.tiny.datawrapper.IJdbcSupplier;
 import org.tiny.datawrapper.Jdbc;
 import org.tiny.wicket.SamlWicketApplication;
+import wicket.util.file.File;
 
 /**
  * @see org.tiny.Start#main(String[])
@@ -43,9 +43,10 @@ public class GearApplication extends SamlWicketApplication implements IJdbcSuppl
 
     public void mountResources() {
         String classesPath = this.getServletContext().getRealPath("/");
-        // Webアプリの CLASSPATH の下、img の下に画像ファイルが存在する場合、、 
+        // img のパスをurlにマッピングする
         this.getSharedResources().add("img/kkrn_icon_menu_11.png", new FileSystemResource(new File(classesPath + "img/kkrn_icon_menu_11.png").toPath()));
         this.mountResource("img/kkrn_icon_menu_11.png", new SharedResourceReference("img/kkrn_icon_menu_11.png"));
+
     }
 
     @Override
@@ -70,10 +71,14 @@ public class GearApplication extends SamlWicketApplication implements IJdbcSuppl
                 Properties prop = new Properties();
                 prop.load(this.getClass().getResourceAsStream(filePath));
                 this.environments.put(PropertyName, prop);
+
             } catch (FileNotFoundException ex) {
-                Logger.getLogger(GearApplication.class.getName()).log(Level.SEVERE, null, ex);
+                Logger.getLogger(GearApplication.class
+                        .getName()).log(Level.SEVERE, null, ex);
+
             } catch (IOException ex) {
-                Logger.getLogger(GearApplication.class.getName()).log(Level.SEVERE, null, ex);
+                Logger.getLogger(GearApplication.class
+                        .getName()).log(Level.SEVERE, null, ex);
             }
         }
         return this.environments.get(PropertyName);
@@ -82,9 +87,9 @@ public class GearApplication extends SamlWicketApplication implements IJdbcSuppl
     @Override
     public Jdbc getJdbc() {
         if (this.jdbc == null) {
-            
+
             Properties tinygear = this.getProperties("tiny.gear");
-            
+
             this.jdbc = new Jdbc();
             this.jdbc.setDriver(tinygear.getProperty("tiny.gear.jdbc.driver"));
             this.jdbc.setUrl(tinygear.getProperty("tiny.gear.jdbc.url"));

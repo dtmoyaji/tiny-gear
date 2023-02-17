@@ -15,18 +15,18 @@
  */
 package org.tiny.gear.view;
 
-import org.tiny.gear.panels.SimpleGroovyExecutePanel;
+import org.tiny.gear.panels.GroovyEditor;
 
 /**
  */
 public class SimpleDevelopmentView extends AbstractView {
 
-    private final SimpleGroovyExecutePanel groovyExec;
+    private final GroovyEditor groovyExec;
 
     public SimpleDevelopmentView() {
         super();
 
-        this.groovyExec = new SimpleGroovyExecutePanel("groovyExecutor");
+        this.groovyExec = new GroovyEditor("groovyExecutor");
         this.add(this.groovyExec);
     }
 

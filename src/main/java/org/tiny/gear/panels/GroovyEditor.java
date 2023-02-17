@@ -30,7 +30,7 @@ import org.apache.wicket.model.Model;
  *
  * @author MURAKAMI Takahiro <daianji@gmail.com>
  */
-public class SimpleGroovyExecutePanel extends AbstractPanel {
+public class GroovyEditor extends AbstractPanel {
 
     private Form editor;
 
@@ -40,9 +40,10 @@ public class SimpleGroovyExecutePanel extends AbstractPanel {
 
     private Label result;
 
-    public SimpleGroovyExecutePanel(String id) {
+    public GroovyEditor(String id) {
 
         super(id);
+        
 
         this.editor = new Form("editor");
         this.add(this.editor);
@@ -60,20 +61,20 @@ public class SimpleGroovyExecutePanel extends AbstractPanel {
                         Logger.getLogger(btnRun.getClass().getName()).log(Level.INFO, script);
 
                         Binding binding = new Binding();
-                        binding.setVariable("myApplication", SimpleGroovyExecutePanel.this.getApplication());
-                        binding.setVariable("mySession", SimpleGroovyExecutePanel.this.getSession());
-                        binding.setVariable("myPanel", SimpleGroovyExecutePanel.this);
+                        binding.setVariable("myApplication", GroovyEditor.this.getApplication());
+                        binding.setVariable("mySession", GroovyEditor.this.getSession());
+                        binding.setVariable("myPanel", GroovyEditor.this);
                         GroovyShell shell = new GroovyShell(binding);
 
                         try {
                             String rvalue = String.valueOf(shell.evaluate(script));
-                            SimpleGroovyExecutePanel.this.result.setDefaultModelObject(rvalue);
+                            GroovyEditor.this.result.setDefaultModelObject(rvalue);
                             Logger.getLogger(btnRun.getClass().getName()).log(Level.INFO, rvalue);
                         } catch (Exception ex) {
                             String strException = ex.getMessage();
                             
                             strException += ex.getStackTrace().toString();
-                            SimpleGroovyExecutePanel.this.result.setDefaultModelObject(strException);
+                            GroovyEditor.this.result.setDefaultModelObject(strException);
                         }
 
                     }
