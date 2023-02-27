@@ -5,20 +5,23 @@
       lang="ja">
     <head>
         <meta charset="utf-8" />
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
         <title>Apache Wicket Quickstart</title>
         <link href='https://fonts.googleapis.com/css?family=Yanone+Kaffeesatz:regular,bold' rel='stylesheet' type='text/css' />
         <link rel="stylesheet" href="style.css" type="text/css" media="screen" title="Stylesheet" />
     </head>
     <body>
-
         <div class="content header">
-            へっだー
+            <div class="humberger"></div>
+            <!--
+            <div class="login" id="headerLogin">ログイン</div>
+            -->
+            <div class="header title" id="serviceTitle">サービスタイトル</div>
         </div>
         <div class="content body">
-            <div class="content left">
+            <div class="content left" id="nav">
                 <div class="eyecache">
                     <div class="row">
-                        <!--                    <div class="humberger">□</div>  -->
                         <a class="title_link" href="./">
                             <img src="img/home.svg" class="icon_home" />
                             <div class="title" wicket:id="serviceTitle">サービス名称が入る</div>
@@ -56,6 +59,14 @@
             <div class="content right">右バー</div>
         </div>
 
+        <script>
+            const btn = document.querySelector('.humberger');
+            const nav = document.getElementById('nav');
+
+            btn.addEventListener('click', () => {
+                nav.setAttribute("opened", nav.getAttribute("opened") ? '' : "true");
+            });
+        </script>
 
     </body>
 </html>
