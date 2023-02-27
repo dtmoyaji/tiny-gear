@@ -13,10 +13,11 @@ body{
     box-sizing: border-box;
 }
 
-div{
-    /*    border-style: solid; 
+div{/*
+        border-style: solid; 
         border-width: thin;
-        background-color: rgba(50, 50, 50, 0.2); */
+        background-color: rgba(50, 50, 50, 0.2); 
+    */
 }
 
 .eyecache .row{
@@ -36,8 +37,21 @@ div{
     vertical-align: middle;
 }
 
+/* ヘッダー領域の描画 */
 .content.header{
     display: none;
+}
+@media screen and (max-width: 820px){
+    .content.header{
+        display: inline-block;
+        position: absolute;
+        top: 0;
+        left: 0;
+        right: 0;
+        height: 5%;
+        background-color: #2980b9;
+        color: white;
+    }
 }
 
 .content.header div{
@@ -54,7 +68,18 @@ div{
     left: 0;
     right: 0;
 }
+@media screen and (max-width: 820px){
+    .content.body{
+        position: absolute;
+        top: 5%;
+        bottom: 0;
+        left: 0;
+        right: 0;
+        overflow: auto;
+    }
+}
 
+/* 左サイドバー */
 .content.left {
     position: fixed;
     left: 0;
@@ -62,6 +87,15 @@ div{
     height: 100%;
     background-color: #343131;
     color: #fcfcfc;
+}
+@media screen and (max-width: 820px){
+    .content.left {
+        height: inherit;
+        top: 2em;
+        bottom: 0;
+        width: 75%;
+        display: none;
+    }
 }
 
 .content.left div{
@@ -144,18 +178,25 @@ hr{
     right: 0;
 }
 
+/* 中央のコンテンツ */
 .content.center{
     position: absolute;
     left: 300px;
     right: 0;
+    overflow: auto;
     height: 100%;
 }
-
-.content.right{
+@media screen and (max-width: 820px){
+    .content.center{
+        position: relative;
+        top: 0;
+        left: 0;
+        right: 0;
+        height: inherit;
+    }
 }
 
-.content.center{
-    overflow: auto;
+.right{
 }
 
 .document_path{
@@ -166,6 +207,12 @@ hr{
     top: 0;
     height: 34px;
 }
+@media screen and (max-width: 820px){
+    .document_path{
+        position: relative;
+        height: inherit;
+    }
+}
 
 .content.center .footer{
     position: absolute;
@@ -175,8 +222,19 @@ hr{
     height:32px;
     padding: 0 0.5em;
 }
+@media screen and (max-width: 820px){
+    .content.center .footer{
+        position: relative;
+        bottom:inherit;
+        left:inherit;
+        right:inherit;
+        height:inherit;
+        padding: inherit;
+    }
+}
 
-.content.center .mainPanel {    
+
+.content.center .mainPanel {
     padding: 1em;
     position: absolute;
     width: 100%;
@@ -184,6 +242,15 @@ hr{
     bottom: 34px;
     overflow: auto;
 }
+@media screen and (max-width: 820px){
+    .content.center .mainPanel {
+        bottom: inherit;
+        top: inherit;
+        bottom: inherit;
+        position: relative;
+    }
+}
+
 
 .code {
     margin: 0.5em 0;
@@ -316,7 +383,7 @@ button{
 .subPanelTitle{
     margin-top: 1em;
 }
- 
+
 p{
     padding: 0.5em;
 }
