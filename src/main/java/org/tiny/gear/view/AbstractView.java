@@ -20,8 +20,8 @@ import org.apache.wicket.markup.html.panel.Panel;
 import org.apache.wicket.model.Model;
 
 /**
- *
- * @author bythe
+ * シーンに含まれるビューの抽象クラス
+ * @author dtmoyaji
  */
 public abstract class AbstractView extends Panel {
    
@@ -34,5 +34,6 @@ public abstract class AbstractView extends Panel {
     }
     
     public abstract String getTitle();
+    
     
 }

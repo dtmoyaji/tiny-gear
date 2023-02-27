@@ -19,8 +19,8 @@ import java.io.Serializable;
 import org.apache.wicket.authroles.authorization.strategies.role.Roles;
 import org.tiny.gear.IRoleChecker;
 import org.tiny.gear.RoleController;
-import org.tiny.gear.view.AbstractView;
 import org.tiny.gear.scenes.AbstractScene;
+import org.tiny.gear.view.AbstractView;
 
 /**
  *
@@ -89,15 +89,23 @@ public class MenuItem implements Serializable, IRoleChecker {
     public void setUrl(String url) {
         this.url = url;
     }
-
-    public final void setUrl(Class scene, Class mainPanel) {
+        
+    public String mapUrl(Class scene, Class mainPanel){
         String urlTemplate = "?scene=%s&view=%s";
         urlTemplate = String.format(
                 urlTemplate,
                 scene.getName(),
                 mainPanel.getName()
         );
-        this.url = urlTemplate;
+        return urlTemplate;
+    }
+    
+    public final void setUrl(Class scene, Class mainPanel) {
+        this.url = this.mapUrl(scene, mainPanel);
+    }
+    
+    public boolean isMatchedUrl(Class scene, Class view){
+        return this.mapUrl(scene, view).equals(this.getUrl());
     }
 
     /**

@@ -66,6 +66,9 @@ public class Index extends SamlMainPage implements IJdbcSupplier {
         } else {
             this.currentPanel = currentScene.getDefaultPanel();
         }
+        
+        // ここに権限の確認処理を入れること。
+        
         this.add(this.currentPanel);
 
         this.currentScene = currentScene;
