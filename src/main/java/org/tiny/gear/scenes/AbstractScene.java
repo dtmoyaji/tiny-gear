@@ -46,7 +46,7 @@ public abstract class AbstractScene implements Serializable, IRoleChecker {
     private HashMap<String, AbstractView> panels;
 
     private final Roles allowed;
-    
+
     private AbstractView defaultPanel;
 
     public AbstractScene(Roles allowed) {
@@ -118,13 +118,13 @@ public abstract class AbstractScene implements Serializable, IRoleChecker {
     public boolean isPrimary() {
         return false;
     }
-    
-    public void putMenu(String menuName, Class<? extends AbstractView> view, Roles roles, boolean primary){
+
+    public void putMenu(String menuName, Class<? extends AbstractView> view, Roles roles, boolean primary) {
         try {
             this.getMenus().add(new MenuItem(menuName, this.getClass(), view, roles));
             AbstractView newView = view.getConstructor().newInstance();
-            this.getPanels().put(view.getName(),newView);
-            if(primary){
+            this.getPanels().put(view.getName(), newView);
+            if (primary) {
                 this.defaultPanel = newView;
             }
         } catch (NoSuchMethodException | SecurityException | InstantiationException | IllegalAccessException | IllegalArgumentException | InvocationTargetException ex) {
@@ -132,8 +132,26 @@ public abstract class AbstractScene implements Serializable, IRoleChecker {
         }
     }
 
-    public AbstractView getDefaultPanel(){
+    public AbstractView getDefaultPanel() {
         return this.defaultPanel;
     }
 
+    /**
+     * ユーザーが表示権限を持っているかどうかをチェックする。
+     *
+     * @param target
+     * @param userRole
+     * @return
+     */
+    public boolean isAuthenticated(AbstractView target, Roles userRole) {
+        boolean rvalue = false;
+        ArrayList<MenuItem> menus = this.getMenus();
+        for (MenuItem menu : menus) {
+            if (menu.isMatchedUrl(this.getClass(), target.getClass())) {
+                rvalue = menu.isAllowed(userRole);
+                break;
+            }
+        }
+        return rvalue;
+    }
 }

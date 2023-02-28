@@ -2,6 +2,7 @@ package org.tiny.gear;
 
 import java.util.ArrayList;
 import java.util.HashMap;
+import org.apache.wicket.authroles.authorization.strategies.role.Roles;
 import org.apache.wicket.markup.html.basic.Label;
 import org.apache.wicket.model.Model;
 import org.apache.wicket.request.mapper.parameter.PageParameters;
@@ -14,6 +15,7 @@ import org.tiny.gear.scenes.PrimaryScene;
 import org.tiny.gear.scenes.SettingScene;
 import org.tiny.gear.view.AbstractView;
 import org.tiny.wicket.SamlMainPage;
+import org.tiny.wicket.onelogin.SamlSession;
 
 public class Index extends SamlMainPage implements IJdbcSupplier {
 
@@ -21,8 +23,8 @@ public class Index extends SamlMainPage implements IJdbcSupplier {
 
     private final Label serviceTitle;
 
-    private final AbstractScene currentScene;
-    private final AbstractView currentPanel;
+    private AbstractScene currentScene;
+    private AbstractView currentPanel;
 
     private final NavigationPanel nav;
 
@@ -38,7 +40,7 @@ public class Index extends SamlMainPage implements IJdbcSupplier {
         this.add(this.serviceTitle);
 
         // いずれリゾルバに置換するけど、暫定処理
-        AbstractScene currentScene = new PrimaryScene(RoleController.getUserRoles());
+        this.currentScene = new PrimaryScene(RoleController.getUserRoles());
         this.scenes = getScenes();
 
         // 指定された状態に応じてシーンを切り換える処理
@@ -46,14 +48,14 @@ public class Index extends SamlMainPage implements IJdbcSupplier {
         if (sceneName != null) {
             for (AbstractScene scene : this.scenes) {
                 if (scene.isSceneKeyMatch(sceneName)) {
-                    currentScene = scene;
+                    this.currentScene = scene;
                     break;
                 }
             }
         } else {
             for (AbstractScene scene : this.scenes) {
                 if (scene.isPrimary()) {
-                    currentScene = scene;
+                    this.currentScene = scene;
                     break;
                 }
             }
@@ -63,15 +65,18 @@ public class Index extends SamlMainPage implements IJdbcSupplier {
         String panelName = parameters.get("view").toString();
         if (panelName != null) {
             this.currentPanel = panels.get(panelName);
+            
+            // ロールをチェックし、権限が無い場合は初期ページに強制遷移する
+            Roles role = ((SamlSession) this.getSession()).getRoles();
+            if (!this.currentScene.isAuthenticated(this.currentPanel, role)) {
+                this.currentScene = new PrimaryScene(RoleController.getUserRoles());
+                this.currentPanel = this.currentScene.getDefaultPanel();
+            }
         } else {
             this.currentPanel = currentScene.getDefaultPanel();
         }
-        
-        // ここに権限の確認処理を入れること。
-        
-        this.add(this.currentPanel);
 
-        this.currentScene = currentScene;
+        this.add(this.currentPanel);
 
         this.nav = new NavigationPanel("menus", this);
         this.add(this.nav);
