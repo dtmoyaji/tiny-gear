@@ -9,10 +9,6 @@ public class PrimaryScene extends AbstractScene {
     public PrimaryScene(Roles allowed) {
         super(allowed);
 
-        this.getPanels().put(AbstractScene.DEFAULT_VIEW,
-                new PrimaryView()
-        );
-
     }
 
     @Override
@@ -23,6 +19,13 @@ public class PrimaryScene extends AbstractScene {
     @Override
     public AbstractView getDefaultPanel() {
         return new PrimaryView();
+    }
+
+    @Override
+    public void defineMenu() {
+        this.getPanels().put(AbstractScene.DEFAULT_VIEW,
+                new PrimaryView()
+        );
     }
 
 }

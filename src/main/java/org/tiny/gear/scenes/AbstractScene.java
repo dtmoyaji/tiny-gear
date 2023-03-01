@@ -28,8 +28,11 @@ import org.tiny.gear.model.MenuItem;
 import org.tiny.gear.view.AbstractView;
 
 /**
- *
- * @author bythe
+ * ブラウザに表示するコンテンツの情報を格納するクラス。
+ * １つの作業単位をシーンにまとめて格納する。
+ * シーンには、複数のビューとメニューが格納される。
+ * このクラスを継承してシーンを作成することを推奨する。
+ * @author dtmoyaji
  */
 public abstract class AbstractScene implements Serializable, IRoleChecker {
 
@@ -55,8 +58,16 @@ public abstract class AbstractScene implements Serializable, IRoleChecker {
 
         this.menus = new ArrayList<>();
         this.panels = new HashMap<>();
+        
+        this.defineMenu();
 
     }
+    
+    /**
+     * 派生クラスはメニューをここで定義する。
+     * putMenuを呼び出して、メニューの表示テキストと、格納するビューを登録すること。
+     */
+    public abstract void defineMenu();
 
     @Override
     public boolean isAllowed(Roles role) {

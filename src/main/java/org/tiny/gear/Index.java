@@ -8,6 +8,7 @@ import org.apache.wicket.model.Model;
 import org.apache.wicket.request.mapper.parameter.PageParameters;
 import org.tiny.datawrapper.IJdbcSupplier;
 import org.tiny.datawrapper.Jdbc;
+import org.tiny.gear.panels.HumbergerIcon;
 import org.tiny.gear.panels.NavigationPanel;
 import org.tiny.gear.scenes.AbstractScene;
 import org.tiny.gear.scenes.DevelopScene;
@@ -27,6 +28,7 @@ public class Index extends SamlMainPage implements IJdbcSupplier {
     private AbstractView currentPanel;
 
     private final NavigationPanel nav;
+    private final HumbergerIcon humbergerIcon;
 
     private ArrayList<AbstractScene> scenes;
 
@@ -41,7 +43,7 @@ public class Index extends SamlMainPage implements IJdbcSupplier {
 
         // いずれリゾルバに置換するけど、暫定処理
         this.currentScene = new PrimaryScene(RoleController.getUserRoles());
-        this.scenes = getScenes();
+        this.scenes = this.getScenes();
 
         // 指定された状態に応じてシーンを切り換える処理
         String sceneName = parameters.get("scene").toString();
@@ -65,7 +67,7 @@ public class Index extends SamlMainPage implements IJdbcSupplier {
         String panelName = parameters.get("view").toString();
         if (panelName != null) {
             this.currentPanel = panels.get(panelName);
-            
+
             // ロールをチェックし、権限が無い場合は初期ページに強制遷移する
             Roles role = ((SamlSession) this.getSession()).getRoles();
             if (!this.currentScene.isAuthenticated(this.currentPanel, role)) {
@@ -79,7 +81,11 @@ public class Index extends SamlMainPage implements IJdbcSupplier {
         this.add(this.currentPanel);
 
         this.nav = new NavigationPanel("menus", this);
+        this.nav.setOutputMarkupId(true);
         this.add(this.nav);
+
+        this.humbergerIcon = new HumbergerIcon("humbergerIcon", this.nav);
+        this.add(this.humbergerIcon);
     }
 
     public ArrayList<AbstractScene> getScenes() {

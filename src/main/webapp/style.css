@@ -75,10 +75,16 @@ div{/*
 }
 
 .content.header div{
-    padding-top: 10px;
     height: var(--header-height);
     color: var(--caption-text-color);
     vertical-align: middle;
+}
+
+.humbergerForm{
+    position: absolute;
+    padding-top: 0;
+    width: var(--header-icon-size);
+    padding-top: 0;
 }
 
 #headerLogin{

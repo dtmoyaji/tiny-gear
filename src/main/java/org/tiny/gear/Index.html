@@ -12,7 +12,7 @@
     </head>
     <body>
         <div class="content header">
-            <div class="humberger"></div>
+            <div wicket:id="humbergerIcon" class="humbergerForm"/>
             <!--
             <div class="login" id="headerLogin">ログイン</div>
             -->
@@ -59,14 +59,15 @@
             <div class="content right">右バー</div>
         </div>
 
-        <script>
-            const btn = document.querySelector('.humberger');
-            const nav = document.getElementById('nav');
+        <!--
+<script>
+const btn = document.querySelector('.humberger');
+const nav = document.getElementById('nav');
 
-            btn.addEventListener('click', () => {
-                nav.setAttribute("opened", nav.getAttribute("opened") ? '' : "true");
-            });
-        </script>
-
+btn.addEventListener('click', () => {
+    nav.setAttribute("opened", nav.getAttribute("opened") ? '' : "true");
+});
+</script>
+        -->
     </body>
 </html>
