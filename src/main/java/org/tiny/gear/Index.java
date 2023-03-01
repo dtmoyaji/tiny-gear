@@ -67,15 +67,14 @@ public class Index extends SamlMainPage implements IJdbcSupplier {
         String panelName = parameters.get("view").toString();
         if (panelName != null) {
             this.currentPanel = panels.get(panelName);
-
-            // ロールをチェックし、権限が無い場合は初期ページに強制遷移する
-            Roles role = ((SamlSession) this.getSession()).getRoles();
-            if (!this.currentScene.isAuthenticated(this.currentPanel, role)) {
-                this.currentScene = new PrimaryScene(RoleController.getUserRoles());
-                this.currentPanel = this.currentScene.getDefaultPanel();
-            }
         } else {
             this.currentPanel = currentScene.getDefaultPanel();
+        }
+        // ロールをチェックし、権限が無い場合は初期ページに強制遷移する
+        Roles role = ((SamlSession) this.getSession()).getRoles();
+        if (!this.currentScene.isAuthenticated(this.currentPanel, role)) {
+            this.currentScene = new PrimaryScene(RoleController.getUserRoles());
+            this.currentPanel = this.currentScene.getDefaultPanel();
         }
 
         this.add(this.currentPanel);
@@ -84,7 +83,7 @@ public class Index extends SamlMainPage implements IJdbcSupplier {
         this.nav.setOutputMarkupId(true);
         this.add(this.nav);
 
-        this.humbergerIcon = new HumbergerIcon("humbergerIcon", this.nav);
+        this.humbergerIcon = new HumbergerIcon("humbergerIcon", "humbergerTarget");
         this.add(this.humbergerIcon);
     }
 

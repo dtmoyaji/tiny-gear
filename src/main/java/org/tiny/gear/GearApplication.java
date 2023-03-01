@@ -39,7 +39,7 @@ public class GearApplication extends SamlWicketApplication implements IJdbcSuppl
     public void init() {
         super.init();
         // 暫定的に実装採取的には消す予定
-        getCspSettings().blocking().disabled();
+        //getCspSettings().blocking().disabled();
         this.mountResources();
     }
 
