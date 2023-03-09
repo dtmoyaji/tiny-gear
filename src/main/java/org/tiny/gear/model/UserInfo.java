@@ -15,8 +15,10 @@
  */
 package org.tiny.gear.model;
 
+import java.sql.Timestamp;
 import org.tiny.datawrapper.Column;
 import org.tiny.datawrapper.IncrementalKey;
+import org.tiny.datawrapper.ShortFlagZero;
 import org.tiny.datawrapper.Table;
 import org.tiny.datawrapper.TinyDatabaseException;
 import org.tiny.datawrapper.annotations.Comment;
@@ -38,23 +40,38 @@ public class UserInfo extends Table {
     @Comment("KeycloakのUUIDを格納する")
     public Column<String> UserId;
     
+    @LogicalName("無効フラグ")
+    @Comment("１で無効")
+    public ShortFlagZero Disable;
+    
     @LogicalName("ユーザー名")
+    @Comment("SamlUserInfo.getNameIdと同値")
     public Column<String> UserName;
     
     @LogicalName("属性情報")
     @Comment("SAMLで取得した属性を全部JSONで格納する")
     public Column<String> AttributeJson;
+    
+    @LogicalName("最終アクセス")
+    @Comment("最後にユーザーがアクセスした日時")
+    public Column<Timestamp> LastAccess;
 
     @Override
     public void defineColumns() throws TinyDatabaseException {
         
         this.UserId.setLength(Column.SIZE_64)
-                .setAllowNull(false);
+                .setAllowNull(false)
+                .setPrimaryKey(true);
         
         this.UserName.setLength(Column.SIZE_128)
                 .setAllowNull(false);
         
-        this.AttributeJson.setLength(Column.SIZE_1024);
+        this.AttributeJson.setLength(Column.SIZE_2048);
+        
+        this.LastAccess.setAllowNull(false)
+                .setDefault("CURRENT_TIMESTAMP");
+                
+        
         
     }
 

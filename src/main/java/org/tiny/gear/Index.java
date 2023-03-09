@@ -1,5 +1,6 @@
 package org.tiny.gear;
 
+import java.sql.Timestamp;
 import java.util.ArrayList;
 import java.util.HashMap;
 import org.apache.wicket.authroles.authorization.strategies.role.Roles;
@@ -8,6 +9,7 @@ import org.apache.wicket.model.Model;
 import org.apache.wicket.request.mapper.parameter.PageParameters;
 import org.tiny.datawrapper.IJdbcSupplier;
 import org.tiny.datawrapper.Jdbc;
+import org.tiny.gear.model.UserInfo;
 import org.tiny.gear.panels.HumbergerIcon;
 import org.tiny.gear.panels.NavigationPanel;
 import org.tiny.gear.scenes.AbstractScene;
@@ -16,8 +18,15 @@ import org.tiny.gear.scenes.PrimaryScene;
 import org.tiny.gear.scenes.SettingScene;
 import org.tiny.gear.view.AbstractView;
 import org.tiny.wicket.SamlMainPage;
+import org.tiny.wicket.onelogin.SamlAuthInfo;
 import org.tiny.wicket.onelogin.SamlSession;
 
+/**
+ * メインページ。
+ * ここで、画面表示を全部制御する。
+ * 
+ * @author bythe
+ */
 public class Index extends SamlMainPage implements IJdbcSupplier {
 
     private static final long serialVersionUID = 1L;
@@ -41,11 +50,11 @@ public class Index extends SamlMainPage implements IJdbcSupplier {
         this.serviceTitle = new Label("serviceTitle", Model.of(svtitle));
         this.add(this.serviceTitle);
 
-        // いずれリゾルバに置換するけど、暫定処理
+        // 初期ページの取得
         this.currentScene = new PrimaryScene(RoleController.getUserRoles());
         this.scenes = this.getScenes();
 
-        // 指定された状態に応じてシーンを切り換える処理
+        // 指定された状態に応じたシーンを表示する処理
         String sceneName = parameters.get("scene").toString();
         if (sceneName != null) {
             for (AbstractScene scene : this.scenes) {
@@ -70,11 +79,22 @@ public class Index extends SamlMainPage implements IJdbcSupplier {
         } else {
             this.currentPanel = currentScene.getDefaultPanel();
         }
+        
         // ロールをチェックし、権限が無い場合は初期ページに強制遷移する
         Roles role = ((SamlSession) this.getSession()).getRoles();
         if (!this.currentScene.isAuthenticated(this.currentPanel, role)) {
             this.currentScene = new PrimaryScene(RoleController.getUserRoles());
             this.currentPanel = this.currentScene.getDefaultPanel();
+        } else { //表示に問題がないときは、ユーザー情報を上書きに行く
+            SamlAuthInfo ainfo = ((SamlSession)this.getSession()).getSamlAuthInfo();
+            UserInfo uinfo =new UserInfo();
+            uinfo.alterOrCreateTable(this.getJdbc());
+            uinfo.setDebugMode(true);
+            uinfo.UserId.setValue(ainfo.getAttributeString("user_id"));
+            uinfo.UserName.setValue(ainfo.getAttributeString("username"));
+            uinfo.LastAccess.setValue(new Timestamp(System.currentTimeMillis()));
+            uinfo.AttributeJson.setValue(ainfo.toJson()); // TODO: JSONの生成ロジックを作ること。
+            uinfo.merge();
         }
 
         this.add(this.currentPanel);
