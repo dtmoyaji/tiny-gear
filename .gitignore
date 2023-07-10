@@ -1,5 +1,10 @@
 /src/main/resources/*.properties
 /target
+/bin
 
 jshell.history
 nb-configuration.xml
+
+.devcontainer
+.vscode
+
