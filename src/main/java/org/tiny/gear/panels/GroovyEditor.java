@@ -32,9 +32,11 @@ import org.apache.wicket.model.Model;
  */
 public class GroovyEditor extends AbstractPanel {
 
-    private Form editor;
+    public static final long serialVersionUID = -1L;
 
-    private TextArea code;
+    private Form<String> editor;
+
+    private TextArea<String> code;
 
     private AjaxButton btnRun;
 
@@ -43,15 +45,15 @@ public class GroovyEditor extends AbstractPanel {
     public GroovyEditor(String id) {
 
         super(id);
-        
 
-        this.editor = new Form("editor");
+        this.editor = new Form<>("editor");
         this.add(this.editor);
 
-        this.code = new TextArea("code", Model.of("import org.tiny.gear.model.UserInfo\n\ndef jdbc = myApplication.getJdbc()\ndef uinfo = new UserInfo()\nuinfo.alterOrCreateTable(jdbc)\n\nreturn uinfo.toString()"));
+        this.code = new TextArea<>("code", Model.of("import org.tiny.gear.model.UserInfo\n\ndef jdbc = myApplication.getJdbc()\ndef uinfo = new UserInfo()\nuinfo.alterOrCreateTable(jdbc)\n\nreturn uinfo.toString()"));
         this.editor.add(this.code);
 
         this.btnRun = new AjaxButton("btnRun", Model.of("実行")) {
+            public static final long serialVersionUID = -1L;
 
             @Override
             public void onSubmit(AjaxRequestTarget target) {
@@ -72,7 +74,7 @@ public class GroovyEditor extends AbstractPanel {
                             Logger.getLogger(btnRun.getClass().getName()).log(Level.INFO, rvalue);
                         } catch (Exception ex) {
                             String strException = ex.getMessage();
-                            
+
                             strException += ex.getStackTrace().toString();
                             GroovyEditor.this.result.setDefaultModelObject(strException);
                         }
@@ -86,6 +88,7 @@ public class GroovyEditor extends AbstractPanel {
         this.editor.add(this.btnRun);
 
         this.result = new Label("lblResult", Model.of("よしなに。"));
+        this.result.setEscapeModelStrings(false);
         this.editor.add(this.result);
 
     }

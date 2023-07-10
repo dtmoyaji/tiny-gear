@@ -15,7 +15,6 @@
  */
 package org.tiny.gear.panels;
 
-import org.tiny.gear.view.AbstractView;
 import org.apache.wicket.AttributeModifier;
 import org.apache.wicket.authroles.authorization.strategies.role.Roles;
 import org.apache.wicket.markup.html.link.ExternalLink;
@@ -26,6 +25,7 @@ import org.tiny.gear.Index;
 import org.tiny.gear.RoleController;
 import org.tiny.gear.model.MenuItem;
 import org.tiny.gear.scenes.AbstractScene;
+import org.tiny.gear.view.AbstractView;
 import org.tiny.wicket.onelogin.SamlSession;
 
 /**
@@ -33,6 +33,8 @@ import org.tiny.wicket.onelogin.SamlSession;
  * @author bythe
  */
 public class NavigationPanel extends Panel {
+
+    public static final long serialVersionUID = -1L;
 
     //private Label menuMoc;
     private ListView<AbstractScene> scenes;
@@ -52,6 +54,7 @@ public class NavigationPanel extends Panel {
         AbstractScene currentScene = index.getCurrentScene();
 
         this.scenes = new ListView<AbstractScene>("menus", index.getScenes()) {
+            public static final long serialVersionUID = -1L;
 
             @Override
             protected void populateItem(ListItem<AbstractScene> item) {
@@ -66,6 +69,7 @@ public class NavigationPanel extends Panel {
                 }
 
                 ListView<MenuItem> submenu = new ListView<MenuItem>("subMenu", scene.getMenus()) {
+                    public static final long serialVersionUID = -1L;
 
                     @Override
                     protected void populateItem(ListItem<MenuItem> item) {

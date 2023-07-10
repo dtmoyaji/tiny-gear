@@ -35,6 +35,8 @@ import org.tiny.gear.view.AbstractView;
  * @author dtmoyaji
  */
 public abstract class AbstractScene implements Serializable, IRoleChecker {
+    
+    public static final long serialVersionUID = -1L;
 
     private int ordinal = -1;
 

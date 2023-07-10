@@ -25,6 +25,8 @@ import org.apache.wicket.model.Model;
  */
 public abstract class AbstractPanel extends Panel {
 
+    public static final long serialVersionUID = -1L;
+
     private Label titleLabel;
 
     public AbstractPanel(String id) {

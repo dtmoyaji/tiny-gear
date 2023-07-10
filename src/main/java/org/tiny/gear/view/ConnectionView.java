@@ -23,61 +23,65 @@ import org.tiny.gear.panels.PropertyPanel;
  *
  * @author bythe
  */
-public class ConnectionView extends AbstractView{
-    
+public class ConnectionView extends AbstractView {
+
+    public static final long serialVersionUID = -1L;
+
     private PropertyPanel jdbcPanel;
     private PropertyPanel samlPanel;
-    
-    public ConnectionView(){
+
+    public ConnectionView() {
         super();
-        
-        this.jdbcPanel = new PropertyPanel("jdbcProperties"){
-            
+
+        this.jdbcPanel = new PropertyPanel("jdbcProperties") {
+            public static final long serialVersionUID = -1L;
+
             @Override
-            public String getTitle(){
+            public String getTitle() {
                 return "JDBC接続";
             }
-            
+
             @Override
-            public Properties getProperties(){
-                GearApplication app = (GearApplication)this.getApplication();
+            public Properties getProperties() {
+                GearApplication app = (GearApplication) this.getApplication();
                 Properties props = app.getProperties("tiny.gear");
                 return props;
             }
-            
+
             @Override
-            public String getPrefix(){
+            public String getPrefix() {
                 return "tiny.gear.jdbc";
             }
         };
         this.add(this.jdbcPanel);
-        
-        this.samlPanel = new PropertyPanel("samlProperties"){
-            
+
+        this.samlPanel = new PropertyPanel("samlProperties") {
+            public static final long serialVersionUID = -1L;
+
             @Override
-            public String getTitle(){
+            public String getTitle() {
                 return "SAML設定";
             }
-            
+
             @Override
-            public Properties getProperties(){
-                GearApplication app = (GearApplication)this.getApplication();
+            public Properties getProperties() {
+                GearApplication app = (GearApplication) this.getApplication();
                 Properties props = app.getProperties("onelogin.saml");
                 return props;
             }
-            
+
             @Override
-            public String getPrefix(){
+            public String getPrefix() {
                 return "onelogin.saml2";
             }
         };
         this.add(this.samlPanel);
-        
+
     }
-    
+
     @Override
     public String getTitle() {
         return "各種接続設定";
     }
-    
+
 }

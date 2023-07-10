@@ -21,19 +21,21 @@ import org.apache.wicket.model.Model;
 
 /**
  * シーンに含まれるビューの抽象クラス
+ *
  * @author dtmoyaji
  */
 public abstract class AbstractView extends Panel {
-   
+
+    public static final long serialVersionUID = -1L;
+
     private final Label title;
-    
-    public AbstractView(){
+
+    public AbstractView() {
         super("scenePanel");
         this.title = new Label("panelTitle", Model.of(this.getTitle()));
         this.add(this.title);
     }
-    
+
     public abstract String getTitle();
-    
-    
+
 }

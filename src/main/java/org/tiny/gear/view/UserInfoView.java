@@ -16,6 +16,8 @@ import org.tiny.wicket.onelogin.SamlSession;
  */
 public class UserInfoView extends AbstractView {
 
+    public static final long serialVersionUID = -1L;
+
     private final Label samlNameId;
 
     private HashMap<String, List<String>> userAttributes;
@@ -41,6 +43,8 @@ public class UserInfoView extends AbstractView {
         }
 
         this.KeySet = new ListView<>("userAttributes", kset) {
+            public static final long serialVersionUID = -1L;
+
             @Override
             protected void populateItem(ListItem<String> item) {
                 String key = item.getModelObject();

@@ -39,6 +39,11 @@ div{/*
     */
 }
 
+table{
+    width: 100%;
+    overflow: scroll;
+}
+
 .eyecache .row{
     display: inline-block;
     text-align: center;
@@ -429,3 +434,6 @@ p{
     padding: 0.5em;
 }
 
+.curd.row.navi{
+    text-align: right;
+}

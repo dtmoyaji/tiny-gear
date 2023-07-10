@@ -7,11 +7,13 @@ import org.apache.wicket.authroles.authorization.strategies.role.Roles;
 import org.apache.wicket.markup.html.basic.Label;
 import org.apache.wicket.model.Model;
 import org.apache.wicket.request.mapper.parameter.PageParameters;
+import org.tiny.datawrapper.Column;
 import org.tiny.datawrapper.IJdbcSupplier;
 import org.tiny.datawrapper.Jdbc;
 import org.tiny.gear.model.UserInfo;
 import org.tiny.gear.panels.HumbergerIcon;
 import org.tiny.gear.panels.NavigationPanel;
+import org.tiny.gear.panels.curd.DataTableView;
 import org.tiny.gear.scenes.AbstractScene;
 import org.tiny.gear.scenes.DevelopScene;
 import org.tiny.gear.scenes.PrimaryScene;
@@ -22,9 +24,8 @@ import org.tiny.wicket.onelogin.SamlAuthInfo;
 import org.tiny.wicket.onelogin.SamlSession;
 
 /**
- * メインページ。
- * ここで、画面表示を全部制御する。
- * 
+ * メインページ。 ここで、画面表示を全部制御する。
+ *
  * @author bythe
  */
 public class Index extends SamlMainPage implements IJdbcSupplier {
@@ -40,6 +41,8 @@ public class Index extends SamlMainPage implements IJdbcSupplier {
     private final HumbergerIcon humbergerIcon;
 
     private ArrayList<AbstractScene> scenes;
+
+    private DataTableView dataListView;
 
     public Index(final PageParameters parameters) {
         super(parameters);
@@ -79,15 +82,15 @@ public class Index extends SamlMainPage implements IJdbcSupplier {
         } else {
             this.currentPanel = currentScene.getDefaultPanel();
         }
-        
+
         // ロールをチェックし、権限が無い場合は初期ページに強制遷移する
         Roles role = ((SamlSession) this.getSession()).getRoles();
         if (!this.currentScene.isAuthenticated(this.currentPanel, role)) {
             this.currentScene = new PrimaryScene(RoleController.getUserRoles());
             this.currentPanel = this.currentScene.getDefaultPanel();
         } else { //表示に問題がないときは、ユーザー情報を上書きに行く
-            SamlAuthInfo ainfo = ((SamlSession)this.getSession()).getSamlAuthInfo();
-            UserInfo uinfo =new UserInfo();
+            SamlAuthInfo ainfo = ((SamlSession) this.getSession()).getSamlAuthInfo();
+            UserInfo uinfo = new UserInfo();
             uinfo.alterOrCreateTable(this.getJdbc());
             uinfo.setDebugMode(true);
             uinfo.UserId.setValue(ainfo.getAttributeString("user_id"));
@@ -105,6 +108,17 @@ public class Index extends SamlMainPage implements IJdbcSupplier {
 
         this.humbergerIcon = new HumbergerIcon("humbergerIcon", "humbergerTarget");
         this.add(this.humbergerIcon);
+
+        UserInfo uinfo = new UserInfo();
+        uinfo.AttributeJson.setVisibleType(Column.VISIBLE_TYPE_HIDDEN);
+        this.dataListView = new DataTableView("dataListView", uinfo, this){
+            @Override
+            public String getExtraColumn() {
+                return "ACHO"; // TODO: あとでボタンArrayを返すように改造する。
+            }
+        
+        };
+        this.add(this.dataListView);
     }
 
     public ArrayList<AbstractScene> getScenes() {

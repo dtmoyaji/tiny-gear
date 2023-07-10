@@ -28,6 +28,8 @@ import org.apache.wicket.model.Model;
  */
 public abstract class PropertyPanel extends AbstractPanel {
 
+    public static final long serialVersionUID = -1L;
+
     private Properties properties;
     private ListView<String> listView;
 
@@ -40,6 +42,8 @@ public abstract class PropertyPanel extends AbstractPanel {
         ArrayList<String> keys = new ArrayList(this.properties.keySet());
 
         this.listView = new ListView<>("properties", keys) {
+            public static final long serialVersionUID = -1L;
+
             @Override
             protected void populateItem(ListItem<String> item) {
                 String key = item.getModelObject();

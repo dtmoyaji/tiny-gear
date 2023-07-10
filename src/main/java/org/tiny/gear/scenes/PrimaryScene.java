@@ -6,6 +6,8 @@ import org.tiny.gear.view.PrimaryView;
 
 public class PrimaryScene extends AbstractScene {
 
+    public static final long serialVersionUID = -1L;
+
     public PrimaryScene(Roles allowed) {
         super(allowed);
 

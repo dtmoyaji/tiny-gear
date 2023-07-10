@@ -12,6 +12,8 @@ import org.tiny.gear.view.UserInfoView;
  */
 public class SettingScene extends AbstractScene {
 
+    public static final long serialVersionUID = -1L;
+
     public SettingScene(Roles allowed) {
         super(allowed);
 

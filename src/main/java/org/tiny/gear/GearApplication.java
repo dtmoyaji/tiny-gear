@@ -38,7 +38,7 @@ public class GearApplication extends SamlWicketApplication implements IJdbcSuppl
     @Override
     public void init() {
         super.init();
-        // 暫定的に実装採取的には消す予定
+        // 暫定的に実装最終的には消す予定
         //getCspSettings().blocking().disabled();
         this.mountResources();
     }
@@ -67,8 +67,6 @@ public class GearApplication extends SamlWicketApplication implements IJdbcSuppl
         }
         if (this.environments.get(PropertyName) == null) {
             try {
-//                File currdir = new File(".");
-//                System.out.println(currdir.getAbsolutePath());
                 String filePath = "/" + PropertyName + ".properties";
                 Properties prop = new Properties();
                 prop.load(this.getClass().getResourceAsStream(filePath));

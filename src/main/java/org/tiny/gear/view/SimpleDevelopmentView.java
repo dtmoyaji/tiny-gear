@@ -21,6 +21,8 @@ import org.tiny.gear.panels.GroovyEditor;
  */
 public class SimpleDevelopmentView extends AbstractView {
 
+    public static final long serialVersionUID = -1L;
+
     private final GroovyEditor groovyExec;
 
     public SimpleDevelopmentView() {

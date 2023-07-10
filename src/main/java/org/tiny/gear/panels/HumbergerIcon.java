@@ -26,6 +26,8 @@ import org.apache.wicket.markup.html.panel.Panel;
  */
 public class HumbergerIcon extends Panel {
 
+    public static final long serialVersionUID = -1L;
+
     private Form humbergerForm;
     private AjaxButton humberger;
 
@@ -37,6 +39,7 @@ public class HumbergerIcon extends Panel {
         this.targetElementId = targetElementId;
 
         this.humberger = new AjaxButton("humbergerPanel") {
+            public static final long serialVersionUID = -1L;
             @Override
             public void onSubmit(AjaxRequestTarget target) {
                 target.appendJavaScript(

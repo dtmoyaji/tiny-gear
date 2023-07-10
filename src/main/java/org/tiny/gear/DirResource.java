@@ -25,7 +25,9 @@ import wicket.util.resource.IResourceStream;
  * @author bythe
  */
 public class DirResource extends WebResource {
-    
+
+    public static final long serialVersionUID = -1L;
+
     private final File basedir;
 
     public DirResource(File basedir) {

@@ -19,11 +19,13 @@ package org.tiny.gear.view;
  *
  * @author bythe
  */
-public class PrimaryView extends AbstractView{
-    
+public class PrimaryView extends AbstractView {
+
+    public static final long serialVersionUID = -1L;
+
     @Override
-    public String getTitle(){
+    public String getTitle() {
         return "はじめに";
     }
-    
+
 }

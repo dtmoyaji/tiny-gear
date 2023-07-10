@@ -6,6 +6,8 @@ import org.tiny.gear.view.SimpleDevelopmentView;
 
 public class DevelopScene extends AbstractScene {
 
+    public static final long serialVersionUID = -1L;
+
     public DevelopScene(Roles allowed) {
         super(allowed);
 
@@ -19,7 +21,7 @@ public class DevelopScene extends AbstractScene {
     @Override
     public void defineMenu() {
         this.putMenu(
-                "Groovy", SimpleDevelopmentView.class,
+                "Groovy編集", SimpleDevelopmentView.class,
                 RoleController.getDevelopmentRoles(), true
         );
     }
