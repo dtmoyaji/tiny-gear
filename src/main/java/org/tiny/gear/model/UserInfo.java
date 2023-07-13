@@ -62,8 +62,7 @@ public class UserInfo extends Table {
     public void defineColumns() throws TinyDatabaseException {
 
         this.UserId.setLength(Column.SIZE_64)
-                .setAllowNull(false)
-                .setPrimaryKey(true);
+                .setAllowNull(false);
 
         this.UserName.setLength(Column.SIZE_128)
                 .setAllowNull(false);

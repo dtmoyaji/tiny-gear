@@ -1,4 +1,4 @@
-package org.tiny.gear.panels.curd;
+package org.tiny.gear.panels.crud;
 
 import java.sql.ResultSet;
 import java.sql.SQLException;
@@ -22,7 +22,7 @@ import org.tiny.datawrapper.TinyDatabaseException;
 
 /**
  * テーブルのデータを表示するパネル
- *
+ * 
  * @author bythe
  */
 public abstract class DataTableView extends Panel {
@@ -87,17 +87,24 @@ public abstract class DataTableView extends Panel {
             protected void populateItem(ListItem<ArrayList<String>> item) {
 
                 // テーブルの列
-                ArrayList<String> row = (ArrayList<String>) item.getDefaultModelObject();
+                ArrayList<String> row = (ArrayList<String>) item.getDefaultModelObject(); // Todo: あとでプロパティに置き換える。
                 ListView<String> tableRow = new ListView<String>("tableRow", row) {
+                    
                     @Override
                     protected void populateItem(ListItem<String> item) {
 
                         // セルのデータ
                         String celldata = item.getDefaultModelObjectAsString();
-                        Label tableCell = new Label("tableCell", Model.of(celldata));
-                        item.add(tableCell);
-
+                        if (celldata.contains("__EXTRA__")) {
+                            RecordButtons panel = new RecordButtons("tableCell"); //Todo あとでジェネリクスでインスタンス化するコードに置換する。
+                            item.add(panel);
+                        } else {
+                            Label tableCell = new Label("tableCell", Model.of(celldata));
+                            item.add(tableCell);
+                        }
+                        
                     }
+                    
                 };
                 tableRow.setOutputMarkupId(true);
                 item.add(tableRow);
@@ -107,6 +114,7 @@ public abstract class DataTableView extends Panel {
         this.curdTableView.add(this.tableRows);
 
         this.pageNext = new AjaxButton("pageNext") {
+            
             @Override
             protected void onSubmit(AjaxRequestTarget target) {
                 DataTableView.this.currentPage += 1;
@@ -144,8 +152,8 @@ public abstract class DataTableView extends Panel {
                     String caption = DataTableView.this.targetTable.getColumnLogicalName(column);
                     Label captionLabel = new Label("columnName", Model.of(caption));
                     item.add(captionLabel);
-                    System.out.println("ADD " + column.getName());
                 } else {
+                    Logger.getLogger(this.getClass().getName()).log(Level.INFO, column.getName() + " SKIPPED.");
                     System.out.println("SKIP " + column.getName());
                 }
             }
@@ -202,7 +210,7 @@ public abstract class DataTableView extends Panel {
             int recordCount = this.getTable().getCount(
                     this.conditions
             );
-            
+
             this.updateTableRows();
 
             // ヘッダ部分の描画
@@ -246,17 +254,15 @@ public abstract class DataTableView extends Panel {
                     }
                 }
                 // 操作用の拡張フィールド
-                String extra = this.getExtraColumn();
-                if(extra!=null){
-                    row.add(extra);
+                Class extra = this.getExtraColumn();
+                if (extra != null) {
+                    row.add("__EXTRA__" + extra.getName());
                 }
                 this.tableData.add(row);
             }
             rs.close();
 
-        } catch (SQLException ex) {
-            Logger.getLogger(DataTableView.class.getName()).log(Level.SEVERE, null, ex);
-        } catch (TinyDatabaseException ex) {
+        } catch (SQLException | TinyDatabaseException ex) {
             Logger.getLogger(DataTableView.class.getName()).log(Level.SEVERE, null, ex);
         }
     }
@@ -273,7 +279,7 @@ public abstract class DataTableView extends Panel {
             }
         }
     }
-    
-    public abstract String getExtraColumn();
-    
+
+    public abstract Class<? extends Panel> getExtraColumn();
+
 }
