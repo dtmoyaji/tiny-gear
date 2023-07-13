@@ -1,5 +1,6 @@
 package org.tiny.gear.panels.crud;
 
+import org.apache.wicket.Component;
 import org.apache.wicket.markup.html.basic.Label;
 import org.apache.wicket.markup.html.form.TextField;
 import org.apache.wicket.markup.html.panel.Panel;
@@ -17,6 +18,8 @@ public class DataControl extends Panel {
     private TextField columnValueTextField;
 
     private Label columnValueLabel;
+    
+    private Component visibleComponent;
 
     private Column targetColumn;
 
@@ -36,10 +39,12 @@ public class DataControl extends Panel {
         this.add(this.columnValueTextField);
 
         // 表示対象でないコントロールを不可視に設定する。
+        this.visibleComponent = this.columnValueTextField;
         this.columnValueLabel.setVisible(false);
 
         if (this.targetColumn.getVisibleType() == Column.VISIBLE_TYPE_LABEL) {
             this.columnValueLabel.setVisible(true);
+            this.visibleComponent = this.columnValueLabel;
             this.columnValueTextField.setVisible(false);
         }
     }
@@ -49,11 +54,11 @@ public class DataControl extends Panel {
     }
 
     public void setValue(String value) {
-        this.columnValueTextField.setDefaultModelObject(value);
+        this.visibleComponent.setDefaultModelObject(value);
     }
 
     public String getValue() {
-        return this.columnValueTextField.getDefaultModelObjectAsString();
+        return this.visibleComponent.getDefaultModelObjectAsString();
     }
 
 }
