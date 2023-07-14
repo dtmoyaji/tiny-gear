@@ -138,6 +138,7 @@ public class Index extends SamlMainPage implements IJdbcSupplier {
         };
         uinfo.RecordId.setVisibleType(Column.VISIBLE_TYPE_LABEL);
         uinfo.LastAccess.setVisibleType(Column.VISIBLE_TYPE_LABEL);
+        uinfo.AttributeJson.setVisibleType(Column.VISIBLE_TYPE_TEXTAREA);
         this.recordEditor.buildForm(uinfo);
         ResultSet rs = uinfo.select();
         try {
