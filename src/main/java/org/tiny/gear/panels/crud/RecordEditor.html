@@ -11,11 +11,21 @@
     <body>
         <wicket:panel class="crud recordeditor">
             <!-- RecordEditor.hml -->
-            <ul>
-                <li wicket:id="controls" class="row">
-                    <div wicket:id="dataControl"  />
-                </li>
-            </ul>
+            <form wicket:id="editorForm">
+                <ul class="table columns">
+                    <li wicket:id="controls" class="row">
+                        <div wicket:id="dataControl"  />
+                    </li>
+                </ul>
+                <ul class="table columns">
+                    <li class="row">
+                        <div class="submitbuttons">
+                            <input wicket:id="submit" type="button" value="登録" />
+                            <input wicket:id="cancel" type="button" value="キャンセル" />
+                        </div>
+                    </li>
+                </ul>
+            </form>
         </wicket:panel>
     </body>
 </html>

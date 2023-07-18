@@ -60,16 +60,23 @@ public class UserInfo extends Table {
 
     @Override
     public void defineColumns() throws TinyDatabaseException {
-
+        this.RecordId.setPrimaryKey(false)
+                .setVisibleType(Column.VISIBLE_TYPE_LABEL);
+        
         this.UserId.setLength(Column.SIZE_64)
-                .setAllowNull(false);
+                .setAllowNull(false)
+                .setVisibleType(Column.VISIBLE_TYPE_LABEL)
+                .setPrimaryKey(true);
 
         this.UserName.setLength(Column.SIZE_128)
                 .setAllowNull(false);
 
-        this.AttributeJson.setLength(Column.SIZE_2048);
+        this.AttributeJson.setLength(Column.SIZE_2048)
+                .setVisibleType(Column.VISIBLE_TYPE_TEXTAREA);
 
         this.LastAccess.setAllowNull(false)
-                .setDefault("CURRENT_TIMESTAMP");
+                .setDefault("CURRENT_TIMESTAMP")
+                .setVisibleType(Column.VISIBLE_TYPE_LABEL);
+        
     }
 }

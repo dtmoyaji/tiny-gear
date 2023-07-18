@@ -2,7 +2,7 @@
 :root{
     /* レスポンシブの切り換えサイズ */
     --resp-small: 820px;
-    
+
     /* 色の設定 */
     --caption-bg-color: #2980b9;
     --caption-button-color: #3990C9;
@@ -11,7 +11,7 @@
     --sidebar-bg-color: #343131;
     --sidebar-selected-menu-bg-color: #fcfcfc;
     --menu-text-color: #404040;
-    
+
     /* アイコンサイズ */
     --header-icon-size: 42px;
     --header-height: calc(var(--header-icon-size) + 2px);
@@ -156,7 +156,7 @@ table{
         z-index: 100;
         display: none;
     }
-    
+
     .content.left[opened='true']{
         width: 75%;
         display: inherit;
@@ -439,34 +439,54 @@ p{
 }
 
 .crud.recordeditor{
-    display: table;
+    width: 100%;
+}
+
+.crud.recordeditor .table.columns{
     width: 100%;
 }
 
 .crud.recordeditor .row{
-    display: table-row;
     width: 100%;
     vertical-align: middle;
+    min-height: 2em;
+}
+
+.crud.recordeditor .row div{
+    display: inline-block;
+    width: 100%;
+}
+
+.crud.recordeditor .row div wicket{
+    display: inherit;
+    width: 100%;
 }
 
 .crud.recordeditor .field.caption{
-    display: inline-block;
-    position: absolute;
-    height: 2em;
-    width: 23%;
+    display: inline-table;
+    vertical-align: middle;
+    padding-right: 1em;
     text-align: right;
-    padding-right: 2%;
+    height: 100%;
+    width: 25%;
 }
 
 .crud.recordeditor .field.edit{
-    display: inline-block;
-    position: absolute;
-    height: 2em;
-    width: 50%;
-    left: 25%;
     vertical-align: middle;
+    min-width: 50%;
+    min-height: 2em;
+    padding-left: 3pt;
+    padding-right: 3pt;
 }
 
 .crud.recordeditor .field.edit.textarea{
     height: 6em;
+}
+
+.crud.recordeditor .submitbuttons{
+    text-align: center;
+}
+
+.crud.recordeditor .submitbuttons input[type='button']{
+    padding: 3px;
 }

@@ -28,6 +28,11 @@ public class SystemVariables extends Table{
     @Override
     public void defineColumns() throws TinyDatabaseException {
         
+        this.Id.setPrimaryKey(false);
+        
+        this.Stamp.setDefault(Column.DEFAULT_TIMESTAMP);
+        this.Mdate.setDefault(Column.DEFAULT_TIMESTAMP);
+        
         this.Key.setAllowNull(false)
                 .setLength(Column.SIZE_256);
         

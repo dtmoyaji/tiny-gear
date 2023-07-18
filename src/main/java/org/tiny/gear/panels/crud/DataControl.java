@@ -38,31 +38,37 @@ public class DataControl extends Panel {
         this.add(this.columnCaption);
 
         // 必要となりそうなコントロールは全て格納しデータモデルを割り当てる。
-        this.fieldData = new Model(this.targetColumn.getValue().toString());
-        this.columnValueLabel = new Label("columnValueLabel", fieldData);
+        this.fieldData = new Model("");
+        if (this.targetColumn.getValue() != null) {
+            this.fieldData = new Model(this.targetColumn.getValue().toString());
+        }
+        this.columnValueLabel = new Label("columnValueLabel", this.fieldData);
         this.add(this.columnValueLabel);
-        this.columnValueTextField = new TextField("columnValueTextField", fieldData);
+        this.columnValueTextField = new TextField("columnValueTextField", this.fieldData);
         this.add(this.columnValueTextField);
-        this.columnValueTextArea = new TextArea("columnValueTextArea", fieldData);
+        this.columnValueTextArea = new TextArea("columnValueTextArea", this.fieldData);
         this.add(this.columnValueTextArea);
 
-        // テーブルの設定で使用しないコントロールを不可視に設定する。
-        this.visibleComponent = this.columnValueTextField;
+        // 一旦全部不可視に設定する。
         this.columnValueLabel.setVisible(false);
-        this.columnValueTextField.setVisible(true);
+        this.columnValueTextField.setVisible(false);
         this.columnValueTextArea.setVisible(false);
 
-        // データの入出力に対応するコントロールを抽象型のvisibleComponentでポイントする。データIOはこれを使って行う。
-        if (this.targetColumn.getVisibleType() == Column.VISIBLE_TYPE_LABEL) {
-            this.visibleComponent = this.columnValueLabel;
-            this.columnValueLabel.setVisible(true);
-            this.columnValueTextField.setVisible(false);
-            this.columnValueTextArea.setVisible(false);
-        } else if (this.targetColumn.getVisibleType() == Column.VISIBLE_TYPE_TEXTAREA) {
-            this.visibleComponent = this.columnValueTextArea;
-            this.columnValueLabel.setVisible(false);
-            this.columnValueTextField.setVisible(false);
-            this.columnValueTextArea.setVisible(true);
+        // データの入出力に対応するコントロールを抽象型のvisibleComponentでポイントする。
+        // データIOはこれを使って行う。
+        switch (this.targetColumn.getVisibleType()) {
+            case Column.VISIBLE_TYPE_LABEL:
+                this.visibleComponent = this.columnValueLabel;
+                this.columnValueLabel.setVisible(true);
+                break;
+            case Column.VISIBLE_TYPE_TEXT:
+                this.visibleComponent = this.columnValueTextField;
+                this.columnValueTextField.setVisible(true);
+                break;
+            case Column.VISIBLE_TYPE_TEXTAREA:
+                this.visibleComponent = this.columnValueTextArea;
+                this.columnValueTextArea.setVisible(true);
+                break;
         }
     }
 
