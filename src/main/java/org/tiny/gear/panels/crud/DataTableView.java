@@ -5,6 +5,7 @@ import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import org.apache.wicket.ajax.AjaxEventBehavior;
 import org.apache.wicket.ajax.AjaxRequestTarget;
 import org.apache.wicket.ajax.markup.html.form.AjaxButton;
 import org.apache.wicket.markup.html.basic.Label;
@@ -22,7 +23,7 @@ import org.tiny.datawrapper.TinyDatabaseException;
 
 /**
  * テーブルのデータを表示するパネル
- * 
+ *
  * @author bythe
  */
 public abstract class DataTableView extends Panel {
@@ -49,9 +50,9 @@ public abstract class DataTableView extends Panel {
 
     private ListView<Column> tableHeader;
 
-    private ArrayList<ArrayList<String>> tableData = new ArrayList<>();
+    private ArrayList<KeyValueList> tableData = new ArrayList<>();
 
-    private ListView<ArrayList<String>> tableRows;
+    private ListView<KeyValueList> tableRows;
     private ArrayList<Column> visibleHeader;
 
     private AjaxButton pageNext;
@@ -82,30 +83,42 @@ public abstract class DataTableView extends Panel {
 
         // 格納したデータを描画する。
         // テーブルの行
-        this.tableRows = new ListView<ArrayList<String>>("tableRows", this.tableData) {
+        this.tableRows = new ListView<KeyValueList>("tableRows", this.tableData) {
             @Override
-            protected void populateItem(ListItem<ArrayList<String>> item) {
+            protected void populateItem(ListItem<KeyValueList> item) {
 
-                // テーブルの列
-                ArrayList<String> row = (ArrayList<String>) item.getDefaultModelObject(); // Todo: あとでプロパティに置き換える。
-                ListView<String> tableRow = new ListView<String>("tableRow", row) {
-                    
+                // テーブルの行
+                KeyValueList recordData = (KeyValueList) item.getDefaultModelObject();
+                ListView<KeyValue> tableRow = new ListView<KeyValue>("tableRow", recordData) {
                     @Override
-                    protected void populateItem(ListItem<String> item) {
-
+                    protected void populateItem(ListItem<KeyValue> item) {
                         // セルのデータ
-                        String celldata = item.getDefaultModelObjectAsString();
-                        if (celldata.contains("__EXTRA__")) {
+                        KeyValue celldata = (KeyValue) item.getDefaultModelObject();
+                        if (celldata.getKey().equals("__EXTRA__")) {
                             RecordButtons panel = new RecordButtons("tableCell"); //Todo あとでジェネリクスでインスタンス化するコードに置換する。
                             item.add(panel);
                         } else {
-                            Label tableCell = new Label("tableCell", Model.of(celldata));
+                            Label tableCell = new Label("tableCell", Model.of(celldata.getValue()));
+                            tableCell.add(new AjaxEventBehavior("click") {
+                                @Override
+                                protected void onEvent(AjaxRequestTarget target) {
+                                    DataTableView.this.onRowClicked(
+                                            target, celldata.getParent()
+                                    );
+                                }
+                            });
                             item.add(tableCell);
                         }
-                        
                     }
-                    
                 };
+                tableRow.add(new AjaxEventBehavior("click") {
+                    @Override
+                    protected void onEvent(AjaxRequestTarget target) {
+                        DataTableView.this.onRowClicked(
+                                target, recordData
+                        );
+                    }
+                });
                 tableRow.setOutputMarkupId(true);
                 item.add(tableRow);
             }
@@ -114,7 +127,7 @@ public abstract class DataTableView extends Panel {
         this.curdTableView.add(this.tableRows);
 
         this.pageNext = new AjaxButton("pageNext") {
-            
+
             @Override
             protected void onSubmit(AjaxRequestTarget target) {
                 DataTableView.this.currentPage += 1;
@@ -236,7 +249,10 @@ public abstract class DataTableView extends Panel {
             // ページ情報の取得
             int rc = this.targetTable.getCount(this.conditions);
             this.lblRecordCount.setDefaultModelObject(rc + " レコード");
-            this.totalPageCount = rc / this.rowsPerPage + 1;
+            this.totalPageCount = rc / this.rowsPerPage;
+            if (rc % this.rowsPerPage > 0) {
+                this.totalPageCount++;
+            }
 
             // ResultSetを取得してアレイに格納する。
             int offset = (this.currentPage - 1) * this.rowsPerPage;
@@ -246,17 +262,20 @@ public abstract class DataTableView extends Panel {
             ResultSet rs = this.targetTable.select(newCnd);
             this.tableData.clear();
             while (rs.next()) {
-                ArrayList<String> row = new ArrayList<>();
+                KeyValueList row = new KeyValueList();
                 for (Column column : targetTable) {
                     if (column.getVisibleType() != Column.VISIBLE_TYPE_HIDDEN) {
+                        String cellName = column.getSplitedName();
                         String cellData = column.of(rs).toString();
-                        row.add(cellData);
+                        KeyValue keyValue = new KeyValue(cellName, cellData);
+                        keyValue.setPrimaryKey(column.isPrimaryKey());
+                        row.add(keyValue);
                     }
                 }
                 // 操作用の拡張フィールド
                 Class extra = this.getExtraColumn();
                 if (extra != null) {
-                    row.add("__EXTRA__" + extra.getName());
+                    row.add(new KeyValue("__EXTRA__", extra.getName()));
                 }
                 this.tableData.add(row);
             }
@@ -281,5 +300,7 @@ public abstract class DataTableView extends Panel {
     }
 
     public abstract Class<? extends Panel> getExtraColumn();
+
+    public abstract void onRowClicked(AjaxRequestTarget target, KeyValueList modelObject);
 
 }

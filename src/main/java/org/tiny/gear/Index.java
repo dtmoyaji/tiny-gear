@@ -3,8 +3,6 @@ package org.tiny.gear;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Timestamp;
-import java.time.LocalDateTime;
-import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.logging.Level;
@@ -23,8 +21,9 @@ import org.tiny.gear.model.SystemVariables;
 import org.tiny.gear.model.UserInfo;
 import org.tiny.gear.panels.HumbergerIcon;
 import org.tiny.gear.panels.NavigationPanel;
-import org.tiny.gear.panels.crud.DataControl;
 import org.tiny.gear.panels.crud.DataTableView;
+import org.tiny.gear.panels.crud.KeyValue;
+import org.tiny.gear.panels.crud.KeyValueList;
 import org.tiny.gear.panels.crud.RecordEditor;
 import org.tiny.gear.scenes.AbstractScene;
 import org.tiny.gear.scenes.DevelopScene;
@@ -128,9 +127,25 @@ public class Index extends SamlMainPage implements IJdbcSupplier {
         uinfo.setJdbc(this.getJdbc());
         uinfo.AttributeJson.setVisibleType(Column.VISIBLE_TYPE_HIDDEN);
         this.dataListView = new DataTableView("dataListView", uinfo, this) {
+
             @Override
             public Class<? extends Panel> getExtraColumn() {
                 return Panel.class;
+            }
+
+            @Override
+            public void onRowClicked(AjaxRequestTarget target, KeyValueList modelObject) {
+                String primaryKey = "";
+                String primaryColumn = "";
+                for (KeyValue keyValue : modelObject) {
+                    if (keyValue.isPrimaryKey()) {
+                        primaryColumn = (String) keyValue.getKey();
+                        primaryKey = (String) keyValue.getValue();
+                        break;
+                    }
+                }
+                System.out.println("PRIMARY: " + primaryColumn + " = " + primaryKey);
+                
             }
         };
         this.add(this.dataListView);
@@ -148,23 +163,7 @@ public class Index extends SamlMainPage implements IJdbcSupplier {
 
             @Override
             public void onSubmit(AjaxRequestTarget target, Table targetTable) {
-                ArrayList<DataControl> controls = this.getDataControls();
-                targetTable.clearValues();
-                for (DataControl control : controls) {
-                    String data = "";
-                    if (control.getColumn().getSplitedName().equals("LAST_ACCESS")) {
-                        control.setValue(
-                                LocalDateTime.now().format(
-                                        DateTimeFormatter.ISO_LOCAL_DATE_TIME
-                                )
-                        );
-                    }
-                    data = control.getValue();
-                    targetTable.get(control.getColumn().getName()).setValue(data);
-                }
-                targetTable.setDebugMode(true);
-                targetTable.merge();
-                target.add(this);
+                super.onSubmit(target, targetTable);
                 Index.this.dataListView.redraw();
                 target.add(Index.this.dataListView);
             }
@@ -179,7 +178,7 @@ public class Index extends SamlMainPage implements IJdbcSupplier {
         ResultSet rs = uinfo.select();
         try {
             if (rs.next()) {
-                this.recordEditor.stackData(rs);
+                this.recordEditor.setResultSet(rs);
             }
         } catch (SQLException ex) {
             Logger.getLogger(Index.class.getName()).log(Level.SEVERE, null, ex);
