@@ -490,3 +490,7 @@ p{
 .crud.recordeditor .submitbuttons input[type='button']{
     padding: 3px;
 }
+
+.crud.tableview .rows:hover{
+    background-color: silver;
+}

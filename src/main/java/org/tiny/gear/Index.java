@@ -99,7 +99,7 @@ public class Index extends SamlMainPage implements IJdbcSupplier {
             UserInfo uinfo = new UserInfo();
             uinfo.alterOrCreateTable(this.getJdbc());
             uinfo.setDebugMode(true);
-            uinfo.UserId.setValue(ainfo.getAttributeString("user_id"));
+            uinfo.UserId.setValue(ainfo.getAttributeString("externalKey"));
             uinfo.UserName.setValue(ainfo.getAttributeString("username"));
             uinfo.LastAccess.setValue(new Timestamp(System.currentTimeMillis()));
             uinfo.AttributeJson.setValue(ainfo.toJson()); // TODO: JSONの生成ロジックを作ること。
