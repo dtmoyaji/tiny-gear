@@ -26,7 +26,7 @@ import org.tiny.datawrapper.TinyDatabaseException;
  *
  * @author bythe
  */
-public abstract class DataTableView extends Panel {
+public abstract class DataTableView extends DataTableInfoPanel {
 
     public static final long serialVersionUID = -1L;
 
@@ -36,7 +36,7 @@ public abstract class DataTableView extends Panel {
 
     private Label lblRecordCount;
 
-    private Table targetTable;
+    //private Table targetTable;
 
     private IJdbcSupplier jdbcSupplier;
 
@@ -65,7 +65,7 @@ public abstract class DataTableView extends Panel {
         super(id);
 
         // 初期化
-        this.targetTable = table;
+        this.setTable(table);
         this.jdbcSupplier = jdbcSupplier;
         this.targetTable.alterOrCreateTable(this.jdbcSupplier.getJdbc());
         this.setOutputMarkupId(true);
@@ -197,10 +197,6 @@ public abstract class DataTableView extends Panel {
         }
     }
 
-    public Table getTable() {
-        return this.targetTable;
-    }
-
     public void setRowsPerPage(int rowCount) {
         this.rowsPerPage = rowCount;
     }
@@ -213,6 +209,8 @@ public abstract class DataTableView extends Panel {
     }
 
     public ResultSet redraw(Condition... conditions) {
+        
+        this.beforeConstructView(targetTable);
 
         this.lblTableName.setDefaultModelObject(targetTable.getLogicalName());
 
@@ -264,7 +262,7 @@ public abstract class DataTableView extends Panel {
             while (rs.next()) {
                 KeyValueList row = new KeyValueList();
                 for (Column column : targetTable) {
-                    if (column.getVisibleType() != Column.VISIBLE_TYPE_HIDDEN) {
+                    if (!column.isMatchedVisibleType(Column.VISIBLE_TYPE_HIDDEN)) {
                         String cellName = column.getSplitedName();
                         String cellData = column.of(rs).toString();
                         KeyValue keyValue = new KeyValue(cellName, cellData);
@@ -297,6 +295,10 @@ public abstract class DataTableView extends Panel {
                 visibleHeader.add(column);
             }
         }
+    }
+    
+    public Condition[] getConditions(){
+        return this.conditions;
     }
 
     public abstract Class<? extends Panel> getExtraColumn();

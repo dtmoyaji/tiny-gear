@@ -1,16 +1,10 @@
 package org.tiny.gear;
 
-import java.sql.ResultSet;
-import java.sql.SQLException;
 import java.sql.Timestamp;
 import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.logging.Level;
-import java.util.logging.Logger;
-import org.apache.wicket.ajax.AjaxRequestTarget;
 import org.apache.wicket.authroles.authorization.strategies.role.Roles;
 import org.apache.wicket.markup.html.basic.Label;
-import org.apache.wicket.markup.html.panel.Panel;
 import org.apache.wicket.model.Model;
 import org.apache.wicket.request.mapper.parameter.PageParameters;
 import org.tiny.datawrapper.Column;
@@ -22,8 +16,7 @@ import org.tiny.gear.model.UserInfo;
 import org.tiny.gear.panels.HumbergerIcon;
 import org.tiny.gear.panels.NavigationPanel;
 import org.tiny.gear.panels.crud.DataTableView;
-import org.tiny.gear.panels.crud.KeyValue;
-import org.tiny.gear.panels.crud.KeyValueList;
+import org.tiny.gear.panels.crud.FilterAndEdit;
 import org.tiny.gear.panels.crud.RecordEditor;
 import org.tiny.gear.scenes.AbstractScene;
 import org.tiny.gear.scenes.DevelopScene;
@@ -53,8 +46,7 @@ public class Index extends SamlMainPage implements IJdbcSupplier {
 
     private ArrayList<AbstractScene> scenes;
 
-    private DataTableView dataListView;
-    private RecordEditor recordEditor;
+    private FilterAndEdit filterAndEdit;
 
     public Index(final PageParameters parameters) {
         super(parameters);
@@ -125,65 +117,20 @@ public class Index extends SamlMainPage implements IJdbcSupplier {
 
         UserInfo uinfo = new UserInfo();
         uinfo.setJdbc(this.getJdbc());
-        uinfo.AttributeJson.setVisibleType(Column.VISIBLE_TYPE_HIDDEN);
-        this.dataListView = new DataTableView("dataListView", uinfo, this) {
 
+        this.filterAndEdit = new FilterAndEdit("filterAndEdit", uinfo, this) {
             @Override
-            public Class<? extends Panel> getExtraColumn() {
-                return Panel.class;
+            public void beforeConstructDataTableView(Table myTable, DataTableView dataTableView) {
+                myTable.get(uinfo.AttributeJson.getName()).setVisibleType(Column.VISIBLE_TYPE_HIDDEN);
             }
 
             @Override
-            public void onRowClicked(AjaxRequestTarget target, KeyValueList modelObject) {
-                String primaryKey = "";
-                String primaryColumn = "";
-                for (KeyValue keyValue : modelObject) {
-                    if (keyValue.isPrimaryKey()) {
-                        primaryColumn = (String) keyValue.getKey();
-                        primaryKey = (String) keyValue.getValue();
-                        break;
-                    }
-                }
-                System.out.println("PRIMARY: " + primaryColumn + " = " + primaryKey);
-                
+            public void beforeConstructRecordEditor(Table myTable, RecordEditor recordEditor) {
+                myTable.get(uinfo.AttributeJson.getName()).setVisibleType(Column.VISIBLE_TYPE_TEXTAREA);
             }
         };
-        this.add(this.dataListView);
+        this.add(this.filterAndEdit);
 
-        uinfo = new UserInfo();
-        uinfo.setJdbc(this.getJdbc());
-        this.recordEditor = new RecordEditor("recordEditor") {
-            @Override
-            public void beforeFormBuild() {
-            }
-
-            @Override
-            public void afterFormBuild() {
-            }
-
-            @Override
-            public void onSubmit(AjaxRequestTarget target, Table targetTable) {
-                super.onSubmit(target, targetTable);
-                Index.this.dataListView.redraw();
-                target.add(Index.this.dataListView);
-            }
-
-            @Override
-            public void onCancel(AjaxRequestTarget target, Table targetTable) {
-            }
-
-        };
-        this.recordEditor.buildForm(uinfo);
-        this.recordEditor.setOutputMarkupId(true);
-        ResultSet rs = uinfo.select();
-        try {
-            if (rs.next()) {
-                this.recordEditor.setResultSet(rs);
-            }
-        } catch (SQLException ex) {
-            Logger.getLogger(Index.class.getName()).log(Level.SEVERE, null, ex);
-        }
-        this.add(this.recordEditor);
     }
 
     private void initTable() {

@@ -9,7 +9,6 @@ import org.apache.wicket.ajax.markup.html.form.AjaxButton;
 import org.apache.wicket.markup.html.form.Form;
 import org.apache.wicket.markup.html.list.ListItem;
 import org.apache.wicket.markup.html.list.ListView;
-import org.apache.wicket.markup.html.panel.Panel;
 import org.tiny.datawrapper.Column;
 import org.tiny.datawrapper.Table;
 
@@ -17,13 +16,10 @@ import org.tiny.datawrapper.Table;
  *
  * @author bythe
  */
-public abstract class RecordEditor extends Panel {
-
-    public static int MODE_NEW = 0;
-
-    public static int MODE_UPDATE = 1;
-
-    private Table targetTable;
+public abstract class RecordEditor extends DataTableInfoPanel{
+    
+    public static final int MODE_EDIT=1;
+    public static final int MODE_READONLY=1;
 
     private ListView<Column> controls;
     private ArrayList<DataControl> dataControls = new ArrayList<>();
@@ -45,7 +41,7 @@ public abstract class RecordEditor extends Panel {
      */
     public void buildForm(Table targetTable) {
 
-        this.targetTable = targetTable;
+        this.setTable(targetTable);
         this.dataControls.clear();
 
         this.editorForm = new Form("editorForm");
@@ -83,25 +79,27 @@ public abstract class RecordEditor extends Panel {
         this.editorForm.add(this.cancel);
     }
 
-    public void setResultSet(ResultSet rs) {
+    /**
+     * SQLの結果をResultSetで渡し、コントロールに表示する。
+     * @param rs 
+     */
+    public void setValues(ResultSet rs) {
         for (Column col : this.targetTable) {
             col.setValue(col.of(rs));
         }
     }
+    
+    /**
+     * コントロールに表示している値を消去する。
+     */
+    public void clearValues(){
+        this.targetTable.clearValues();
+    }
+    
 
     public ArrayList<DataControl> getDataControls() {
         return this.dataControls;
     }
-
-    /**
-     * フォームを生成する前の処理を定義する。
-     */
-    public abstract void beforeFormBuild();
-
-    /**
-     * フォームを生成した後の処理を定義する。
-     */
-    public abstract void afterFormBuild();
 
     /**
      * 更新ボタンを押したとき
