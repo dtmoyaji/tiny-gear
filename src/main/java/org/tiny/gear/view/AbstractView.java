@@ -18,24 +18,32 @@ package org.tiny.gear.view;
 import org.apache.wicket.markup.html.basic.Label;
 import org.apache.wicket.markup.html.panel.Panel;
 import org.apache.wicket.model.Model;
+import org.tiny.datawrapper.IJdbcSupplier;
+import org.tiny.datawrapper.Jdbc;
 
 /**
  * シーンに含まれるビューの抽象クラス
  *
  * @author dtmoyaji
  */
-public abstract class AbstractView extends Panel {
+public abstract class AbstractView extends Panel{
 
     public static final long serialVersionUID = -1L;
 
     private final Label title;
+    
+    private Jdbc jdbc;
+    
+    protected IJdbcSupplier supplier;
 
-    public AbstractView() {
+    public AbstractView(IJdbcSupplier supplier) {
         super("scenePanel");
+        
+        this.supplier = supplier;
         this.title = new Label("panelTitle", Model.of(this.getTitle()));
         this.add(this.title);
     }
 
     public abstract String getTitle();
-
+    
 }

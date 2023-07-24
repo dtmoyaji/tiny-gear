@@ -15,6 +15,8 @@
  */
 package org.tiny.gear.view;
 
+import org.tiny.datawrapper.IJdbcSupplier;
+
 /**
  *
  * @author bythe
@@ -22,6 +24,10 @@ package org.tiny.gear.view;
 public class PrimaryView extends AbstractView {
 
     public static final long serialVersionUID = -1L;
+    
+    public PrimaryView(IJdbcSupplier supplier){
+        super(supplier);
+    }
 
     @Override
     public String getTitle() {

@@ -1,5 +1,6 @@
 package org.tiny.gear.panels.crud;
 
+import java.lang.reflect.Constructor;
 import java.lang.reflect.InvocationTargetException;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -30,10 +31,13 @@ public abstract class DataTableInfoPanel extends Panel {
     public void setTable(Table target){
         try {
             Class cls = target.getClass();
-            Table clone = (Table) cls.getConstructor().newInstance();
+            Constructor constructor = cls.getDeclaredConstructor();
+            constructor.setAccessible(true);
+            Table clone = (Table) constructor.newInstance();
+            
             this.targetTable = clone;
-            this.beforeConstructView(target);
-        } catch (NoSuchMethodException | SecurityException | InstantiationException | IllegalAccessException | IllegalArgumentException | InvocationTargetException ex) {
+            this.beforeConstructView(this.targetTable);
+        } catch (SecurityException | IllegalArgumentException | NoSuchMethodException | InstantiationException | IllegalAccessException | InvocationTargetException  ex) {
             Logger.getLogger(DataTableInfoPanel.class.getName()).log(Level.SEVERE, null, ex);
         }
     }

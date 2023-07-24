@@ -16,6 +16,7 @@
 package org.tiny.gear.view;
 
 import java.util.Properties;
+import org.tiny.datawrapper.IJdbcSupplier;
 import org.tiny.gear.GearApplication;
 import org.tiny.gear.panels.PropertyPanel;
 
@@ -30,8 +31,8 @@ public class ConnectionView extends AbstractView {
     private PropertyPanel jdbcPanel;
     private PropertyPanel samlPanel;
 
-    public ConnectionView() {
-        super();
+    public ConnectionView(IJdbcSupplier supplier) {
+        super(supplier);
 
         this.jdbcPanel = new PropertyPanel("jdbcProperties") {
             public static final long serialVersionUID = -1L;

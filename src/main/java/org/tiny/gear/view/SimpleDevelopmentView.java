@@ -15,6 +15,7 @@
  */
 package org.tiny.gear.view;
 
+import org.tiny.datawrapper.IJdbcSupplier;
 import org.tiny.gear.panels.GroovyEditor;
 
 /**
@@ -25,8 +26,8 @@ public class SimpleDevelopmentView extends AbstractView {
 
     private final GroovyEditor groovyExec;
 
-    public SimpleDevelopmentView() {
-        super();
+    public SimpleDevelopmentView(IJdbcSupplier supplier) {
+        super(supplier);
 
         this.groovyExec = new GroovyEditor("groovyExecutor");
         this.add(this.groovyExec);

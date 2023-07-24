@@ -7,6 +7,7 @@ import org.apache.wicket.markup.html.basic.Label;
 import org.apache.wicket.markup.html.list.ListItem;
 import org.apache.wicket.markup.html.list.ListView;
 import org.apache.wicket.model.Model;
+import org.tiny.datawrapper.IJdbcSupplier;
 import org.tiny.wicket.onelogin.SamlAuthInfo;
 import org.tiny.wicket.onelogin.SamlSession;
 
@@ -23,9 +24,9 @@ public class UserInfoView extends AbstractView {
     private HashMap<String, List<String>> userAttributes;
     private ListView<String> KeySet;
 
-    public UserInfoView() {
+    public UserInfoView(IJdbcSupplier supplier) {
 
-        super();
+        super(supplier);
 
         this.samlNameId = new Label("samlNameId", Model.of(""));
         this.add(this.samlNameId);

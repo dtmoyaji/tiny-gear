@@ -1,6 +1,7 @@
 package org.tiny.gear.scenes;
 
 import org.apache.wicket.authroles.authorization.strategies.role.Roles;
+import org.tiny.datawrapper.IJdbcSupplier;
 import org.tiny.gear.RoleController;
 import org.tiny.gear.model.MenuItem;
 import org.tiny.gear.view.ConnectionView;
@@ -14,8 +15,8 @@ public class SettingScene extends AbstractScene {
 
     public static final long serialVersionUID = -1L;
 
-    public SettingScene(Roles allowed) {
-        super(allowed);
+    public SettingScene(Roles allowed, IJdbcSupplier supplier) {
+        super(allowed, supplier);
 
     }
 

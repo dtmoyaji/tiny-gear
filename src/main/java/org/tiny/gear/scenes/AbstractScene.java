@@ -22,6 +22,7 @@ import java.util.HashMap;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import org.apache.wicket.authroles.authorization.strategies.role.Roles;
+import org.tiny.datawrapper.IJdbcSupplier;
 import org.tiny.gear.IRoleChecker;
 import org.tiny.gear.RoleController;
 import org.tiny.gear.model.MenuItem;
@@ -53,10 +54,13 @@ public abstract class AbstractScene implements Serializable, IRoleChecker {
     private final Roles allowed;
 
     private AbstractView defaultPanel;
+    
+    protected IJdbcSupplier supplier;
 
-    public AbstractScene(Roles allowed) {
+    public AbstractScene(Roles allowed, IJdbcSupplier supplier) {
 
         this.allowed = allowed;
+        this.supplier = supplier;
 
         this.menus = new ArrayList<>();
         this.panels = new HashMap<>();
