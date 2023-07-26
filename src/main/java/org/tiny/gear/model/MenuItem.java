@@ -128,5 +128,9 @@ public class MenuItem implements Serializable, IRoleChecker {
     public boolean isAllowed(Roles roles) {
         return RoleController.isRolesMatched(this.allowed, roles);
     }
+    
+    public String getViewClassName(){
+        return this.panel.getName();
+    }
 
 }

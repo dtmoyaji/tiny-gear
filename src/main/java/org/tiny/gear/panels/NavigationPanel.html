@@ -15,10 +15,12 @@
             </label>
             <ul>
                 <li  wicket:id="menus" class="menus">
-                    <a wicket:id="menuItem" class="menuItem">メニュー</a>
+                    <a wicket:id="menuItem" class="menuItem"><label wicket:id="menuCaption">メニュー</label></a>
                     <ul>
                         <li wicket:id="subMenu" class="subMenu">
-                            <a wicket:id="subMenuItem" class="subMenuItem">サブメニュー</a>
+                            <a wicket:id="subMenuItem" class="subMenuItem">
+                                <label wicket:id="subMenuCaption">サブメニュー</label>
+                            </a>
                         </li>
                     </ul>
                 </li>

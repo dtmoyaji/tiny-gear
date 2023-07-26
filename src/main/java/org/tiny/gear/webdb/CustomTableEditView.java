@@ -15,6 +15,7 @@
  */
 package org.tiny.gear.webdb;
 
+import org.tiny.datawrapper.Column;
 import org.tiny.datawrapper.IJdbcSupplier;
 import org.tiny.datawrapper.Table;
 import org.tiny.gear.panels.crud.DataTableView;
@@ -35,15 +36,17 @@ public class CustomTableEditView extends AbstractView{
     public CustomTableEditView(IJdbcSupplier supplier){
         super(supplier);
         this.customTable = new CustomTable();
-        this.customTable.setJdbc(this.supplier.getJdbc());
+        this.customTable.alterOrCreateTable(this.supplier.getJdbc());
         
         this.filterAndEdit = new FilterAndEdit("customTableEditor", this.customTable, this.supplier.getJdbc()){
             @Override
             public void beforeConstructDataTableView(Table myTable, DataTableView dataTableView) {
+                myTable.get(customTable.TableDef.getName()).setVisibleType(Column.VISIBLE_TYPE_HIDDEN);
             }
 
             @Override
             public void beforeConstructRecordEditor(Table myTable, RecordEditor recordEditor) {
+                myTable.get(customTable.LastAccess.getName()).setVisibleType(Column.VISIBLE_TYPE_LABEL);
             }
         };
         this.add(this.filterAndEdit);

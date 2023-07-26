@@ -139,7 +139,7 @@ public abstract class AbstractScene implements Serializable, IRoleChecker {
     public void putMenu(String menuName, Class<? extends AbstractView> view, Roles roles, boolean primary) {
         try {
             this.getMenus().add(new MenuItem(menuName, this.getClass(), view, roles));
-            AbstractView newView = view.getConstructor().newInstance();
+            AbstractView newView = view.getConstructor(IJdbcSupplier.class).newInstance(this.supplier);
             this.getPanels().put(view.getName(), newView);
             if (primary) {
                 this.defaultPanel = newView;

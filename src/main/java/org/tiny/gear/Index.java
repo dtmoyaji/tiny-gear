@@ -3,6 +3,7 @@ package org.tiny.gear;
 import java.sql.Timestamp;
 import java.util.ArrayList;
 import java.util.HashMap;
+import org.apache.wicket.ajax.AjaxRequestTarget;
 import org.apache.wicket.authroles.authorization.strategies.role.Roles;
 import org.apache.wicket.markup.html.basic.Label;
 import org.apache.wicket.model.Model;
@@ -47,18 +48,51 @@ public class Index extends SamlMainPage implements IJdbcSupplier {
 
         this.initTable();
 
-        GearApplication app = (GearApplication) this.getApplication();
-        String svtitle = (String) app.getProperties("tiny.gear").get("tiny.gear.service.title");
+        String svtitle = (String) ((GearApplication) this.getApplication())
+                .getProperties("tiny.gear")
+                .get("tiny.gear.service.title");
 
         this.serviceTitle = new Label("serviceTitle", Model.of(svtitle));
         this.add(this.serviceTitle);
 
-        // 初期ページの取得
-        this.currentScene = new PrimaryScene(RoleController.getUserRoles(), this);
+        // 登録済シーンの取得
         this.scenes = this.getScenes();
 
-        // 指定された状態に応じたシーンを表示する処理
+        // 初期ページの取得
+        this.currentScene = new PrimaryScene(RoleController.getUserRoles(), this);
+        this.currentPanel = this.currentScene.getDefaultPanel();
+
         String sceneName = parameters.get("scene").toString();
+        String panelName = parameters.get("view").toString();
+        this.resolvePage(sceneName, panelName);
+
+        this.nav = new NavigationPanel("menus", this) {
+            @Override
+            public void onMenuItemClick(AjaxRequestTarget target, String sceneName, String panelName) {
+                Index.this.resolvePage(sceneName, panelName);
+                target.add(Index.this.currentPanel);
+                target.add(Index.this.nav);
+            }
+        };
+        this.nav.setOutputMarkupId(true);
+        this.add(this.nav);
+
+        this.humbergerIcon = new HumbergerIcon("humbergerIcon", "humbergerTarget");
+        this.add(this.humbergerIcon);
+
+        this.currentPanel.setOutputMarkupId(true);
+        this.add(this.currentPanel);
+
+    }
+
+    /**
+     * ページリゾルバ
+     *
+     * @param parameters
+     */
+    private void resolvePage(String sceneName, String panelName) {
+        
+        // 指定された状態に応じたシーンを表示する処理
         if (sceneName != null) {
             for (AbstractScene scene : this.scenes) {
                 if (scene.isSceneKeyMatch(sceneName)) {
@@ -76,7 +110,6 @@ public class Index extends SamlMainPage implements IJdbcSupplier {
         }
 
         HashMap<String, AbstractView> panels = currentScene.getPanels();
-        String panelName = parameters.get("view").toString();
         if (panelName != null) {
             this.currentPanel = panels.get(panelName);
         } else {
@@ -104,16 +137,12 @@ public class Index extends SamlMainPage implements IJdbcSupplier {
                 uinfo.merge();
             }
         }
+        this.currentPanel.setOutputMarkupId(true);
+        this.addOrReplace(this.currentPanel);
 
-        this.add(this.currentPanel);
-
-        this.nav = new NavigationPanel("menus", this);
-        this.nav.setOutputMarkupId(true);
-        this.add(this.nav);
-
-        this.humbergerIcon = new HumbergerIcon("humbergerIcon", "humbergerTarget");
-        this.add(this.humbergerIcon);
-
+        if (this.nav != null) {
+            this.nav.resolve(this);
+        }
     }
 
     private void initTable() {
@@ -131,7 +160,7 @@ public class Index extends SamlMainPage implements IJdbcSupplier {
         scenemap.add(new PrimaryScene(RoleController.getAllRoles(), this));
         scenemap.add(new SettingScene(RoleController.getUserRoles(), this));
         scenemap.add(new DevelopScene(RoleController.getDevelopmentRoles(), this));
-        scenemap.add(new CustomTableManagementScene(RoleController.getAllRoles(), this)); //後でDevelopmentRoleに変更する。
+        scenemap.add(new CustomTableManagementScene(RoleController.getDevelopmentRoles(), this));
         return scenemap;
     }
 
@@ -152,6 +181,12 @@ public class Index extends SamlMainPage implements IJdbcSupplier {
     public Jdbc getJdbc() {
         GearApplication app = (GearApplication) this.getApplication();
         return app.getJdbc();
+    }
+
+    public void onMenuItemClick(AjaxRequestTarget target, String sceneName, String panelName) {
+        this.resolvePage(sceneName, panelName);
+        target.add(this.currentPanel);
+        target.add(this.nav);
     }
 
 }

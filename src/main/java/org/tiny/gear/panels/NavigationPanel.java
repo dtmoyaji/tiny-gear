@@ -16,11 +16,14 @@
 package org.tiny.gear.panels;
 
 import org.apache.wicket.AttributeModifier;
+import org.apache.wicket.ajax.AjaxRequestTarget;
+import org.apache.wicket.ajax.markup.html.AjaxLink;
 import org.apache.wicket.authroles.authorization.strategies.role.Roles;
-import org.apache.wicket.markup.html.link.ExternalLink;
+import org.apache.wicket.markup.html.basic.Label;
 import org.apache.wicket.markup.html.list.ListItem;
 import org.apache.wicket.markup.html.list.ListView;
 import org.apache.wicket.markup.html.panel.Panel;
+import org.apache.wicket.model.Model;
 import org.tiny.gear.Index;
 import org.tiny.gear.RoleController;
 import org.tiny.gear.model.MenuItem;
@@ -32,7 +35,7 @@ import org.tiny.wicket.onelogin.SamlSession;
  *
  * @author bythe
  */
-public class NavigationPanel extends Panel {
+public abstract class NavigationPanel extends Panel {
 
     public static final long serialVersionUID = -1L;
 
@@ -40,6 +43,9 @@ public class NavigationPanel extends Panel {
     private ListView<AbstractScene> scenes;
 
     private Roles currentRoles;
+
+    private AbstractView currentPanel;
+    private AbstractScene currentScene;
 
     public NavigationPanel(String id, Index index) {
         super(id);
@@ -50,8 +56,7 @@ public class NavigationPanel extends Panel {
             this.currentRoles = RoleController.getGuestRoles();
         }
 
-        AbstractView currentPanel = index.getCurrentPanel();
-        AbstractScene currentScene = index.getCurrentScene();
+        this.resolve(index);
 
         this.scenes = new ListView<AbstractScene>("menus", index.getScenes()) {
             public static final long serialVersionUID = -1L;
@@ -60,9 +65,18 @@ public class NavigationPanel extends Panel {
             protected void populateItem(ListItem<AbstractScene> item) {
 
                 AbstractScene scene = item.getModelObject();
-                ExternalLink link = new ExternalLink("menuItem",
-                        "?scene="
-                        + scene.getClass().getName(), scene.getSceneName());
+                AjaxLink link = new AjaxLink<>("menuItem") {
+                    @Override
+                    public void onClick(AjaxRequestTarget art) {
+                        NavigationPanel.this.onMenuItemClick(
+                                art,
+                                scene.getSceneKey(),
+                                scene.getDefaultPanel().getClass().getName()
+                        );
+                    }
+                };
+                link.add(new Label("menuCaption", Model.of(scene.getSceneName())));
+
                 item.add(link);
                 if (!scene.isAllowed(currentRoles)) {
                     item.setVisible(false);
@@ -74,10 +88,18 @@ public class NavigationPanel extends Panel {
                     @Override
                     protected void populateItem(ListItem<MenuItem> item) {
                         MenuItem itemObject = item.getModelObject();
-                        ExternalLink link = new ExternalLink("subMenuItem",
-                                itemObject.getUrl(),
-                                itemObject.getText()
-                        );
+
+                        AjaxLink link = new AjaxLink<>("subMenuItem") {
+                            @Override
+                            public void onClick(AjaxRequestTarget target) {
+                                NavigationPanel.this.onMenuItemClick(
+                                        target,
+                                        scene.getSceneKey(),
+                                        itemObject.getViewClassName()
+                                );
+                            }
+                        };
+                        link.add(new Label("subMenuCaption", Model.of(itemObject.getText())));
                         item.add(link);
 
                         if (itemObject.isMatchedMainPanel(currentPanel.getClass())) {
@@ -104,5 +126,12 @@ public class NavigationPanel extends Panel {
         this.add(this.scenes);
 
     }
+
+    public final void resolve(Index index) {
+        this.currentPanel = index.getCurrentPanel();
+        this.currentScene = index.getCurrentScene();
+    }
+
+    public abstract void onMenuItemClick(AjaxRequestTarget target, String sceneName, String panelName);
 
 }

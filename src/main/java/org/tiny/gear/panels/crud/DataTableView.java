@@ -37,7 +37,6 @@ public abstract class DataTableView extends DataTableInfoPanel {
     private Label lblRecordCount;
 
     //private Table targetTable;
-
     private IJdbcSupplier jdbcSupplier;
 
     private int rowsPerPage = 2; // ページに表示する最大行
@@ -209,7 +208,7 @@ public abstract class DataTableView extends DataTableInfoPanel {
     }
 
     public ResultSet redraw(Condition... conditions) {
-        
+
         this.beforeConstructView(targetTable);
 
         this.lblTableName.setDefaultModelObject(targetTable.getLogicalName());
@@ -264,7 +263,7 @@ public abstract class DataTableView extends DataTableInfoPanel {
                 for (Column column : targetTable) {
                     if (!column.isMatchedVisibleType(Column.VISIBLE_TYPE_HIDDEN)) {
                         String cellName = column.getSplitedName();
-                        String cellData = column.of(rs).toString();
+                        String cellData = column.of(rs) != null ? column.of(rs).toString() : null;
                         KeyValue keyValue = new KeyValue(cellName, cellData);
                         keyValue.setPrimaryKey(column.isPrimaryKey());
                         row.add(keyValue);
@@ -296,8 +295,8 @@ public abstract class DataTableView extends DataTableInfoPanel {
             }
         }
     }
-    
-    public Condition[] getConditions(){
+
+    public Condition[] getConditions() {
         return this.conditions;
     }
 

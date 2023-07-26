@@ -6,6 +6,7 @@ import java.util.HashMap;
 import java.util.Properties;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import org.apache.wicket.RuntimeConfigurationType;
 import org.apache.wicket.markup.html.WebPage;
 import org.apache.wicket.request.resource.SharedResourceReference;
 import org.apache.wicket.resource.FileSystemResource;
@@ -38,6 +39,7 @@ public class GearApplication extends SamlWicketApplication implements IJdbcSuppl
     @Override
     public void init() {
         super.init();
+
         // 暫定的に実装最終的には消す予定
         //getCspSettings().blocking().disabled();
         this.mountResources();
@@ -97,5 +99,15 @@ public class GearApplication extends SamlWicketApplication implements IJdbcSuppl
             this.jdbc.setPassword(tinygear.getProperty("tiny.gear.jdbc.password"));
         }
         return this.jdbc;
+    }
+
+    @Override
+    public RuntimeConfigurationType getConfigurationType() {
+        /* "WICKET AJAX DEBUG" Link を表示させる場合は、
+       * Application.DEVELOPMENT を返すこと。
+       * Application.DEPLOYMENT を返すことで非表示にする
+         */
+        return RuntimeConfigurationType.DEVELOPMENT;
+        //return Application.DEVELOPMENT;
     }
 }

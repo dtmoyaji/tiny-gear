@@ -29,12 +29,13 @@ public abstract class DataTableInfoPanel extends Panel {
      * @param target 
      */
     public void setTable(Table target){
+
         try {
             Class cls = target.getClass();
             Constructor constructor = cls.getDeclaredConstructor();
             constructor.setAccessible(true);
             Table clone = (Table) constructor.newInstance();
-            
+
             this.targetTable = clone;
             this.beforeConstructView(this.targetTable);
         } catch (SecurityException | IllegalArgumentException | NoSuchMethodException | InstantiationException | IllegalAccessException | InvocationTargetException  ex) {

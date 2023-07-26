@@ -16,10 +16,10 @@ import org.tiny.datawrapper.Table;
  *
  * @author bythe
  */
-public abstract class RecordEditor extends DataTableInfoPanel{
-    
-    public static final int MODE_EDIT=1;
-    public static final int MODE_READONLY=1;
+public abstract class RecordEditor extends DataTableInfoPanel {
+
+    public static final int MODE_EDIT = 1;
+    public static final int MODE_READONLY = 1;
 
     private ListView<Column> controls;
     private ArrayList<DataControl> dataControls = new ArrayList<>();
@@ -81,21 +81,21 @@ public abstract class RecordEditor extends DataTableInfoPanel{
 
     /**
      * SQLの結果をResultSetで渡し、コントロールに表示する。
-     * @param rs 
+     *
+     * @param rs
      */
     public void setValues(ResultSet rs) {
         for (Column col : this.targetTable) {
             col.setValue(col.of(rs));
         }
     }
-    
+
     /**
      * コントロールに表示している値を消去する。
      */
-    public void clearValues(){
+    public void clearValues() {
         this.targetTable.clearValues();
     }
-    
 
     public ArrayList<DataControl> getDataControls() {
         return this.dataControls;
@@ -109,20 +109,31 @@ public abstract class RecordEditor extends DataTableInfoPanel{
     public void onSubmit(AjaxRequestTarget target, Table targetTable) {
         ArrayList<DataControl> controls = this.getDataControls();
         targetTable.clearValues();
+        boolean insert = false;
         for (DataControl control : controls) {
             String data = "";
-            if (control.getColumn().getSplitedName().equals("LAST_ACCESS")) {
+            Column col = control.getColumn();
+            if (col.getSplitedName().equals("LAST_ACCESS")) {
                 control.setValue(
                         LocalDateTime.now().format(
                                 DateTimeFormatter.ISO_LOCAL_DATE_TIME
                         )
                 );
             }
-            data = control.getValue();
-            targetTable.get(control.getColumn().getName()).setValue(data);
+            if (col.isPrimaryKey() && col.getValue() == null) { // 主キーに値がないときは、インサート文
+                insert = true;
+                targetTable.get(control.getColumn().getName()).setValue(null);
+            } else {
+                data = control.getValue();
+                targetTable.get(control.getColumn().getName()).setValue(data);
+            }
         }
-        //targetTable.setDebugMode(true);
-        targetTable.merge();
+        targetTable.setDebugMode(true);
+        if (insert) {
+            targetTable.insert();
+        } else {
+            targetTable.merge();
+        }
         target.add(this);
     }
 

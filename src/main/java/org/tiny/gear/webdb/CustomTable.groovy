@@ -16,35 +16,40 @@ import org.tiny.datawrapper.annotations.LogicalName;
 class CustomTable extends Table {
 
     @LogicalName("テーブルID")
-    public IncrementalKey tableId;
+    public IncrementalKey TableId;
 
     @LogicalName("テーブル名")
-    public Column<String> tableName;
+    public Column<String> TableName;
 
     @LogicalName("バージョン")
-    public Column<String> version;
+    public Column<String> Version;
 
     @LogicalName("テーブル定義")
-    public Column<String> tableDef;
+    public Column<String> TableDef;
 
     @LogicalName("備考")
-    public Column<String> memo;
+    public Column<String> Memo;
 
     @LogicalName("無効フラグ")
-    public ShortFlagZero disable;
+    public ShortFlagZero Disable;
 
     @LogicalName("更新日")
-    public CurrentTimestamp updateDate;
+    public CurrentTimestamp LastAccess;
 
     @Override
     public void defineColumns() {
+        
+        this.TableId.setVisibleType(Column.VISIBLE_TYPE_LABEL);
 
-        this.tableName.setAllowNull(false)
-                .setLength(Column.SIZE_256);
+        this.TableName.setAllowNull(false).setLength(Column.SIZE_256);
+        
+        this.TableDef.setLength(Column.SIZE_4096)
+        .setAllowNull(false)
+        .setVisibleType(Column.VISIBLE_TYPE_TEXTAREA);
 
-        this.version.setLength(Column.SIZE_32);
+        this.Version.setLength(Column.SIZE_32);
 
-        this.memo.setLength(Column.SIZE_2048);
+        this.Memo.setLength(Column.SIZE_2048);
 
     }
 }
