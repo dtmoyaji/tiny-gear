@@ -235,6 +235,8 @@ public abstract class DataTableView extends DataTableInfoPanel {
         } catch (TinyDatabaseException ex) {
             Logger.getLogger(DataTableView.class.getName()).log(Level.SEVERE, null, ex);
         }
+        
+        this.afterConstructView(targetTable);
         return rvalue;
     }
 

@@ -129,7 +129,7 @@ public class Index extends SamlMainPage implements IJdbcSupplier {
             if (ainfo != null) {
                 UserInfo uinfo = new UserInfo();
                 uinfo.alterOrCreateTable(this.getJdbc());
-                uinfo.setDebugMode(true);
+                // uinfo.setDebugMode(true);
                 uinfo.UserId.setValue(ainfo.getAttributeString("externalKey"));
                 uinfo.UserName.setValue(ainfo.getAttributeString("username"));
                 uinfo.LastAccess.setValue(new Timestamp(System.currentTimeMillis()));

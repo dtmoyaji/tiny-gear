@@ -15,47 +15,61 @@
  */
 package org.tiny.gear.webdb;
 
+import org.apache.wicket.AttributeModifier;
+import org.apache.wicket.model.Model;
 import org.tiny.datawrapper.Column;
 import org.tiny.datawrapper.IJdbcSupplier;
 import org.tiny.datawrapper.Table;
+import org.tiny.gear.panels.crud.DataControl;
 import org.tiny.gear.panels.crud.DataTableView;
 import org.tiny.gear.panels.crud.FilterAndEdit;
 import org.tiny.gear.panels.crud.RecordEditor;
 import org.tiny.gear.view.AbstractView;
 
 /**
- * 
+ *
  * @author bythe
  */
-public class CustomTableEditView extends AbstractView{
-    
+public class CustomTableEditView extends AbstractView {
+
     private CustomTable customTable;
-    
+
     private FilterAndEdit filterAndEdit;
-    
-    public CustomTableEditView(IJdbcSupplier supplier){
+
+    public CustomTableEditView(IJdbcSupplier supplier) {
         super(supplier);
         this.customTable = new CustomTable();
         this.customTable.alterOrCreateTable(this.supplier.getJdbc());
-        
-        this.filterAndEdit = new FilterAndEdit("customTableEditor", this.customTable, this.supplier.getJdbc()){
+
+        this.filterAndEdit = new FilterAndEdit("customTableEditor", this.customTable, this.supplier.getJdbc()) {
             @Override
             public void beforeConstructDataTableView(Table myTable, DataTableView dataTableView) {
                 myTable.get(customTable.TableDef.getName()).setVisibleType(Column.VISIBLE_TYPE_HIDDEN);
             }
 
             @Override
+            public void afterConstructDataTableView(Table myTable, DataTableView dataTableView) {
+            }
+
+            @Override
             public void beforeConstructRecordEditor(Table myTable, RecordEditor recordEditor) {
                 myTable.get(customTable.LastAccess.getName()).setVisibleType(Column.VISIBLE_TYPE_LABEL);
+            }
+
+            @Override
+            public void afterConstructRecordEditor(Table myTable, RecordEditor recordEditor) {
+                DataControl control = recordEditor.getDataControl(customTable.TableDef.getSplitedName());
+                if (control != null) {
+                    control.getVisibleComponent().add(new AttributeModifier("style",Model.of("height: 12em;")));
+                }
             }
         };
         this.add(this.filterAndEdit);
     }
-    
-  
+
     @Override
     public String getTitle() {
         return "カスタムテーブル編集";
     }
-    
+
 }

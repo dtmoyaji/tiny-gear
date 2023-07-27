@@ -47,6 +47,16 @@ public abstract class DataTableInfoPanel extends Panel {
         return this.targetTable;
     }
     
+    /**
+     * ビューの構築前に操作。
+     * @param myTable 
+     */
     public abstract void beforeConstructView(Table myTable);
+
+    /**
+     * ビューの構築後の操作。
+     * @param myTable 
+     */
+    public abstract void afterConstructView(Table myTable);
     
 }

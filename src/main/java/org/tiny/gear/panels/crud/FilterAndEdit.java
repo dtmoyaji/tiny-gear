@@ -1,18 +1,3 @@
-/*
- * Copyright 2023 bythe.
- *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
- *
- *      http://www.apache.org/licenses/LICENSE-2.0
- *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
- */
 package org.tiny.gear.panels.crud;
 
 import java.sql.ResultSet;
@@ -26,7 +11,7 @@ import org.tiny.datawrapper.IJdbcSupplier;
 import org.tiny.datawrapper.Table;
 
 /**
- * @author bythe
+ * レコードを検索し、編集する。
  */
 abstract public class FilterAndEdit extends Panel {
     
@@ -54,6 +39,11 @@ abstract public class FilterAndEdit extends Panel {
             public void beforeConstructView(Table myTable) {
                 FilterAndEdit.this.beforeConstructDataTableView(myTable, FilterAndEdit.this.dataTableView);
             }
+
+            @Override
+            public void afterConstructView(Table myTable) {
+                FilterAndEdit.this.afterConstructDataTableView(myTable, FilterAndEdit.this.dataTableView);
+            }
         };
         this.dataTableView.setOutputMarkupId(true);
         this.add(this.dataTableView);
@@ -80,6 +70,11 @@ abstract public class FilterAndEdit extends Panel {
                         FilterAndEdit.this.recordEditor
                 );
             }
+
+            @Override
+            public void afterConstructView(Table myTable) {
+                FilterAndEdit.this.afterConstructRecordEditor(myTable, FilterAndEdit.this.recordEditor);
+            }
         };
         this.add(this.recordEditor);
         this.recordEditor.setOutputMarkupId(true);
@@ -87,6 +82,10 @@ abstract public class FilterAndEdit extends Panel {
 
     }
     
+    /**
+     * 
+     * @param target 
+     */
     public void reloadRecordEditor(AjaxRequestTarget target){
         this.onRowClicked(target, currentKeyValueList);
     }
@@ -127,14 +126,32 @@ abstract public class FilterAndEdit extends Panel {
      * データテーブルを構築する前にテーブル設定などに変更を加える時に使用する。
      *
      * @param myTable
+     * @param dataTableView
      */
     public abstract void beforeConstructDataTableView(Table myTable, DataTableView dataTableView);
 
     /**
-     * データテーブルを構築する前にテーブル設定などに変更を加える時に使用する。
+     * データテーブルを構築した後にテーブル設定などに変更を加える時に使用する。
      *
      * @param myTable
+     * @param dataTableView
+     */
+    public abstract void afterConstructDataTableView(Table myTable, DataTableView dataTableView);
+
+    /**
+     * レコードエディタを構築する前にテーブル設定などに変更を加える時に使用する。
+     *
+     * @param myTable
+     * @param recordEditor
      */
     public abstract void beforeConstructRecordEditor(Table myTable, RecordEditor recordEditor);
+
+    /**
+     * レコードエディタを構築した後にテーブル設定などに変更を加える時に使用する。
+     *
+     * @param myTable
+     * @param recordEditor
+     */
+    public abstract void afterConstructRecordEditor(Table myTable, RecordEditor recordEditor);
 
 }

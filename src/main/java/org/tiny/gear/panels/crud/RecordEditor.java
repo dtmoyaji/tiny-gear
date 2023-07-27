@@ -10,6 +10,7 @@ import org.apache.wicket.markup.html.form.Form;
 import org.apache.wicket.markup.html.list.ListItem;
 import org.apache.wicket.markup.html.list.ListView;
 import org.tiny.datawrapper.Column;
+import org.tiny.datawrapper.CurrentTimestamp;
 import org.tiny.datawrapper.Table;
 
 /**
@@ -23,9 +24,20 @@ public abstract class RecordEditor extends DataTableInfoPanel {
 
     private ListView<Column> controls;
     private ArrayList<DataControl> dataControls = new ArrayList<>();
+    
+    /**
+     * 複製
+     */
+    private AjaxButton clone;
 
+    /**
+     * 更新
+     */
     private AjaxButton submit;
 
+    /**
+     * キャンセル
+     */
     private AjaxButton cancel;
 
     private Form editorForm;
@@ -40,6 +52,8 @@ public abstract class RecordEditor extends DataTableInfoPanel {
      * @param targetTable
      */
     public void buildForm(Table targetTable) {
+        
+        this.beforeConstructView(targetTable);
 
         this.setTable(targetTable);
         this.dataControls.clear();
@@ -55,6 +69,7 @@ public abstract class RecordEditor extends DataTableInfoPanel {
                 DataControl dcol = new DataControl("dataControl", col);
                 item.add(dcol);
                 RecordEditor.this.dataControls.add(dcol);
+                RecordEditor.this.afterConstructView(targetTable);
             }
 
         };
@@ -77,6 +92,8 @@ public abstract class RecordEditor extends DataTableInfoPanel {
             }
         };
         this.editorForm.add(this.cancel);
+        
+        this.afterConstructView(targetTable);
     }
 
     /**
@@ -113,7 +130,7 @@ public abstract class RecordEditor extends DataTableInfoPanel {
         for (DataControl control : controls) {
             String data = "";
             Column col = control.getColumn();
-            if (col.getSplitedName().equals("LAST_ACCESS")) {
+            if (col.getClass().getName().equals(CurrentTimestamp.class.getName())) {
                 control.setValue(
                         LocalDateTime.now().format(
                                 DateTimeFormatter.ISO_LOCAL_DATE_TIME
@@ -143,4 +160,15 @@ public abstract class RecordEditor extends DataTableInfoPanel {
      * @param target
      */
     public abstract void onCancel(AjaxRequestTarget target, Table targetTable);
+    
+    public DataControl getDataControl(String columnName){
+        DataControl rvalue = null;
+        for(DataControl control: this.dataControls){
+            if(control.getColumn().getSplitedName().equals(columnName)){
+                rvalue = control;
+                break;
+            }
+        }
+        return rvalue;
+    }
 }

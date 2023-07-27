@@ -83,5 +83,9 @@ public class DataControl extends Panel {
     public String getValue() {
         return this.fieldData.getObject();
     }
+    
+    public Component getVisibleComponent(){
+        return this.visibleComponent;
+    }
 
 }

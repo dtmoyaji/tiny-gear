@@ -15,8 +15,12 @@
  */
 package org.tiny.gear.panels;
 
+import java.util.List;
 import org.apache.wicket.AttributeModifier;
 import org.apache.wicket.ajax.AjaxRequestTarget;
+import org.apache.wicket.ajax.attributes.AjaxCallListener;
+import org.apache.wicket.ajax.attributes.AjaxRequestAttributes;
+import org.apache.wicket.ajax.attributes.IAjaxCallListener;
 import org.apache.wicket.ajax.markup.html.AjaxLink;
 import org.apache.wicket.authroles.authorization.strategies.role.Roles;
 import org.apache.wicket.markup.html.basic.Label;
@@ -67,17 +71,33 @@ public abstract class NavigationPanel extends Panel {
                 AbstractScene scene = item.getModelObject();
                 AjaxLink link = new AjaxLink<>("menuItem") {
                     @Override
-                    public void onClick(AjaxRequestTarget art) {
+                    public void onClick(AjaxRequestTarget target) {
+
+                        target.add(this);
+
+                        // 既定のビューに遷移
                         NavigationPanel.this.onMenuItemClick(
-                                art,
+                                target,
                                 scene.getSceneKey(),
                                 scene.getDefaultPanel().getClass().getName()
                         );
                     }
+
+                    @Override
+                    protected void updateAjaxAttributes(AjaxRequestAttributes attributes) {
+                        super.updateAjaxAttributes(attributes);
+                        NavigationPanel.this.addReloadEvent(attributes);
+                    }
                 };
-                link.add(new Label("menuCaption", Model.of(scene.getSceneName())));
+
+                link.setOutputMarkupId(
+                        true);
+
+                link.add(
+                        new Label("menuCaption", Model.of(scene.getSceneName())));
 
                 item.add(link);
+
                 if (!scene.isAllowed(currentRoles)) {
                     item.setVisible(false);
                 }
@@ -98,6 +118,12 @@ public abstract class NavigationPanel extends Panel {
                                         itemObject.getViewClassName()
                                 );
                             }
+
+                            @Override
+                            protected void updateAjaxAttributes(AjaxRequestAttributes attributes) {
+                                super.updateAjaxAttributes(attributes);
+                                NavigationPanel.this.addReloadEvent(attributes);
+                            }
                         };
                         link.add(new Label("subMenuCaption", Model.of(itemObject.getText())));
                         item.add(link);
@@ -113,9 +139,11 @@ public abstract class NavigationPanel extends Panel {
                     }
 
                 };
+
                 item.add(submenu);
 
-                if (!currentScene.getClass().getName().equals(scene.getClass().getName())) {
+                if (!currentScene.getClass()
+                        .getName().equals(scene.getClass().getName())) {
                     submenu.setVisible(false);
                 } else {
                     item.add(AttributeModifier.append("current", "true"));
@@ -123,13 +151,25 @@ public abstract class NavigationPanel extends Panel {
             }
         };
 
-        this.add(this.scenes);
+        this.add(
+                this.scenes);
 
     }
 
     public final void resolve(Index index) {
         this.currentPanel = index.getCurrentPanel();
         this.currentScene = index.getCurrentScene();
+    }
+
+    public void addReloadEvent(AjaxRequestAttributes attributes) {
+        AjaxCallListener listener = new AjaxCallListener();
+        listener.onBeforeSend("document.getElementById('loading').style.visibility = 'visible';")
+                .onComplete("document.getElementById('loading').style.visibility = 'hidden';");
+
+        // AjaxCallListenerのリストを取得
+        List<IAjaxCallListener> listeners = attributes.getAjaxCallListeners();
+        // AjaxCallListenerのインスタンスをリストに追加
+        listeners.add(listener);
     }
 
     public abstract void onMenuItemClick(AjaxRequestTarget target, String sceneName, String panelName);

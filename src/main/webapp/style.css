@@ -11,10 +11,14 @@
     --sidebar-bg-color: #343131;
     --sidebar-selected-menu-bg-color: #fcfcfc;
     --menu-text-color: #404040;
+    --reload-backcolor: rgba(255,255,255,0.7);
 
     /* アイコンサイズ */
     --header-icon-size: 42px;
     --header-height: calc(var(--header-icon-size) + 2px);
+    
+    /* アイコン定義 */
+    --reload-gif: url(img/477-32.gif);
 }
 
 html{
@@ -42,6 +46,20 @@ div{/*
 table{
     width: 100%;
     overflow: scroll;
+}
+
+#loading{
+    z-index: 10000; /* 一番手前 */
+    position: absolute;
+    left: 0;
+    right: 0;
+    top: 0;
+    bottom: 0;
+    background-image: var(--reload-gif);
+    background-repeat: no-repeat;
+    background-position: center;
+    background-color: var(--reload-backcolor);
+    visibility: hidden;
 }
 
 .eyecache .row{
@@ -485,10 +503,34 @@ p{
 
 .crud.recordeditor .submitbuttons{
     text-align: center;
+    width: 100%;
+    padding-left: 20%;
+    padding-right: 20%;
+}
+
+.crud.recordeditor .submitbuttons div{
+    display: inline-block;
+    position: relative;
+}
+
+.crud.recordeditor .submitbuttons .buttons_left{
+    text-align: left;
+    width: 50%;
+    float: left;
+}
+
+.crud.recordeditor .submitbuttons .buttons_right{
+    text-align: right;
+    width: 50%;
+    float: right;
 }
 
 .crud.recordeditor .submitbuttons input[type='button']{
-    padding: 3px;
+    padding: 4px 12px;
+    color: var(--caption-text-color);
+    background-color: var(--caption-button-color);
+    border-radius: 3px;
+    border-style:none;
 }
 
 .crud.tableview .rows:hover{
