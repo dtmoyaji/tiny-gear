@@ -24,7 +24,12 @@ public abstract class RecordEditor extends DataTableInfoPanel {
 
     private ListView<Column> controls;
     private ArrayList<DataControl> dataControls = new ArrayList<>();
-    
+
+    /**
+     * 新規
+     */
+    private AjaxButton btnNew;
+
     /**
      * 複製
      */
@@ -52,7 +57,7 @@ public abstract class RecordEditor extends DataTableInfoPanel {
      * @param targetTable
      */
     public void buildForm(Table targetTable) {
-        
+
         this.beforeConstructView(targetTable);
 
         this.setTable(targetTable);
@@ -75,6 +80,22 @@ public abstract class RecordEditor extends DataTableInfoPanel {
         };
         this.editorForm.add(this.controls);
 
+        this.btnNew = new AjaxButton("btnNew") {
+            @Override
+            protected void onSubmit(AjaxRequestTarget target) {
+                RecordEditor.this.onBtnNew(target, targetTable);
+            }
+        };
+        this.editorForm.add(this.btnNew);
+
+        this.clone = new AjaxButton("clone") {
+            @Override
+            protected void onSubmit(AjaxRequestTarget target) {
+                RecordEditor.this.onClone(target, targetTable);
+            }
+        };
+        this.editorForm.add(this.clone);
+
         // 登録ボタン
         this.submit = new AjaxButton("submit") {
             @Override
@@ -92,7 +113,7 @@ public abstract class RecordEditor extends DataTableInfoPanel {
             }
         };
         this.editorForm.add(this.cancel);
-        
+
         this.afterConstructView(targetTable);
     }
 
@@ -160,15 +181,43 @@ public abstract class RecordEditor extends DataTableInfoPanel {
      * @param target
      */
     public abstract void onCancel(AjaxRequestTarget target, Table targetTable);
+
+    /**
+     * 新規ボタンが押された。 フォームのデータを全部空にする。 defaultValueを持つフィールドにはDefault値を入れる。
+     *
+     * @param target
+     * @param targetTable
+     */
+    private void onBtnNew(AjaxRequestTarget target, Table targetTable) {
+        this.targetTable.clearValues();
+        target.add(this);
+    }
     
-    public DataControl getDataControl(String columnName){
+
+    /**
+     * 複製ボタンが押された。 primaryKeyだけ空欄にする。
+     *
+     * @param target
+     * @param targetTable
+     */
+    private void onClone(AjaxRequestTarget target, Table targetTable) {
+        for(Column column: this.targetTable){
+            if(column.isPrimaryKey()){
+                column.clearValue();
+            }
+        }
+        target.add(this);
+    }
+
+    public DataControl getDataControl(String columnName) {
         DataControl rvalue = null;
-        for(DataControl control: this.dataControls){
-            if(control.getColumn().getSplitedName().equals(columnName)){
+        for (DataControl control : this.dataControls) {
+            if (control.getColumn().getSplitedName().equals(columnName)) {
                 rvalue = control;
                 break;
             }
         }
         return rvalue;
     }
+
 }
