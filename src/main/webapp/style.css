@@ -440,6 +440,7 @@ button{
     min-width: 20%;
 }
 
+
 .wicket-onelogin button{
     font-size: 0.7em;
 }
@@ -475,6 +476,9 @@ p{
     width: 100%;
 }
 
+.crud.recordeditor .row div div{
+    width: inherit;
+}
 .crud.recordeditor .row div wicket{
     display: inherit;
     width: 100%;
@@ -533,6 +537,29 @@ p{
     border-style:none;
 }
 
+.curd.recordeditor .row div div{
+    width: inherit;
+}
+
+.curd.tableview .rows{
+    border-collapse: collapse;
+}
+
 .crud.tableview .rows:hover{
     background-color: silver;
 }
+
+.crud.tableview .column {
+    border-style: solid;
+    border-width: 1px;
+    border-color: silver;
+    border-collapse: collapse;
+    border-radius: 2px;
+}
+
+.crud.tableview .column span{
+    display: inline-block;
+    width: 100%;
+    padding: 0.1em 1em;
+}
+

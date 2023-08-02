@@ -73,6 +73,11 @@
             <artifactId>postgresql</artifactId>
             <version>42.2.14</version>
         </dependency>
+        <dependency>
+            <groupId>org.wicketstuff</groupId>
+            <artifactId>wicketstuff-tinymce4</artifactId>
+            <version>8.6.0</version>
+        </dependency>
     </dependencies>
     
 

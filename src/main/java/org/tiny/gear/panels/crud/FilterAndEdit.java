@@ -2,6 +2,7 @@ package org.tiny.gear.panels.crud;
 
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.util.ArrayList;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import org.apache.wicket.ajax.AjaxRequestTarget;
@@ -49,6 +50,11 @@ abstract public class FilterAndEdit extends Panel {
         this.add(this.dataTableView);
 
         this.recordEditor = new RecordEditor("recordEditor") {
+            
+            @Override
+            public boolean beforeSubmit(AjaxRequestTarget target, Table targetTable, ArrayList<DataControl> dataControls){
+                return FilterAndEdit.this.beforeSubmit(target, targetTable, dataControls);
+            }
 
             @Override
             public void onSubmit(AjaxRequestTarget target, Table targetTable) {
@@ -60,7 +66,12 @@ abstract public class FilterAndEdit extends Panel {
             }
 
             @Override
-            public void onCancel(AjaxRequestTarget target, Table targetTable) {
+            public void onDelete(AjaxRequestTarget target, Table targetTable) {
+                super.onDelete(target, targetTable);
+                FilterAndEdit.this.reloadRecordEditor(target);
+                DataTableView dataTableView = FilterAndEdit.this.dataTableView;
+                dataTableView.redraw(dataTableView.getConditions());
+                target.add(dataTableView);
             }
 
             @Override
@@ -153,5 +164,13 @@ abstract public class FilterAndEdit extends Panel {
      * @param recordEditor
      */
     public abstract void afterConstructRecordEditor(Table myTable, RecordEditor recordEditor);
+
+    /**
+     * 更新ボタンを押した直後の処理（確認などに使う）
+     * @param target
+     * @param targetTable
+     * @return 
+     */
+    public abstract boolean beforeSubmit(AjaxRequestTarget target, Table targetTable, ArrayList<DataControl> dataControls);
 
 }

@@ -10,6 +10,7 @@ import org.apache.wicket.markup.html.form.Form;
 import org.apache.wicket.markup.html.list.ListItem;
 import org.apache.wicket.markup.html.list.ListView;
 import org.tiny.datawrapper.Column;
+import org.tiny.datawrapper.Condition;
 import org.tiny.datawrapper.CurrentTimestamp;
 import org.tiny.datawrapper.Table;
 
@@ -43,7 +44,7 @@ public abstract class RecordEditor extends DataTableInfoPanel {
     /**
      * キャンセル
      */
-    private AjaxButton cancel;
+    private AjaxButton delete;
 
     private Form editorForm;
 
@@ -105,14 +106,17 @@ public abstract class RecordEditor extends DataTableInfoPanel {
         };
         this.editorForm.add(this.submit);
 
-        // キャンセルボタン
-        this.cancel = new AjaxButton("cancel") {
+        // 削除ボタン
+        this.delete = new AjaxButton("delete") {
             @Override
             protected void onSubmit(AjaxRequestTarget target) {
-                RecordEditor.this.onCancel(target, targetTable);
+                RecordEditor.this.onDelete(target, targetTable);
             }
         };
-        this.editorForm.add(this.cancel);
+        if (!this.targetTable.isAllowDeleteRow()) {
+            this.delete.setVisible(false);
+        }
+        this.editorForm.add(this.delete);
 
         this.afterConstructView(targetTable);
     }
@@ -123,6 +127,7 @@ public abstract class RecordEditor extends DataTableInfoPanel {
      * @param rs
      */
     public void setValues(ResultSet rs) {
+        this.dataControls.clear();
         for (Column col : this.targetTable) {
             col.setValue(col.of(rs));
         }
@@ -145,34 +150,46 @@ public abstract class RecordEditor extends DataTableInfoPanel {
      * @param target
      */
     public void onSubmit(AjaxRequestTarget target, Table targetTable) {
-        ArrayList<DataControl> controls = this.getDataControls();
-        targetTable.clearValues();
-        boolean insert = false;
-        for (DataControl control : controls) {
-            String data = "";
-            Column col = control.getColumn();
-            if (col.getClass().getName().equals(CurrentTimestamp.class.getName())) {
-                control.setValue(
-                        LocalDateTime.now().format(
-                                DateTimeFormatter.ISO_LOCAL_DATE_TIME
-                        )
-                );
+        if (this.beforeSubmit(target, targetTable, this.getDataControls())) {
+            ArrayList<DataControl> controls = this.getDataControls();
+            targetTable.clearValues();
+            boolean insert = false;
+            for (DataControl control : controls) {
+                String data = "";
+                Column col = control.getColumn();
+                if (col.getClass().getName().equals(CurrentTimestamp.class.getName())) {
+                    control.setValue(
+                            LocalDateTime.now().format(
+                                    DateTimeFormatter.ISO_LOCAL_DATE_TIME
+                            )
+                    );
+                }
+                if (col.isPrimaryKey() && col.getValue() == null) { // 主キーに値がないときは、インサート文
+                    insert = true;
+                    targetTable.get(control.getColumn().getName()).setValue(null);
+                } else {
+                    data = control.getValue();
+                    targetTable.get(control.getColumn().getName()).setValue(data);
+                }
             }
-            if (col.isPrimaryKey() && col.getValue() == null) { // 主キーに値がないときは、インサート文
-                insert = true;
-                targetTable.get(control.getColumn().getName()).setValue(null);
+            targetTable.setDebugMode(true);
+            if (insert) {
+                targetTable.insert();
             } else {
-                data = control.getValue();
-                targetTable.get(control.getColumn().getName()).setValue(data);
+                targetTable.merge();
             }
+            target.add(this);
         }
-        targetTable.setDebugMode(true);
-        if (insert) {
-            targetTable.insert();
-        } else {
-            targetTable.merge();
-        }
-        target.add(this);
+    }
+
+    /**
+     * 更新前のチェックなどに使用する。
+     * @param target
+     * @param targetTable
+     * @return 
+     */
+    public boolean beforeSubmit(AjaxRequestTarget target, Table targetTable, ArrayList<DataControl> dataControls1) {
+        return true;
     }
 
     /**
@@ -180,7 +197,20 @@ public abstract class RecordEditor extends DataTableInfoPanel {
      *
      * @param target
      */
-    public abstract void onCancel(AjaxRequestTarget target, Table targetTable);
+    public void onDelete(AjaxRequestTarget target, Table targetTable) {
+        ArrayList<DataControl> controls = this.getDataControls();
+        ArrayList<Condition> conds = new ArrayList<>();
+        for (DataControl cntl : controls) {
+            if (targetTable.get(cntl.getColumn().getName()).isPrimaryKey()) {
+                System.out.println(cntl.getColumn().getName() + " " + cntl.getValue());
+                conds.add(cntl.getColumn().sameValueOf(cntl.getValue()));
+            }
+        }
+        Condition[] cnd = new Condition[conds.size()];
+        targetTable.delete(conds.toArray(cnd));
+        this.targetTable.clearValues();
+        target.add(this);
+    }
 
     /**
      * 新規ボタンが押された。 フォームのデータを全部空にする。 defaultValueを持つフィールドにはDefault値を入れる。
@@ -192,7 +222,6 @@ public abstract class RecordEditor extends DataTableInfoPanel {
         this.targetTable.clearValues();
         target.add(this);
     }
-    
 
     /**
      * 複製ボタンが押された。 primaryKeyだけ空欄にする。
@@ -201,8 +230,8 @@ public abstract class RecordEditor extends DataTableInfoPanel {
      * @param targetTable
      */
     private void onClone(AjaxRequestTarget target, Table targetTable) {
-        for(Column column: this.targetTable){
-            if(column.isPrimaryKey()){
+        for (Column column : this.targetTable) {
+            if (column.isPrimaryKey()) {
                 column.clearValue();
             }
         }
@@ -218,6 +247,13 @@ public abstract class RecordEditor extends DataTableInfoPanel {
             }
         }
         return rvalue;
+    }
+
+    @Override
+    protected void onAfterRender() {
+        super.onAfterRender();
+        System.out.println("ONAFTER_RENDER");
+
     }
 
 }

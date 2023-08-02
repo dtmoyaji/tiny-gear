@@ -15,7 +15,10 @@
  */
 package org.tiny.gear.webdb;
 
+import groovy.lang.GroovyShell;
+import java.util.ArrayList;
 import org.apache.wicket.AttributeModifier;
+import org.apache.wicket.ajax.AjaxRequestTarget;
 import org.apache.wicket.model.Model;
 import org.tiny.datawrapper.Column;
 import org.tiny.datawrapper.IJdbcSupplier;
@@ -39,6 +42,7 @@ public class CustomTableEditView extends AbstractView {
     public CustomTableEditView(IJdbcSupplier supplier) {
         super(supplier);
         this.customTable = new CustomTable();
+        this.customTable.setAllowDeleteRow(true); // TODO: あとでfalseに変える。
         this.customTable.alterOrCreateTable(this.supplier.getJdbc());
 
         this.filterAndEdit = new FilterAndEdit("customTableEditor", this.customTable, this.supplier.getJdbc()) {
@@ -60,8 +64,25 @@ public class CustomTableEditView extends AbstractView {
             public void afterConstructRecordEditor(Table myTable, RecordEditor recordEditor) {
                 DataControl control = recordEditor.getDataControl(customTable.TableDef.getSplitedName());
                 if (control != null) {
-                    control.getVisibleComponent().add(new AttributeModifier("style",Model.of("height: 12em;")));
+                    control.getVisibleComponent().add(new AttributeModifier("style", Model.of("height: 12em;")));
                 }
+            }
+
+            @Override
+            public boolean beforeSubmit(AjaxRequestTarget target, Table targetTable, ArrayList<DataControl> dataControls) {
+                boolean rvalue = false;
+                for(DataControl control: dataControls){
+                    if(control.getColumn().getName().equals(customTable.TableDef.getName())){
+                        String def = control.getValue(DataControl.UNESCAPE);
+                        GroovyShell shell = new GroovyShell();
+                        Object obj = shell.evaluate(def);
+                        if(obj instanceof Table){
+                            ((Table)obj).alterOrCreateTable(CustomTableEditView.this.supplier.getJdbc());
+                        }
+                        rvalue = true;
+                    }
+                }
+                return rvalue;
             }
         };
         this.add(this.filterAndEdit);

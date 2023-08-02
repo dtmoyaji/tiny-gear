@@ -14,6 +14,9 @@ import org.tiny.datawrapper.Column;
  * @author bythe
  */
 public class DataControl extends Panel {
+    
+    public static final int ESCAPE = 0;
+    public static final int UNESCAPE = 1;
 
     private Label columnCaption;
 
@@ -32,6 +35,7 @@ public class DataControl extends Panel {
         super(id);
 
         this.targetColumn = column;
+        //System.out.println("SERVER_TYPE: " + column.getTable().getServerType());
 
         String caption = this.targetColumn.getTable().getColumnLogicalName(this.targetColumn);
         this.columnCaption = new Label("columnCaption", Model.of(caption));
@@ -47,6 +51,7 @@ public class DataControl extends Panel {
         this.columnValueTextField = new TextField("columnValueTextField", this.fieldData);
         this.add(this.columnValueTextField);
         this.columnValueTextArea = new TextArea("columnValueTextArea", this.fieldData);
+        this.columnValueTextArea.setOutputMarkupId(true);
         this.add(this.columnValueTextArea);
 
         // 一旦全部不可視に設定する。
@@ -59,17 +64,17 @@ public class DataControl extends Panel {
         switch (this.targetColumn.getVisibleType()) {
             case Column.VISIBLE_TYPE_LABEL:
                 this.visibleComponent = this.columnValueLabel;
-                this.columnValueLabel.setVisible(true);
                 break;
             case Column.VISIBLE_TYPE_TEXT:
                 this.visibleComponent = this.columnValueTextField;
-                this.columnValueTextField.setVisible(true);
                 break;
             case Column.VISIBLE_TYPE_TEXTAREA:
                 this.visibleComponent = this.columnValueTextArea;
-                this.columnValueTextArea.setVisible(true);
                 break;
         }
+        this.visibleComponent.setVisible(true);
+        this.visibleComponent.setOutputMarkupId(true);
+        System.out.println("DATA CONTROL");
     }
 
     public Column getColumn() {
@@ -79,12 +84,29 @@ public class DataControl extends Panel {
     public void setValue(String value) {
         this.visibleComponent.setDefaultModelObject(value);
     }
+    
+    public String getValue(int escaping){
+        String rvalue = null;
+        switch(escaping){
+            case DataControl.ESCAPE:
+                this.visibleComponent.setEscapeModelStrings(true);
+                rvalue = this.visibleComponent.getDefaultModelObjectAsString();
+                break;
+            case DataControl.UNESCAPE:
+                this.visibleComponent.setEscapeModelStrings(false);
+                rvalue = this.visibleComponent.getDefaultModelObjectAsString();
+                break;
+        }
+        this.visibleComponent.setEscapeModelStrings(false);
+        return rvalue;
+    }
 
     public String getValue() {
-        return this.fieldData.getObject();
+        return this.getValue(DataControl.UNESCAPE);
     }
     
-    public Component getVisibleComponent(){
+
+    public Component getVisibleComponent() {
         return this.visibleComponent;
     }
 

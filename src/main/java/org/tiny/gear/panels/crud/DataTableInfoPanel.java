@@ -37,6 +37,9 @@ public abstract class DataTableInfoPanel extends Panel {
             Table clone = (Table) constructor.newInstance();
 
             this.targetTable = clone;
+            this.targetTable.setAllowDeleteRow(target.isAllowDeleteRow());
+            this.targetTable.setDebugMode(target.getDebugMode());
+            this.targetTable.setJdbc(target.getJdbc());
             this.beforeConstructView(this.targetTable);
         } catch (SecurityException | IllegalArgumentException | NoSuchMethodException | InstantiationException | IllegalAccessException | InvocationTargetException  ex) {
             Logger.getLogger(DataTableInfoPanel.class.getName()).log(Level.SEVERE, null, ex);
