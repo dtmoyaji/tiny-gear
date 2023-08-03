@@ -17,14 +17,14 @@ import org.tiny.datawrapper.Table;
 abstract public class FilterAndEdit extends Panel {
     
     private KeyValueList currentKeyValueList;
-
+    
     private DataTableView dataTableView;
 
     private RecordEditor recordEditor;
 
     public FilterAndEdit(String id, Table table, IJdbcSupplier jdbcSupplier) {
         super(id);
-
+        
         this.dataTableView = new DataTableView("dataTableView", table, jdbcSupplier) {
             @Override
             public Class<? extends Panel> getExtraColumn() {
@@ -90,6 +90,7 @@ abstract public class FilterAndEdit extends Panel {
         this.add(this.recordEditor);
         this.recordEditor.setOutputMarkupId(true);
         this.recordEditor.buildForm(table);
+        
 
     }
     

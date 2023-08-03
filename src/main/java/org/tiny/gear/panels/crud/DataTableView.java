@@ -60,6 +60,8 @@ public abstract class DataTableView extends DataTableInfoPanel {
     private Label lblCurPageNum;
     private Label lblPageCount;
 
+    private CsvTransportPanel csvTransportPanel;
+
     public DataTableView(String id, Table table, IJdbcSupplier jdbcSupplier) {
         super(id);
 
@@ -173,6 +175,20 @@ public abstract class DataTableView extends DataTableInfoPanel {
         this.tableHeader.setOutputMarkupId(true);
         this.curdTableView.add(this.tableHeader);
 
+        this.csvTransportPanel = new CsvTransportPanel("csvTransportPanel") {
+            @Override
+            public void beforeConstructView(Table myTable) {
+            }
+
+            @Override
+            public void afterConstructView(Table myTable) {
+            }
+
+        };
+        this.csvTransportPanel.setTable(table);
+        this.csvTransportPanel.setOutputMarkupId(true);
+        this.curdTableView.add(this.csvTransportPanel);
+
         // データ取得
         this.redraw();
 
@@ -235,7 +251,7 @@ public abstract class DataTableView extends DataTableInfoPanel {
         } catch (TinyDatabaseException ex) {
             Logger.getLogger(DataTableView.class.getName()).log(Level.SEVERE, null, ex);
         }
-        
+
         this.afterConstructView(targetTable);
         return rvalue;
     }
