@@ -252,8 +252,6 @@ public abstract class RecordEditor extends DataTableInfoPanel {
     @Override
     protected void onAfterRender() {
         super.onAfterRender();
-        System.out.println("ONAFTER_RENDER");
-
     }
 
 }

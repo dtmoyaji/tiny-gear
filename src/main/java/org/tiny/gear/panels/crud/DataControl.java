@@ -74,7 +74,6 @@ public class DataControl extends Panel {
         }
         this.visibleComponent.setVisible(true);
         this.visibleComponent.setOutputMarkupId(true);
-        System.out.println("DATA CONTROL");
     }
 
     public Column getColumn() {
