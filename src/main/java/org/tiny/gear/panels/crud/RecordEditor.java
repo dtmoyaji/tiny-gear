@@ -177,9 +177,9 @@ public abstract class RecordEditor extends DataTableInfoPanel {
                     targetTable.get(control.getColumn().getName()).setValue(data);
                 }
             }
-            // targetTable.setDebugMode(true);
+            
+            targetTable.setDebugMode(true);
             if (insert) {
-                targetTable.setDebugMode(true);
                 if(!targetTable.insert()){
                     System.out.println("INSERT ERROR");
                 }

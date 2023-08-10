@@ -1,6 +1,5 @@
 package org.tiny.gear.scenes.webdb;
 
-import groovy.lang.GroovyShell;
 import java.util.ArrayList;
 import org.apache.wicket.AttributeModifier;
 import org.apache.wicket.ajax.AjaxRequestTarget;
@@ -63,19 +62,18 @@ public class CustomTableEditView extends AbstractView {
 
             @Override
             public boolean beforeSubmit(AjaxRequestTarget target, Table targetTable, ArrayList<DataControl> dataControls) {
-                boolean rvalue = false;
+                String tableName = "";
+                String tableDef = "";
                 for(DataControl control: dataControls){
                     if(control.getColumn().getName().equals(customTable.TableDef.getName())){
-                        String def = control.getValue(DataControl.UNESCAPE);
-                        GroovyShell shell = new GroovyShell();
-                        Object obj = shell.evaluate(def);
-                        if(obj instanceof Table){
-                            ((Table)obj).alterOrCreateTable(CustomTableEditView.this.app.getJdbc());
-                        }
-                        rvalue = true;
+                        tableDef = control.getValue(DataControl.UNESCAPE);
+                    }
+                    if(control.getColumn().getName().equals(customTable.TableName.getName())){
+                        tableName = control.getValue(DataControl.UNESCAPE);
                     }
                 }
-                return rvalue;
+                GroovyTableBuilder gtb = new GroovyTableBuilder(getGearApplication());
+                return (gtb.createTable(tableName, tableDef) instanceof Table);
             }
         };
         this.add(this.filterAndEdit);

@@ -2,7 +2,6 @@ package org.tiny.gear.scenes.webdb;
 
 import org.tiny.datawrapper.Column;
 import org.tiny.datawrapper.CurrentTimestamp;
-import org.tiny.datawrapper.IncrementalKey;
 import org.tiny.datawrapper.ShortFlagZero;
 import org.tiny.datawrapper.Table;
 import org.tiny.datawrapper.annotations.LogicalName;
@@ -14,9 +13,6 @@ import org.tiny.datawrapper.annotations.LogicalName;
  */
 @LogicalName("カスタムテーブル")
 public class CustomTable extends Table {
-
-    @LogicalName("テーブルID")
-    public IncrementalKey TableId;
 
     @LogicalName("テーブル名")
     public Column<String> TableName;
@@ -42,9 +38,8 @@ public class CustomTable extends Table {
     @Override
     public void defineColumns() {
         
-        this.TableId.setVisibleType(Column.VISIBLE_TYPE_LABEL);
-
-        this.TableName.setAllowNull(false).setLength(Column.SIZE_256);
+        this.TableName.setAllowNull(false).setLength(Column.SIZE_256)
+                .setPrimaryKey(true);
         
         this.CustomTable.setDefault("0")
                 .setAllowNull(false);
