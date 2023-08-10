@@ -37,7 +37,7 @@ public class ConnectionView extends AbstractView {
     
     @Override
     public void redraw(){
-        this.removeAll();
+        super.redraw();
 
         this.jdbcPanel = new PropertyPanel("jdbcProperties") {
             public static final long serialVersionUID = -1L;

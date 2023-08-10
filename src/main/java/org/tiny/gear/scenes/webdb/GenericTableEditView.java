@@ -41,10 +41,13 @@ public class GenericTableEditView extends AbstractView {
 
     public GenericTableEditView(GearApplication app) {
         super(app);
+
     }
     
     @Override
     public void redraw(){
+        super.redraw();
+
         Table table = this.getPrimaryTargetTable();
 
         this.systemVariables = (SystemVariables) this.getTable(SystemVariables.class);

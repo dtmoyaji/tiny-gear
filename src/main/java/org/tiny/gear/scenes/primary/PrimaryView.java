@@ -37,6 +37,7 @@ public class PrimaryView extends AbstractView {
 
     @Override
     public void redraw() {
+        super.redraw();
     }
 
 }

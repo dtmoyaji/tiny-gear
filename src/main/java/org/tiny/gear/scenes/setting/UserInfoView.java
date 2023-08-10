@@ -32,7 +32,7 @@ public class UserInfoView extends AbstractView {
     
     @Override
     public void redraw(){
-        this.removeAll();
+        super.redraw();
 
         this.samlNameId = new Label("samlNameId", Model.of(""));
         this.add(this.samlNameId);

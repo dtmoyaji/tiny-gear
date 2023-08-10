@@ -30,7 +30,7 @@ public class CustomTableEditView extends AbstractView {
     
     @Override
     public void redraw(){
-        this.removeAll();
+        super.redraw();
         
         this.customTable = (CustomTable) this.getTable(CustomTable.class);
         this.customTable.setAllowDeleteRow(true); // TODO: あとでfalseに変える。

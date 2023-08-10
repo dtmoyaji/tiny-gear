@@ -35,7 +35,7 @@ public abstract class AbstractView extends Panel{
 
     public static final long serialVersionUID = -1L;
 
-    private final Label title;
+    private Label title;
     
     protected GearApplication app;
     
@@ -44,10 +44,6 @@ public abstract class AbstractView extends Panel{
 
     public AbstractView(GearApplication app) {
         super("scenePanel");
-        
-        this.app = app;
-        this.title = new Label("panelTitle", Model.of(this.getTitle()));
-        this.add(this.title);
         
         TablesForAbstractView tfav = (TablesForAbstractView) this.getTable(TablesForAbstractView.class);
         
@@ -88,7 +84,13 @@ public abstract class AbstractView extends Panel{
 
     public abstract String getTitle();
     
-    public abstract void redraw();
+    public void redraw(){
+        this.removeAll();
+        
+        this.app = app;
+        this.title = new Label("panelTitle", Model.of(this.getTitle()));
+        this.add(this.title);
+    }
     
     public GearApplication getGearApplication(){
         return (GearApplication) this.getApplication();

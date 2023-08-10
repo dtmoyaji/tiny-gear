@@ -30,6 +30,7 @@ public class TraderEditView extends AbstractView{
 
     @Override
     public void redraw() {
+        super.redraw();
     }
 
     @Override

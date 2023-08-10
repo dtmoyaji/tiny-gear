@@ -32,7 +32,7 @@ public class SimpleDevelopmentView extends AbstractView {
     }
     
     public void redraw(){
-        this.removeAll();
+        super.redraw();
         this.groovyExec = new GroovyEditor("groovyExecutor");
         this.add(this.groovyExec);
     }
