@@ -563,3 +563,28 @@ p{
     padding: 0.1em 1em;
 }
 
+.crudTableInfoBar{
+    display: block;
+}
+
+.crudTableInfoBar .captionItem{
+    display: inline-block;
+}
+
+.crudTableInfoBar .captionItem.caption{
+    width: 75%;
+}
+
+.crudTableInfoBar .captionItem.controller{
+    width: 24%;
+    text-align: right;
+}
+
+.crudTableInfoBar .captionItem .panelButton{
+    background-color: var(--caption-button-color);
+    border-width: 0;
+    padding: 0.2em 0.2em;
+    border-radius: 3px;
+    color: var(--caption-text-color);
+}
+

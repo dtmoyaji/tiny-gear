@@ -17,7 +17,6 @@ import org.apache.wicket.model.Model;
 import org.tiny.datawrapper.Column;
 import org.tiny.datawrapper.Condition;
 import org.tiny.datawrapper.ConditionForRegion;
-import org.tiny.datawrapper.IJdbcSupplier;
 import org.tiny.datawrapper.Table;
 import org.tiny.datawrapper.TinyDatabaseException;
 
@@ -35,9 +34,6 @@ public abstract class DataTableView extends DataTableInfoPanel {
     private Label lblTableName;
 
     private Label lblRecordCount;
-
-    //private Table targetTable;
-    private IJdbcSupplier jdbcSupplier;
 
     private int rowsPerPage = 2; // ページに表示する最大行
 
@@ -60,15 +56,13 @@ public abstract class DataTableView extends DataTableInfoPanel {
     private Label lblCurPageNum;
     private Label lblPageCount;
 
-    private CsvTransportPanel csvTransportPanel;
+    private CsvTransportPanel csvTransPortPanelPlaceHolder;
 
-    public DataTableView(String id, Table table, IJdbcSupplier jdbcSupplier) {
+    public DataTableView(String id, Table table) {
         super(id);
 
         // 初期化
         this.setTable(table);
-        this.jdbcSupplier = jdbcSupplier;
-        this.targetTable.alterOrCreateTable(this.jdbcSupplier.getJdbc());
         this.setOutputMarkupId(true);
 
         // 描画
@@ -175,7 +169,7 @@ public abstract class DataTableView extends DataTableInfoPanel {
         this.tableHeader.setOutputMarkupId(true);
         this.curdTableView.add(this.tableHeader);
 
-        this.csvTransportPanel = new CsvTransportPanel("csvTransportPanel") {
+        this.csvTransPortPanelPlaceHolder = new CsvTransportPanel("csvTransPortPanelPlaceHolder") {
             @Override
             public void beforeConstructView(Table myTable) {
             }
@@ -185,9 +179,9 @@ public abstract class DataTableView extends DataTableInfoPanel {
             }
 
         };
-        this.csvTransportPanel.setTable(table);
-        this.csvTransportPanel.setOutputMarkupId(true);
-        this.curdTableView.add(this.csvTransportPanel);
+        this.csvTransPortPanelPlaceHolder.setTable(table);
+        this.csvTransPortPanelPlaceHolder.setOutputMarkupId(true);
+        this.curdTableView.add(this.csvTransPortPanelPlaceHolder);
 
         // データ取得
         this.redraw();
@@ -316,6 +310,10 @@ public abstract class DataTableView extends DataTableInfoPanel {
 
     public Condition[] getConditions() {
         return this.conditions;
+    }
+    
+    public KeyValueList getFirstKeyValueList(){
+        return this.tableData.get(0);
     }
 
     public abstract Class<? extends Panel> getExtraColumn();

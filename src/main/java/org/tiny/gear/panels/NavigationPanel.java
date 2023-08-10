@@ -15,7 +15,12 @@
  */
 package org.tiny.gear.panels;
 
+import java.sql.ResultSet;
+import java.sql.SQLException;
+import java.util.ArrayList;
 import java.util.List;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import org.apache.wicket.AttributeModifier;
 import org.apache.wicket.ajax.AjaxRequestTarget;
 import org.apache.wicket.ajax.attributes.AjaxCallListener;
@@ -28,31 +33,41 @@ import org.apache.wicket.markup.html.list.ListItem;
 import org.apache.wicket.markup.html.list.ListView;
 import org.apache.wicket.markup.html.panel.Panel;
 import org.apache.wicket.model.Model;
+import org.tiny.gear.GearApplication;
 import org.tiny.gear.Index;
 import org.tiny.gear.RoleController;
 import org.tiny.gear.model.MenuItem;
 import org.tiny.gear.scenes.AbstractScene;
-import org.tiny.gear.view.AbstractView;
+import org.tiny.gear.scenes.AbstractView;
+import org.tiny.gear.scenes.SceneTable;
 import org.tiny.wicket.onelogin.SamlSession;
 
 /**
- *
- * @author bythe
+ * @author dtmoyaji
  */
 public abstract class NavigationPanel extends Panel {
 
     public static final long serialVersionUID = -1L;
 
     //private Label menuMoc;
-    private ListView<AbstractScene> scenes;
+    private ListView<String> scenes;
+
+    private SceneTable sceneTable;
 
     private Roles currentRoles;
 
     private AbstractView currentPanel;
     private AbstractScene currentScene;
 
+    private Index parent;
+
     public NavigationPanel(String id, Index index) {
         super(id);
+
+        this.sceneTable = (SceneTable) index.getGearApplication().getCachedTable(SceneTable.class);
+        this.sceneTable.setJdbc(index.getJdbc());
+
+        this.parent = index;
 
         SamlSession session = (SamlSession) this.getSession();
         this.currentRoles = session.getRoles();
@@ -62,24 +77,26 @@ public abstract class NavigationPanel extends Panel {
 
         this.resolve(index);
 
-        this.scenes = new ListView<AbstractScene>("menus", index.getScenes()) {
+        ArrayList<String> sceneNames = this.getScenes();
+        this.scenes = new ListView<String>("menus", sceneNames) {
             public static final long serialVersionUID = -1L;
 
             @Override
-            protected void populateItem(ListItem<AbstractScene> item) {
+            protected void populateItem(ListItem<String> item) {
 
-                AbstractScene scene = item.getModelObject();
+                String sceneClass = item.getModelObject();
+                AbstractScene scene = ((GearApplication) this.getApplication())
+                        .getCachedAbstractScene(sceneClass);
+
                 AjaxLink link = new AjaxLink<>("menuItem") {
                     @Override
                     public void onClick(AjaxRequestTarget target) {
-
                         target.add(this);
-
                         // 既定のビューに遷移
                         NavigationPanel.this.onMenuItemClick(
                                 target,
                                 scene.getSceneKey(),
-                                scene.getDefaultPanel().getClass().getName()
+                                scene.getDefaultViewClass().getCanonicalName()
                         );
                     }
 
@@ -89,13 +106,8 @@ public abstract class NavigationPanel extends Panel {
                         NavigationPanel.this.addReloadEvent(attributes);
                     }
                 };
-
-                link.setOutputMarkupId(
-                        true);
-
-                link.add(
-                        new Label("menuCaption", Model.of(scene.getSceneName())));
-
+                link.setOutputMarkupId(true);
+                link.add(new Label("menuCaption", Model.of(scene.getSceneName())));
                 item.add(link);
 
                 if (!scene.isAllowed(currentRoles)) {
@@ -137,7 +149,6 @@ public abstract class NavigationPanel extends Panel {
                             item.setVisible(false);
                         }
                     }
-
                 };
 
                 item.add(submenu);
@@ -151,13 +162,12 @@ public abstract class NavigationPanel extends Panel {
             }
         };
 
-        this.add(
-                this.scenes);
+        this.add(this.scenes);
 
     }
 
     public final void resolve(Index index) {
-        this.currentPanel = index.getCurrentPanel();
+        this.currentPanel = index.getCurrentView();
         this.currentScene = index.getCurrentScene();
     }
 
@@ -170,6 +180,22 @@ public abstract class NavigationPanel extends Panel {
         List<IAjaxCallListener> listeners = attributes.getAjaxCallListeners();
         // AjaxCallListenerのインスタンスをリストに追加
         listeners.add(listener);
+    }
+
+    public final ArrayList<String> getScenes() {
+        ArrayList<String> rvalue = new ArrayList<>();
+        try {
+            SceneTable sr = new SceneTable();
+            sr.setJdbc(this.parent.getJdbc());
+            try (ResultSet rs = sr.select(sr.Ordinal.asc())) {
+                while (rs.next()) {
+                    rvalue.add(sr.SceneClassName.of(rs));
+                }
+            }
+        } catch (SQLException ex) {
+            Logger.getLogger(NavigationPanel.class.getName()).log(Level.SEVERE, null, ex);
+        }
+        return rvalue;
     }
 
     public abstract void onMenuItemClick(AjaxRequestTarget target, String sceneName, String panelName);

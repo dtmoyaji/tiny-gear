@@ -2,12 +2,18 @@ package org.tiny.gear;
 
 import org.apache.wicket.authroles.authorization.strategies.role.Roles;
 
+
 /**
  * ロールを扱うクラス
  *
  * @author dtmoyaji
  */
 public class RoleController {
+    public static final String ROLE_ALL = "ALL";
+    public static final String ROLE_USER = "USER";
+    public static final String ROLE_ADMIN = "ADMIN";
+    public static final String ROLE_GUEST = "GUEST";
+    public static final String ROLE_DEVELOPER = "DEVELOPMENT";
 
     public static boolean isRolesMatched(Roles userRole, Roles menuRole) {
         boolean rvalue = false;
@@ -23,6 +29,28 @@ public class RoleController {
             }
         }
         return rvalue;
+    }
+    
+    public static Roles of(String RoleName){
+        Roles role = null;
+        switch(RoleName){
+            case RoleController.ROLE_ADMIN:
+                role = RoleController.getAdminRoles();
+                break;
+            case RoleController.ROLE_ALL:
+                role = RoleController.getAllRoles();
+                break;
+            case RoleController.ROLE_DEVELOPER:
+                role = RoleController.getDevelopmentRoles();
+                break;
+            case RoleController.ROLE_GUEST:
+                role = RoleController.getGuestRoles();
+                break;
+            case RoleController.ROLE_USER:
+                role = RoleController.getUserRoles();
+                break;
+        }
+        return role;
     }
 
     public static Roles getAllRoles() {

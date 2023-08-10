@@ -20,7 +20,7 @@ import org.apache.wicket.authroles.authorization.strategies.role.Roles;
 import org.tiny.gear.IRoleChecker;
 import org.tiny.gear.RoleController;
 import org.tiny.gear.scenes.AbstractScene;
-import org.tiny.gear.view.AbstractView;
+import org.tiny.gear.scenes.AbstractView;
 
 /**
  *
@@ -32,24 +32,20 @@ public class MenuItem implements Serializable, IRoleChecker {
 
     private String text;
 
-    private String url;
-
     private Roles allowed;
 
     private Class<? extends AbstractScene> scene;
-    private Class<? extends AbstractView> panel;
+    private Class<? extends AbstractView> view;
 
-    public MenuItem(String text, String url, Roles allowed) {
+    public MenuItem(String text, Roles allowed) {
         this.text = text;
-        this.url = url;
         this.allowed = allowed;
     }
 
-    public MenuItem(String text, Class<? extends AbstractScene> scene, Class<? extends AbstractView> view, Roles allowed) {
+    public MenuItem(String text, Class<? extends AbstractScene> scene, Roles allowed, Class<? extends AbstractView> view) {
         this.text = text;
         this.scene = scene;
-        this.panel = view;
-        this.setUrl(scene, view);
+        this.view = view;
         this.allowed = allowed;
     }
 
@@ -58,10 +54,10 @@ public class MenuItem implements Serializable, IRoleChecker {
     }
 
     public boolean isMatchedMainPanel(Class<? extends AbstractView> panel) {
-        if (this.panel == null) {
+        if (this.view == null) {
             return false;
         }
-        return this.panel.getName().equals(panel.getName());
+        return this.view.getName().equals(panel.getName());
     }
 
     /**
@@ -78,20 +74,6 @@ public class MenuItem implements Serializable, IRoleChecker {
         this.text = text;
     }
 
-    /**
-     * @return the url
-     */
-    public String getUrl() {
-        return url;
-    }
-
-    /**
-     * @param url the url to set
-     */
-    public void setUrl(String url) {
-        this.url = url;
-    }
-
     public String mapUrl(Class scene, Class mainPanel) {
         String urlTemplate = "?scene=%s&view=%s";
         urlTemplate = String.format(
@@ -100,14 +82,6 @@ public class MenuItem implements Serializable, IRoleChecker {
                 mainPanel.getName()
         );
         return urlTemplate;
-    }
-
-    public final void setUrl(Class scene, Class mainPanel) {
-        this.url = this.mapUrl(scene, mainPanel);
-    }
-
-    public boolean isMatchedUrl(Class scene, Class view) {
-        return this.mapUrl(scene, view).equals(this.getUrl());
     }
 
     /**
@@ -130,7 +104,7 @@ public class MenuItem implements Serializable, IRoleChecker {
     }
     
     public String getViewClassName(){
-        return this.panel.getName();
+        return this.view.getName();
     }
 
 }

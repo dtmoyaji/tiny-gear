@@ -13,36 +13,33 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.tiny.gear.panels;
+package org.tiny.gear.scenes.develop;
 
-import org.apache.wicket.markup.html.basic.Label;
-import org.apache.wicket.markup.html.panel.Panel;
-import org.apache.wicket.model.Model;
 import org.tiny.gear.GearApplication;
+import org.tiny.gear.panels.GroovyEditor;
+import org.tiny.gear.scenes.AbstractView;
 
 /**
- *
- * @author MURAKAMI Takahiro <daianji@gmail.com>
  */
-public abstract class AbstractPanel extends Panel {
+public class SimpleDevelopmentView extends AbstractView {
 
     public static final long serialVersionUID = -1L;
 
-    private Label titleLabel;
+    private GroovyEditor groovyExec;
 
-    public AbstractPanel(String id) {
-        super(id);
-
-        this.titleLabel = new Label("title", Model.of(this.getTitle()));
-        this.add(this.titleLabel);
-    }
-
-    public String getTitle() {
-        return "AbstractPanel";
+    public SimpleDevelopmentView(GearApplication supplier) {
+        super(supplier);
     }
     
-    public GearApplication getGearApplication(){
-        return (GearApplication) this.getApplication();
+    public void redraw(){
+        this.removeAll();
+        this.groovyExec = new GroovyEditor("groovyExecutor");
+        this.add(this.groovyExec);
+    }
+
+    @Override
+    public String getTitle() {
+        return "簡易開発ビュー";
     }
 
 }

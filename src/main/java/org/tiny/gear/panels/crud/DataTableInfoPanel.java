@@ -6,15 +6,19 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 import org.apache.wicket.markup.html.panel.Panel;
 import org.apache.wicket.model.Model;
+import org.tiny.datawrapper.IJdbcSupplier;
+import org.tiny.datawrapper.Jdbc;
 import org.tiny.datawrapper.Table;
 
 /**
  * データテーブル情報を格納するクラス
  * @author bythe
  */
-public abstract class DataTableInfoPanel extends Panel {
+public abstract class DataTableInfoPanel extends Panel implements IJdbcSupplier{
     
     protected Table targetTable;
+    
+    protected Jdbc jdbc;
 
     public DataTableInfoPanel(String id) {
         super(id);
@@ -31,6 +35,9 @@ public abstract class DataTableInfoPanel extends Panel {
     public void setTable(Table target){
 
         try {
+            
+            this.jdbc = target.getJdbc();
+            
             Class cls = target.getClass();
             Constructor constructor = cls.getDeclaredConstructor();
             constructor.setAccessible(true);
@@ -39,7 +46,7 @@ public abstract class DataTableInfoPanel extends Panel {
             this.targetTable = clone;
             this.targetTable.setAllowDeleteRow(target.isAllowDeleteRow());
             this.targetTable.setDebugMode(target.getDebugMode());
-            this.targetTable.setJdbc(target.getJdbc());
+            this.targetTable.setJdbc(this.jdbc);
             this.beforeConstructView(this.targetTable);
         } catch (SecurityException | IllegalArgumentException | NoSuchMethodException | InstantiationException | IllegalAccessException | InvocationTargetException  ex) {
             Logger.getLogger(DataTableInfoPanel.class.getName()).log(Level.SEVERE, null, ex);
@@ -61,5 +68,10 @@ public abstract class DataTableInfoPanel extends Panel {
      * @param myTable 
      */
     public abstract void afterConstructView(Table myTable);
+
+    @Override
+    public Jdbc getJdbc() {
+        return this.jdbc;
+    }
     
 }

@@ -8,7 +8,6 @@ import java.util.logging.Logger;
 import org.apache.wicket.ajax.AjaxRequestTarget;
 import org.apache.wicket.markup.html.panel.Panel;
 import org.tiny.datawrapper.Column;
-import org.tiny.datawrapper.IJdbcSupplier;
 import org.tiny.datawrapper.Table;
 
 /**
@@ -22,10 +21,10 @@ abstract public class FilterAndEdit extends Panel {
 
     private RecordEditor recordEditor;
 
-    public FilterAndEdit(String id, Table table, IJdbcSupplier jdbcSupplier) {
+    public FilterAndEdit(String id, Table table) {
         super(id);
         
-        this.dataTableView = new DataTableView("dataTableView", table, jdbcSupplier) {
+        this.dataTableView = new DataTableView("dataTableView", table) {
             @Override
             public Class<? extends Panel> getExtraColumn() {
                 return null;
@@ -59,10 +58,10 @@ abstract public class FilterAndEdit extends Panel {
             @Override
             public void onSubmit(AjaxRequestTarget target, Table targetTable) {
                 super.onSubmit(target, targetTable);
-                FilterAndEdit.this.reloadRecordEditor(target);
                 DataTableView dataTableView = FilterAndEdit.this.dataTableView;
                 dataTableView.redraw(dataTableView.getConditions());
                 target.add(dataTableView);
+                FilterAndEdit.this.reloadRecordEditor(target);
             }
 
             @Override
@@ -90,7 +89,6 @@ abstract public class FilterAndEdit extends Panel {
         this.add(this.recordEditor);
         this.recordEditor.setOutputMarkupId(true);
         this.recordEditor.buildForm(table);
-        
 
     }
     
@@ -99,6 +97,10 @@ abstract public class FilterAndEdit extends Panel {
      * @param target 
      */
     public void reloadRecordEditor(AjaxRequestTarget target){
+        // 最初の行を取得する
+        if(this.currentKeyValueList==null){
+            this.currentKeyValueList = this.dataTableView.getFirstKeyValueList();
+        }
         this.onRowClicked(target, currentKeyValueList);
     }
 
@@ -127,6 +129,7 @@ abstract public class FilterAndEdit extends Panel {
                 rs.next();
                 this.recordEditor.clearValues();
                 this.recordEditor.setValues(rs);
+                rs.close();
             }
             target.add(this.recordEditor);
         } catch (SQLException ex) {
@@ -173,5 +176,13 @@ abstract public class FilterAndEdit extends Panel {
      * @return 
      */
     public abstract boolean beforeSubmit(AjaxRequestTarget target, Table targetTable, ArrayList<DataControl> dataControls);
+    
+    public DataTableView getDataTableView(){
+        return this.dataTableView;
+    }
+    
+    public RecordEditor getRecordEditor(){
+        return this.recordEditor;
+    }
 
 }

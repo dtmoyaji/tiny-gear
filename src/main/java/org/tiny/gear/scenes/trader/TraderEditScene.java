@@ -13,42 +13,39 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.tiny.gear.webdb;
+package org.tiny.gear.scenes.trader;
 
 import org.apache.wicket.authroles.authorization.strategies.role.Roles;
-import org.tiny.datawrapper.IJdbcSupplier;
+import org.tiny.gear.GearApplication;
 import org.tiny.gear.RoleController;
 import org.tiny.gear.scenes.AbstractScene;
-import org.tiny.gear.view.AbstractView;
 
 /**
  *
- * @author bythe
+ * @author dtmoyaji
  */
-public class CustomTableManagementScene extends AbstractScene {
+public class TraderEditScene extends AbstractScene{
 
-    public CustomTableManagementScene(Roles allowed, IJdbcSupplier supplier) {
-        super(allowed, supplier);
-        
-    }
-    
-    @Override
-    public AbstractView getDefaultPanel() {
-        return new CustomTableEditView(this.supplier);
-    }    
-    
-    @Override
-    public String getSceneName(){
-        return "WEB DB";
+    public TraderEditScene(Roles allowed, GearApplication application){
+        super(allowed, application);
     }
 
     @Override
     public void defineMenu() {
-        this.putMenu(
-                "カスタムテーブル", CustomTableEditView.class,
-                RoleController.getAllRoles(), true
-        );
-
+        this.putMenu("仕入先編集",
+                TraderEditView.class,
+                RoleController.getUserRoles(),
+                true);
     }
 
+    @Override
+    public Class getDefaultViewClass() {
+        return TraderEditView.class;
+    }
+
+    @Override
+    public String getSceneName() {
+        return "取引先編集";
+    }
+    
 }

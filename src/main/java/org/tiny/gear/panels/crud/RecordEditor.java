@@ -51,6 +51,11 @@ public abstract class RecordEditor extends DataTableInfoPanel {
     public RecordEditor(String id) {
         super(id);
     }
+    
+    public void buildForm(){
+        this.removeAll();
+        this.buildForm(this.getTable());
+    }
 
     /**
      * テーブルの設計に基づいて、フォームを自動生成する。
@@ -164,7 +169,7 @@ public abstract class RecordEditor extends DataTableInfoPanel {
                             )
                     );
                 }
-                if (col.isPrimaryKey() && col.getValue() == null) { // 主キーに値がないときは、インサート文
+                if (col.isPrimaryKey() && control.getValue() == null) { // 主キーに値がないときは、インサート文
                     insert = true;
                     targetTable.get(control.getColumn().getName()).setValue(null);
                 } else {
@@ -172,9 +177,12 @@ public abstract class RecordEditor extends DataTableInfoPanel {
                     targetTable.get(control.getColumn().getName()).setValue(data);
                 }
             }
-            targetTable.setDebugMode(true);
+            // targetTable.setDebugMode(true);
             if (insert) {
-                targetTable.insert();
+                targetTable.setDebugMode(true);
+                if(!targetTable.insert()){
+                    System.out.println("INSERT ERROR");
+                }
             } else {
                 targetTable.merge();
             }

@@ -3,6 +3,8 @@ package org.tiny.gear;
 import java.sql.Timestamp;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import org.apache.wicket.ajax.AjaxRequestTarget;
 import org.apache.wicket.authroles.authorization.strategies.role.Roles;
 import org.apache.wicket.markup.html.basic.Label;
@@ -15,11 +17,13 @@ import org.tiny.gear.model.UserInfo;
 import org.tiny.gear.panels.HumbergerIcon;
 import org.tiny.gear.panels.NavigationPanel;
 import org.tiny.gear.scenes.AbstractScene;
-import org.tiny.gear.scenes.DevelopScene;
-import org.tiny.gear.scenes.PrimaryScene;
-import org.tiny.gear.scenes.SettingScene;
-import org.tiny.gear.view.AbstractView;
-import org.tiny.gear.webdb.CustomTableManagementScene;
+import org.tiny.gear.scenes.AbstractView;
+import org.tiny.gear.scenes.SceneTable;
+import org.tiny.gear.scenes.develop.DevelopScene;
+import org.tiny.gear.scenes.primary.PrimaryScene;
+import org.tiny.gear.scenes.setting.SettingScene;
+import org.tiny.gear.scenes.trader.TraderEditScene;
+import org.tiny.gear.scenes.webdb.CustomTableManagementScene;
 import org.tiny.wicket.SamlMainPage;
 import org.tiny.wicket.onelogin.SamlAuthInfo;
 import org.tiny.wicket.onelogin.SamlSession;
@@ -36,19 +40,22 @@ public class Index extends SamlMainPage implements IJdbcSupplier {
     private final Label serviceTitle;
 
     private AbstractScene currentScene;
-    private AbstractView currentPanel;
+    private AbstractView currentView;
 
     private final NavigationPanel nav;
     private final HumbergerIcon humbergerIcon;
 
-    private ArrayList<AbstractScene> scenes;
+    private ArrayList<Class> scenes;
+    private SceneTable sceneTable;
 
     public Index(final PageParameters parameters) {
         super(parameters);
 
+        this.getGearApplication().buildCach();
+
         this.initTable();
 
-        String svtitle = (String) ((GearApplication) this.getApplication())
+        String svtitle = (String) this.getGearApplication()
                 .getProperties("tiny.gear")
                 .get("tiny.gear.service.title");
 
@@ -56,11 +63,12 @@ public class Index extends SamlMainPage implements IJdbcSupplier {
         this.add(this.serviceTitle);
 
         // 登録済シーンの取得
-        this.scenes = this.getScenes();
+        this.initSceneRoles();
+        //this.scenes = this.getScenes();
 
         // 初期ページの取得
-        this.currentScene = new PrimaryScene(RoleController.getUserRoles(), this);
-        this.currentPanel = this.currentScene.getDefaultPanel();
+        this.currentScene = new PrimaryScene(RoleController.getUserRoles(), this.getGearApplication());
+        this.currentView = this.currentScene.createDefaultView();
 
         String sceneName = parameters.get("scene").toString();
         String panelName = parameters.get("view").toString();
@@ -70,7 +78,7 @@ public class Index extends SamlMainPage implements IJdbcSupplier {
             @Override
             public void onMenuItemClick(AjaxRequestTarget target, String sceneName, String panelName) {
                 Index.this.resolvePage(sceneName, panelName);
-                target.add(Index.this.currentPanel);
+                target.add(Index.this.currentView);
                 target.add(Index.this.nav);
             }
         };
@@ -80,8 +88,8 @@ public class Index extends SamlMainPage implements IJdbcSupplier {
         this.humbergerIcon = new HumbergerIcon("humbergerIcon", "humbergerTarget");
         this.add(this.humbergerIcon);
 
-        this.currentPanel.setOutputMarkupId(true);
-        this.add(this.currentPanel);
+        this.currentView.setOutputMarkupId(true);
+        this.add(this.currentView);
 
     }
 
@@ -90,46 +98,41 @@ public class Index extends SamlMainPage implements IJdbcSupplier {
      *
      * @param parameters
      */
-    private void resolvePage(String sceneName, String panelName) {
-        
-        // 指定された状態に応じたシーンを表示する処理
-        if (sceneName != null) {
-            for (AbstractScene scene : this.scenes) {
-                if (scene.isSceneKeyMatch(sceneName)) {
-                    this.currentScene = scene;
-                    break;
-                }
-            }
-        } else {
-            for (AbstractScene scene : this.scenes) {
-                if (scene.isPrimary()) {
-                    this.currentScene = scene;
-                    break;
-                }
-            }
-        }
+    private void resolvePage(String sceneName, String viewName) {
 
-        HashMap<String, AbstractView> panels = currentScene.getPanels();
-        if (panelName != null) {
-            this.currentPanel = panels.get(panelName);
+        // 指定された状態に応じたシーンを表示する処理
+        if (sceneName == null) {
+            sceneName = PrimaryScene.class.getCanonicalName();
+        }
+        this.currentScene = this.getGearApplication().getCachedAbstractScene(sceneName);
+
+        if (viewName == null) {
+            this.currentView = this.currentScene.createDefaultView();
         } else {
-            this.currentPanel = currentScene.getDefaultPanel();
+            HashMap<String, String> panels = this.currentScene.getPanelNames();
+            if (panels.containsValue(viewName)) {
+                try {
+                    this.currentView = (AbstractView) this.getGearApplication().getCachedView(viewName);
+                } catch (SecurityException | IllegalArgumentException ex) {
+                    Logger.getLogger(Index.class.getName()).log(Level.SEVERE, null, ex);
+                }
+            }
         }
 
         // ロールをチェックし、権限が無い場合は初期ページに強制遷移する
         Roles role = ((SamlSession) this.getSession()).getRoles();
+
         if (role.size() < 1) {
             role.add("guest");
         }
-        if (!this.currentScene.isAuthenticated(this.currentPanel, role)) {
-            this.currentScene = new PrimaryScene(RoleController.getGuestRoles(), this);
-            this.currentPanel = this.currentScene.getDefaultPanel();
+
+        if (!this.currentScene.isAuthenticated(this.currentView, role)) {
+            this.currentScene = new PrimaryScene(RoleController.getGuestRoles(), this.getGearApplication());
+            this.currentView = this.currentScene.createDefaultView();
         } else { //表示に問題がないときは、ユーザー情報を上書きに行く
             SamlAuthInfo ainfo = ((SamlSession) this.getSession()).getSamlAuthInfo();
             if (ainfo != null) {
-                UserInfo uinfo = new UserInfo();
-                uinfo.alterOrCreateTable(this.getJdbc());
-                // uinfo.setDebugMode(true);
+                UserInfo uinfo = (UserInfo) this.getGearApplication().getCachedTable(UserInfo.class);
                 uinfo.UserId.setValue(ainfo.getAttributeString("externalKey"));
                 uinfo.UserName.setValue(ainfo.getAttributeString("username"));
                 uinfo.LastAccess.setValue(new Timestamp(System.currentTimeMillis()));
@@ -137,8 +140,11 @@ public class Index extends SamlMainPage implements IJdbcSupplier {
                 uinfo.merge();
             }
         }
-        this.currentPanel.setOutputMarkupId(true);
-        this.addOrReplace(this.currentPanel);
+        
+        this.currentView.redraw();
+        this.currentView.setOutputMarkupId(true);
+
+        this.addOrReplace(this.currentView);
 
         if (this.nav != null) {
             this.nav.resolve(this);
@@ -148,20 +154,24 @@ public class Index extends SamlMainPage implements IJdbcSupplier {
     private void initTable() {
         SystemVariables sysvar = new SystemVariables();
         sysvar.alterOrCreateTable(this.getJdbc());
+        this.sceneTable = (SceneTable) this.getGearApplication().getCachedTable(SceneTable.class);
     }
 
-    /**
-     * 取り扱うシーン定義
-     *
-     * @return
-     */
-    public ArrayList<AbstractScene> getScenes() {
-        ArrayList<AbstractScene> scenemap = new ArrayList<>();
-        scenemap.add(new PrimaryScene(RoleController.getAllRoles(), this));
-        scenemap.add(new SettingScene(RoleController.getUserRoles(), this));
-        scenemap.add(new DevelopScene(RoleController.getDevelopmentRoles(), this));
-        scenemap.add(new CustomTableManagementScene(RoleController.getDevelopmentRoles(), this));
-        return scenemap;
+    public final GearApplication getGearApplication() {
+        return (GearApplication) this.getApplication();
+    }
+
+    protected void initSceneRoles() {
+        this.sceneTable.registScene(this.getGearApplication(), PrimaryScene.class,
+                0, RoleController.ROLE_ALL);
+        this.sceneTable.registScene(this.getGearApplication(), SettingScene.class,
+                1, RoleController.ROLE_USER);
+        this.sceneTable.registScene(this.getGearApplication(), DevelopScene.class,
+                2, RoleController.ROLE_DEVELOPER);
+        this.sceneTable.registScene(this.getGearApplication(), CustomTableManagementScene.class,
+                3, RoleController.ROLE_DEVELOPER);
+        this.sceneTable.registScene(this.getGearApplication(), TraderEditScene.class,
+                4, RoleController.ROLE_USER);
     }
 
     @Override
@@ -173,8 +183,8 @@ public class Index extends SamlMainPage implements IJdbcSupplier {
         return this.currentScene;
     }
 
-    public AbstractView getCurrentPanel() {
-        return this.currentPanel;
+    public AbstractView getCurrentView() {
+        return this.currentView;
     }
 
     @Override
@@ -185,7 +195,7 @@ public class Index extends SamlMainPage implements IJdbcSupplier {
 
     public void onMenuItemClick(AjaxRequestTarget target, String sceneName, String panelName) {
         this.resolvePage(sceneName, panelName);
-        target.add(this.currentPanel);
+        target.add(this.currentView);
         target.add(this.nav);
     }
 

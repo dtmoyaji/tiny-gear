@@ -13,9 +13,10 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.tiny.gear.view;
+package org.tiny.gear.scenes.primary;
 
-import org.tiny.datawrapper.IJdbcSupplier;
+import org.tiny.gear.GearApplication;
+import org.tiny.gear.scenes.AbstractView;
 
 /**
  *
@@ -25,13 +26,17 @@ public class PrimaryView extends AbstractView {
 
     public static final long serialVersionUID = -1L;
     
-    public PrimaryView(IJdbcSupplier supplier){
+    public PrimaryView(GearApplication supplier){
         super(supplier);
     }
 
     @Override
     public String getTitle() {
         return "はじめに";
+    }
+
+    @Override
+    public void redraw() {
     }
 
 }

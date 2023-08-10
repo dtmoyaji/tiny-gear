@@ -1,5 +1,5 @@
 /*
- * Copyright 2023 MURAKAMI Takahiro <daianji@gmail.com>.
+ * Copyright 2023 bythe.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -13,29 +13,29 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.tiny.gear.view;
+package org.tiny.gear.scenes.trader;
 
-import org.tiny.datawrapper.IJdbcSupplier;
-import org.tiny.gear.panels.GroovyEditor;
+import org.tiny.gear.GearApplication;
+import org.tiny.gear.scenes.AbstractView;
 
 /**
+ *
+ * @author bythe
  */
-public class SimpleDevelopmentView extends AbstractView {
+public class TraderEditView extends AbstractView{
 
-    public static final long serialVersionUID = -1L;
+    public TraderEditView(GearApplication app) {
+        super(app);
+    }
 
-    private final GroovyEditor groovyExec;
-
-    public SimpleDevelopmentView(IJdbcSupplier supplier) {
-        super(supplier);
-
-        this.groovyExec = new GroovyEditor("groovyExecutor");
-        this.add(this.groovyExec);
+    @Override
+    public void redraw() {
     }
 
     @Override
     public String getTitle() {
-        return "簡易開発ビュー";
+        return "仕入先編集";
     }
 
+    
 }

@@ -14,13 +14,9 @@
     <body>
         <wicket:panel>
             <form wicket:id="curdTableView">
-                <div class="curdTableInfoBar">
-                    <div>
-                        <span  wicket:id="lblTableName">TableName</span>
-                        <div wicket:id="csvTransportPanel" />
-                    </div>
-                </div>
-                <div class="curdTableControlBar">
+                <div class="crudTableInfoBar">
+                    <span  wicket:id="lblTableName" class="captionItem caption">TableName</span>
+                    <div wicket:id="csvTransPortPanelPlaceHolder" class="captionItem controller" />
                 </div>
                 <div>
                     <table class="crud tableview">

@@ -13,12 +13,12 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.tiny.gear.view;
+package org.tiny.gear.scenes.setting;
 
 import java.util.Properties;
-import org.tiny.datawrapper.IJdbcSupplier;
 import org.tiny.gear.GearApplication;
 import org.tiny.gear.panels.PropertyPanel;
+import org.tiny.gear.scenes.AbstractView;
 
 /**
  *
@@ -31,8 +31,13 @@ public class ConnectionView extends AbstractView {
     private PropertyPanel jdbcPanel;
     private PropertyPanel samlPanel;
 
-    public ConnectionView(IJdbcSupplier supplier) {
-        super(supplier);
+    public ConnectionView(GearApplication app) {
+        super(app);
+    }
+    
+    @Override
+    public void redraw(){
+        this.removeAll();
 
         this.jdbcPanel = new PropertyPanel("jdbcProperties") {
             public static final long serialVersionUID = -1L;
