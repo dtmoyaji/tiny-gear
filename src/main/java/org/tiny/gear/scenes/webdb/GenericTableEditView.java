@@ -19,6 +19,7 @@ import java.util.ArrayList;
 import org.apache.wicket.ajax.AjaxRequestTarget;
 import org.tiny.datawrapper.Table;
 import org.tiny.gear.GearApplication;
+import org.tiny.gear.GroovyTableBuilder;
 import org.tiny.gear.model.SystemVariables;
 import org.tiny.gear.panels.crud.DataControl;
 import org.tiny.gear.panels.crud.DataTableView;
@@ -38,20 +39,20 @@ public class GenericTableEditView extends AbstractView {
     private FilterAndEdit filterAndEdit;
 
     private SystemVariables systemVariables;
-
+    
     public GenericTableEditView(GearApplication app) {
         super(app);
-
     }
     
     @Override
     public void redraw(){
         super.redraw();
 
-        Table table = this.getPrimaryTargetTable();
+        GroovyTableBuilder groovyTableBuilder = new GroovyTableBuilder(this.getGearApplication());
+        Table table = groovyTableBuilder.createTable("TEST_TABLE");
 
         this.systemVariables = (SystemVariables) this.getTable(SystemVariables.class);
-
+        
         this.filterAndEdit = new FilterAndEdit("genericTableEditor", table) {
             @Override
             public void beforeConstructDataTableView(Table myTable, DataTableView dataTableView) {

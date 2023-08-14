@@ -45,9 +45,10 @@ public abstract class Cache<T> extends HashMap<String, T> {
         this.objectCachInfo.alterOrCreateTable(this.jdbc);
         this.constParam = constParam;
 
+        String key = "";
         try (ResultSet rs = this.objectCachInfo.getTypeOf(this.cachType)) {
             while (rs.next()) {
-                String key = this.objectCachInfo.ObjectName.of(rs);
+                key = this.objectCachInfo.ObjectName.of(rs);
                 Class cls = Class.forName(key);
                 Constructor constructor = cls.getConstructor(constParam);
                 T data = (T) this.onNewInstance(constructor);
@@ -58,7 +59,7 @@ public abstract class Cache<T> extends HashMap<String, T> {
                 | ClassNotFoundException
                 | NoSuchMethodException
                 | SecurityException ex) {
-            Logger.getLogger(Cache.class.getName()).log(Level.SEVERE, null, ex);
+                super.put(key, null);
         }
     }
 

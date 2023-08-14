@@ -7,6 +7,7 @@ import org.apache.wicket.model.Model;
 import org.tiny.datawrapper.Column;
 import org.tiny.datawrapper.Table;
 import org.tiny.gear.GearApplication;
+import org.tiny.gear.GroovyTableBuilder;
 import org.tiny.gear.panels.crud.DataControl;
 import org.tiny.gear.panels.crud.DataTableView;
 import org.tiny.gear.panels.crud.FilterAndEdit;
@@ -72,7 +73,11 @@ public class CustomTableEditView extends AbstractView {
                         tableName = control.getValue(DataControl.UNESCAPE);
                     }
                 }
-                GroovyTableBuilder gtb = new GroovyTableBuilder(getGearApplication());
+                GearApplication ga = getGearApplication();
+                ga.removeTableCach(tableName);
+                ga.clearViewCach();
+                GroovyTableBuilder gtb = new GroovyTableBuilder(ga);
+                
                 return (gtb.createTable(tableName, tableDef) instanceof Table);
             }
         };

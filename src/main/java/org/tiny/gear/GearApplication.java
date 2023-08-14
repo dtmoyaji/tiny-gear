@@ -69,7 +69,7 @@ public class GearApplication extends SamlWicketApplication implements IJdbcSuppl
         this.mountResources();
     }
 
-    public void buildCach() {
+    public void buildCache() {
         if (this.tableCache == null) {
             this.tableCache = new Cache<>(this.getJdbc(), ObjectCachInfo.TYPE_TALBE) {
                 @Override
@@ -191,11 +191,22 @@ public class GearApplication extends SamlWicketApplication implements IJdbcSuppl
 
     public Table getCachedTable(String tableClassName) {
         Table rvalue = null;
-        try {
-            Class<? extends Table> cls = (Class<? extends Table>) Class.forName(tableClassName);
-            rvalue = this.getCachedTable(cls);
-        } catch (ClassNotFoundException ex) {
-            Logger.getLogger(GearApplication.class.getName()).log(Level.SEVERE, null, ex);
+        if (this.tableCache.containsKey(tableClassName)) {
+            rvalue = this.tableCache.get(tableClassName);
+            if (rvalue == null) {
+                if (tableClassName.contains(GroovyTableBuilder.CUSTOM_TABLE_PACKAGE)) {
+                    GroovyTableBuilder gtb = new GroovyTableBuilder(this);
+                    String sqlName = GroovyTableBuilder.toSQLName(tableClassName);
+                    rvalue = gtb.createTable(sqlName);
+                }
+            }
+        } else {
+            try {
+                Class<? extends Table> cls = (Class<? extends Table>) Class.forName(tableClassName);
+                rvalue = this.getCachedTable(cls);
+            } catch (ClassNotFoundException ex) {
+                Logger.getLogger(GearApplication.class.getName()).log(Level.SEVERE, null, ex);
+            }
         }
         return rvalue;
     }
@@ -203,6 +214,28 @@ public class GearApplication extends SamlWicketApplication implements IJdbcSuppl
     public Table getCachedTable(Class<? extends Table> tableClass) {
         Table rvalue = this.tableCache.get(tableClass.getName());
         return rvalue;
+    }
+
+    public boolean isTableCached(String tableClassName) {
+        boolean rvalue = this.tableCache.containsKey(tableClassName);
+        if (rvalue) {
+            rvalue = (this.tableCache.get(tableClassName) != null);
+        }
+        return rvalue;
+    }
+
+    public Table stackTableOnCach(Table table) {
+        this.tableCache.put(table.getClass().getName(), table);
+        Logger.getLogger(this.getName()).log(Level.INFO, "TABLE: {0} instance created.", table.getClass().getName());
+        return table;
+    }
+    
+    public void removeTableCach(String tableClassName){
+        this.tableCache.remove(tableClassName);
+    }
+    
+    public void clearViewCach(){
+        this.viewCache.clear();
     }
 
     public AbstractView getCachedView(String viewClassName) {
@@ -236,7 +269,7 @@ public class GearApplication extends SamlWicketApplication implements IJdbcSuppl
                 Logger.getLogger(GearApplication.class.getName()).log(Level.SEVERE, null, ex);
             }
         }
-        if(scene==null){
+        if (scene == null) {
             this.sceneCach.remove(sceneClassName);
         }
         return scene;

@@ -169,7 +169,8 @@ public abstract class RecordEditor extends DataTableInfoPanel {
                             )
                     );
                 }
-                if (col.isPrimaryKey() && control.getValue() == null) { // 主キーに値がないときは、インサート文
+                if ((col.isPrimaryKey() && control.getValue() == null)
+                        || col.isPrimaryKey() && control.getValue().length() < 1 ) { // 主キーに値がないときは、インサート文
                     insert = true;
                     targetTable.get(control.getColumn().getName()).setValue(null);
                 } else {
@@ -178,7 +179,7 @@ public abstract class RecordEditor extends DataTableInfoPanel {
                 }
             }
             
-            targetTable.setDebugMode(true);
+            targetTable.setDebugMode(false);
             if (insert) {
                 if(!targetTable.insert()){
                     System.out.println("INSERT ERROR");

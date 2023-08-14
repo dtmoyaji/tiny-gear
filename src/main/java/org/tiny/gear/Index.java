@@ -51,7 +51,7 @@ public class Index extends SamlMainPage implements IJdbcSupplier {
     public Index(final PageParameters parameters) {
         super(parameters);
 
-        this.getGearApplication().buildCach();
+        this.getGearApplication().buildCache();
 
         this.initTable();
 
