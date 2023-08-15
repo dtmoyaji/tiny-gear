@@ -26,7 +26,7 @@ public class GroovyTableBuilder {
 
     public GroovyTableBuilder(GearApplication app) {
         this.app = app;
-        this.customTable = new CustomTable();
+        this.customTable = (CustomTable) app.getCachedTable(CustomTable.class);
         this.customTable.setJdbc(app.getJdbc());
 
         this.tableDefHeader += "package " + GroovyTableBuilder.CUSTOM_TABLE_PACKAGE + "\n";

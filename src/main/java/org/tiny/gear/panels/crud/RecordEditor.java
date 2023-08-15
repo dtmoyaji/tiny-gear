@@ -13,6 +13,7 @@ import org.tiny.datawrapper.Column;
 import org.tiny.datawrapper.Condition;
 import org.tiny.datawrapper.CurrentTimestamp;
 import org.tiny.datawrapper.Table;
+import org.tiny.gear.scenes.AbstractView;
 
 /**
  *
@@ -22,6 +23,8 @@ public abstract class RecordEditor extends DataTableInfoPanel {
 
     public static final int MODE_EDIT = 1;
     public static final int MODE_READONLY = 1;
+
+    public static final String ALLOW_DELETE = "AllowDelete";
 
     private ListView<Column> controls;
     private ArrayList<DataControl> dataControls = new ArrayList<>();
@@ -48,11 +51,14 @@ public abstract class RecordEditor extends DataTableInfoPanel {
 
     private Form editorForm;
 
+    private AbstractView parentView;
+
     public RecordEditor(String id) {
         super(id);
     }
-    
-    public void buildForm(){
+
+    public void buildForm(AbstractView parentView) {
+        this.parentView = parentView;
         this.removeAll();
         this.buildForm(this.getTable());
     }
@@ -118,8 +124,8 @@ public abstract class RecordEditor extends DataTableInfoPanel {
                 RecordEditor.this.onDelete(target, targetTable);
             }
         };
-        if (!this.targetTable.isAllowDeleteRow()) {
-            this.delete.setVisible(false);
+        if (this.parentView != null) {
+            this.delete.setVisible(this.isAllowDelete());
         }
         this.editorForm.add(this.delete);
 
@@ -153,6 +159,7 @@ public abstract class RecordEditor extends DataTableInfoPanel {
      * 更新ボタンを押したとき
      *
      * @param target
+     * @param targetTable
      */
     public void onSubmit(AjaxRequestTarget target, Table targetTable) {
         if (this.beforeSubmit(target, targetTable, this.getDataControls())) {
@@ -170,7 +177,7 @@ public abstract class RecordEditor extends DataTableInfoPanel {
                     );
                 }
                 if ((col.isPrimaryKey() && control.getValue() == null)
-                        || col.isPrimaryKey() && control.getValue().length() < 1 ) { // 主キーに値がないときは、インサート文
+                        || col.isPrimaryKey() && control.getValue().length() < 1) { // 主キーに値がないときは、インサート文
                     insert = true;
                     targetTable.get(control.getColumn().getName()).setValue(null);
                 } else {
@@ -178,24 +185,29 @@ public abstract class RecordEditor extends DataTableInfoPanel {
                     targetTable.get(control.getColumn().getName()).setValue(data);
                 }
             }
-            
+
             targetTable.setDebugMode(false);
             if (insert) {
-                if(!targetTable.insert()){
+                if (!targetTable.insert()) {
                     System.out.println("INSERT ERROR");
                 }
             } else {
                 targetTable.merge();
             }
+            
             target.add(this);
+            
+            this.delete.setVisible(this.isAllowDelete());
+            target.add(this.delete);
         }
     }
 
     /**
      * 更新前のチェックなどに使用する。
+     *
      * @param target
      * @param targetTable
-     * @return 
+     * @return
      */
     public boolean beforeSubmit(AjaxRequestTarget target, Table targetTable, ArrayList<DataControl> dataControls1) {
         return true;
@@ -261,6 +273,15 @@ public abstract class RecordEditor extends DataTableInfoPanel {
     @Override
     protected void onAfterRender() {
         super.onAfterRender();
+    }
+
+    public boolean isAllowDelete() {
+        String parentClassName = this.parentView.getClass().getSimpleName();
+        String paramName = parentClassName + "." + RecordEditor.ALLOW_DELETE;
+        Boolean rvalue = Boolean.valueOf(
+                this.getGearApplication().getSystemVariable(paramName, "false")
+        );
+        return rvalue;
     }
 
 }

@@ -26,7 +26,6 @@ import org.tiny.datawrapper.Column;
 import org.tiny.datawrapper.Table;
 import org.tiny.datawrapper.entity.TableInfo;
 import org.tiny.gear.GearApplication;
-import org.tiny.gear.GroovyTableBuilder;
 import org.tiny.gear.model.SystemVariables;
 import org.tiny.gear.panels.crud.DataControl;
 import org.tiny.gear.panels.crud.DataTableView;
@@ -43,6 +42,7 @@ public class GenericTableEditView extends AbstractView {
 
     public static final String KEY_DEFAULT_ROWS_PER_PAGE = "GenericTableEditView.DefaultRowsPerPage";
     public static final String KEY_DEFAULT_ALLOW_DELETE = "GenericTableEditView.AllowDelete";
+    public static final String KEY_DEFAULT_TABLESELECTOR_ROWCOUNT ="GenericTableEditView.TableSelectorRowsPerPage";
 
     private FilterAndEdit filterAndEdit;
 
@@ -58,8 +58,7 @@ public class GenericTableEditView extends AbstractView {
     public void redraw() {
         super.redraw();
 
-        GroovyTableBuilder groovyTableBuilder = new GroovyTableBuilder(this.getGearApplication());
-        Table table = groovyTableBuilder.createTable("TEST_TABLE");
+        Table table = this.getGearApplication().getCachedTable(SystemVariables.class);
 
         this.systemVariables = (SystemVariables) this.getTable(SystemVariables.class);
 
@@ -132,7 +131,16 @@ public class GenericTableEditView extends AbstractView {
                 )
         );
         this.filterAndEdit.getRecordEditor().getTable().setAllowDeleteRow(allowDelete);
-        this.filterAndEdit.getRecordEditor().buildForm();
+        this.filterAndEdit.getRecordEditor().buildForm(this);
+        
+        defaultRowsPerPage = Integer.parseInt(
+                this.getGearApplication().getSystemVariable(
+                        GenericTableEditView.KEY_DEFAULT_TABLESELECTOR_ROWCOUNT,
+                        "2"
+                )
+        );
+        this.tableSelector.setRowsPerPage(defaultRowsPerPage);
+        this.tableSelector.redraw();
 
         this.add(this.filterAndEdit);
     }

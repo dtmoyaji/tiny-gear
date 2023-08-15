@@ -592,6 +592,7 @@ p{
     position: relative;
     float: left;
     width: 69%;
+    overflow: scroll;
 }
 
 .genericTableEditView .tableSelector{
@@ -600,8 +601,18 @@ p{
     position: relative;
     float: right;
     width: 30%;
+    overflow: scroll;
+}
+
+.genericTableEditView .tableSelector table{
+    background-color: rgb(250, 250, 250);
 }
 
 .genericTableEditView .tableSelector .csvTransportPanel{
     display: none;
 }
+
+.genericTableEditView .tableSelector .rows{
+    background-color: white;
+}
+

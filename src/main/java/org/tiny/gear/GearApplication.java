@@ -39,6 +39,7 @@ public class GearApplication extends SamlWicketApplication implements IJdbcSuppl
     private ObjectCachInfo objectCachInfo;
 
     private SystemVariables systemVariables;
+    private HashMap<String, String> systemVariableCache;
 
     private HashMap<String, Properties> environments;
 
@@ -98,6 +99,19 @@ public class GearApplication extends SamlWicketApplication implements IJdbcSuppl
 
         if (this.systemVariables == null) {
             this.systemVariables = (SystemVariables) this.getCachedTable(SystemVariables.class);
+            this.systemVariableCache = new HashMap<>();
+            try (ResultSet rs = this.systemVariables.select()) {
+                while (rs.next()) {
+                    String key = this.systemVariables.Key.of(rs);
+                    this.systemVariableCache.put(
+                            key, this.systemVariables.Value.of(rs)
+                    );
+                    Logger.getLogger(this.systemVariableCache.getClass().getName())
+                            .log(Level.INFO, "VARIABLE: {0} cached.", key);
+                }
+            } catch (SQLException ex) {
+                Logger.getLogger(GearApplication.class.getName()).log(Level.SEVERE, null, ex);
+            }
         }
 
         if (this.viewCache == null) {
@@ -229,12 +243,12 @@ public class GearApplication extends SamlWicketApplication implements IJdbcSuppl
         Logger.getLogger(this.getName()).log(Level.INFO, "TABLE: {0} instance created.", table.getClass().getName());
         return table;
     }
-    
-    public void removeTableCach(String tableClassName){
+
+    public void removeTableCach(String tableClassName) {
         this.tableCache.remove(tableClassName);
     }
-    
-    public void clearViewCach(){
+
+    public void clearViewCach() {
         this.viewCache.clear();
     }
 
@@ -277,23 +291,31 @@ public class GearApplication extends SamlWicketApplication implements IJdbcSuppl
 
     public String getSystemVariable(String key, String defaultValue) {
         String rvalue = defaultValue;
-        try {
-            if (this.systemVariables.getCount(this.systemVariables.Key.sameValueOf(key)) < 1) {
-                this.systemVariables.merge(
-                        this.systemVariables.Key.setValue(key),
-                        this.systemVariables.Value.setValue(defaultValue)
-                );
-            } else {
-                try (ResultSet rs = this.systemVariables.select(this.systemVariables.Key.sameValueOf(key))) {
-                    if (rs.next()) {
-                        rvalue = this.systemVariables.Value.of(rs);
-                        rs.close();
+        if (this.systemVariableCache.containsKey(key)) {
+            rvalue = this.systemVariableCache.get(key);
+            if (rvalue == null) {
+                rvalue = defaultValue;
+            }
+        } else {
+            try {
+                if (this.systemVariables.getCount(this.systemVariables.Key.sameValueOf(key)) < 1) {
+                    this.systemVariables.merge(
+                            this.systemVariables.Key.setValue(key),
+                            this.systemVariables.Value.setValue(defaultValue)
+                    );
+                } else {
+                    try (ResultSet rs = this.systemVariables.select(this.systemVariables.Key.sameValueOf(key))) {
+                        if (rs.next()) {
+                            rvalue = this.systemVariables.Value.of(rs);
+                            rs.close();
+                        }
                     }
                 }
+            } catch (TinyDatabaseException | SQLException ex) {
+                Logger.getLogger(GearApplication.class.getName()).log(Level.SEVERE, null, ex);
             }
-        } catch (TinyDatabaseException | SQLException ex) {
-            Logger.getLogger(GearApplication.class.getName()).log(Level.SEVERE, null, ex);
         }
+        this.systemVariableCache.put(key, rvalue);
         return rvalue;
     }
 }

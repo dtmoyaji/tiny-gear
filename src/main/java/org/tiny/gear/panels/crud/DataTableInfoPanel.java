@@ -9,6 +9,7 @@ import org.apache.wicket.model.Model;
 import org.tiny.datawrapper.IJdbcSupplier;
 import org.tiny.datawrapper.Jdbc;
 import org.tiny.datawrapper.Table;
+import org.tiny.gear.GearApplication;
 
 /**
  * データテーブル情報を格納するクラス
@@ -18,8 +19,6 @@ public abstract class DataTableInfoPanel extends Panel implements IJdbcSupplier{
     
     protected Table targetTable;
     
-    protected Jdbc jdbc;
-
     public DataTableInfoPanel(String id) {
         super(id);
     }
@@ -35,9 +34,6 @@ public abstract class DataTableInfoPanel extends Panel implements IJdbcSupplier{
     public void setTable(Table target){
 
         try {
-            
-            this.jdbc = target.getJdbc();
-            
             Class cls = target.getClass();
             Constructor constructor = cls.getDeclaredConstructor();
             constructor.setAccessible(true);
@@ -46,9 +42,14 @@ public abstract class DataTableInfoPanel extends Panel implements IJdbcSupplier{
             this.targetTable = clone;
             this.targetTable.setAllowDeleteRow(target.isAllowDeleteRow());
             this.targetTable.setDebugMode(target.getDebugMode());
-            this.targetTable.setJdbc(this.jdbc);
+            this.targetTable.setJdbc(this.getJdbc());
             this.beforeConstructView(this.targetTable);
-        } catch (SecurityException | IllegalArgumentException | NoSuchMethodException | InstantiationException | IllegalAccessException | InvocationTargetException  ex) {
+        } catch (SecurityException 
+                | IllegalArgumentException 
+                | NoSuchMethodException 
+                | InstantiationException 
+                | IllegalAccessException 
+                | InvocationTargetException  ex) {
             Logger.getLogger(DataTableInfoPanel.class.getName()).log(Level.SEVERE, null, ex);
         }
     }
@@ -71,7 +72,12 @@ public abstract class DataTableInfoPanel extends Panel implements IJdbcSupplier{
 
     @Override
     public Jdbc getJdbc() {
-        return this.jdbc;
+        GearApplication app = (GearApplication) this.getApplication();
+        return app.getJdbc();
+    }
+    
+    public GearApplication getGearApplication(){
+        return (GearApplication) this.getApplication();
     }
     
 }
