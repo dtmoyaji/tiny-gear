@@ -7,7 +7,7 @@ import org.tiny.gear.scenes.AbstractScene;
 
 /**
  *
- * @author bythe
+ * @author dtmoyaji
  */
 public class SettingScene extends AbstractScene {
 
@@ -15,7 +15,6 @@ public class SettingScene extends AbstractScene {
 
     public SettingScene(Roles allowed, GearApplication supplier) {
         super(allowed, supplier);
-
     }
 
     @Override
@@ -25,12 +24,10 @@ public class SettingScene extends AbstractScene {
 
     @Override
     public void defineMenu() {
-        Roles generalRoles = RoleController.getUserRoles();
-        Roles adminRoles = RoleController.getAdminRoles();
 
-        this.putMenu("マイアカウント", UserInfoView.class, generalRoles, true);
-        //this.getMenus().add(new MenuItem("ユーザー同期", "?menu=menu1", adminRoles));
-        this.putMenu("接続設定", ConnectionView.class, adminRoles, false);
+        this.putMenu("マイアカウント", UserInfoView.class, RoleController.getUserRoles(), true);
+        this.putMenu("接続設定", ConnectionView.class, RoleController.getAdminRoles(), false);
+        this.putMenu("キャッシュ", CacheControlView.class, RoleController.getDevelopmentRoles(), false);
     }
 
     @Override

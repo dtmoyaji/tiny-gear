@@ -52,7 +52,7 @@ public class CustomTableManagementScene extends AbstractScene {
         this.putMenu("テーブル編集", GenericTableEditView.class,
                 new Class[]{SystemVariables.class, TableInfo.class},
                 RoleController.getAllRoles(),
-                true);
+                false);
 
     }
 

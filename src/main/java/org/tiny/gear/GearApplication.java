@@ -95,6 +95,8 @@ public class GearApplication extends SamlWicketApplication implements IJdbcSuppl
                     return rvalue;
                 }
             };
+        }else{
+            this.tableCache.clear();
         }
 
         if (this.systemVariables == null) {
@@ -112,6 +114,8 @@ public class GearApplication extends SamlWicketApplication implements IJdbcSuppl
             } catch (SQLException ex) {
                 Logger.getLogger(GearApplication.class.getName()).log(Level.SEVERE, null, ex);
             }
+        }else{
+            this.systemVariableCache.clear();
         }
 
         if (this.viewCache == null) {
@@ -134,6 +138,8 @@ public class GearApplication extends SamlWicketApplication implements IJdbcSuppl
                     this.put(key, data);
                 }
             };
+        }else{
+            this.viewCache.clear();
         }
     }
 
