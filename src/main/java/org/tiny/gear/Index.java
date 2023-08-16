@@ -12,18 +12,12 @@ import org.apache.wicket.model.Model;
 import org.apache.wicket.request.mapper.parameter.PageParameters;
 import org.tiny.datawrapper.IJdbcSupplier;
 import org.tiny.datawrapper.Jdbc;
-import org.tiny.gear.model.SystemVariables;
 import org.tiny.gear.model.UserInfo;
 import org.tiny.gear.panels.HumbergerIcon;
 import org.tiny.gear.panels.NavigationPanel;
 import org.tiny.gear.scenes.AbstractScene;
 import org.tiny.gear.scenes.AbstractView;
-import org.tiny.gear.scenes.SceneTable;
-import org.tiny.gear.scenes.develop.DevelopScene;
 import org.tiny.gear.scenes.primary.PrimaryScene;
-import org.tiny.gear.scenes.setting.SettingScene;
-import org.tiny.gear.scenes.trader.TraderEditScene;
-import org.tiny.gear.scenes.webdb.CustomTableManagementScene;
 import org.tiny.wicket.SamlMainPage;
 import org.tiny.wicket.onelogin.SamlAuthInfo;
 import org.tiny.wicket.onelogin.SamlSession;
@@ -46,14 +40,13 @@ public class Index extends SamlMainPage implements IJdbcSupplier {
     private final HumbergerIcon humbergerIcon;
 
     private ArrayList<Class> scenes;
-    private SceneTable sceneTable;
+    //private SceneTable sceneTable;
 
     public Index(final PageParameters parameters) {
         super(parameters);
 
         this.getGearApplication().buildCache();
-
-        this.initTable();
+        this.getGearApplication().initScenes();
 
         String svtitle = (String) this.getGearApplication()
                 .getProperties("tiny.gear")
@@ -62,12 +55,8 @@ public class Index extends SamlMainPage implements IJdbcSupplier {
         this.serviceTitle = new Label("serviceTitle", Model.of(svtitle));
         this.add(this.serviceTitle);
 
-        // 登録済シーンの取得
-        this.initSceneRoles();
-        //this.scenes = this.getScenes();
-
         // 初期ページの取得
-        this.currentScene = new PrimaryScene(RoleController.getUserRoles(), this.getGearApplication());
+        this.currentScene = this.getGearApplication().getCachedScene(PrimaryScene.class.getName());
         this.currentView = this.currentScene.createDefaultView();
 
         String sceneName = parameters.get("scene").toString();
@@ -104,7 +93,7 @@ public class Index extends SamlMainPage implements IJdbcSupplier {
         if (sceneName == null) {
             sceneName = PrimaryScene.class.getCanonicalName();
         }
-        this.currentScene = this.getGearApplication().getCachedAbstractScene(sceneName);
+        this.currentScene = this.getGearApplication().getCachedScene(sceneName);
 
         if (viewName == null) {
             this.currentView = this.currentScene.createDefaultView();
@@ -151,29 +140,9 @@ public class Index extends SamlMainPage implements IJdbcSupplier {
         }
     }
 
-    private void initTable() {
-        SystemVariables sysvar = new SystemVariables();
-        sysvar.alterOrCreateTable(this.getJdbc());
-        this.sceneTable = (SceneTable) this.getGearApplication().getCachedTable(SceneTable.class);
-    }
-
     public final GearApplication getGearApplication() {
         return (GearApplication) this.getApplication();
     }
-
-    protected void initSceneRoles() {
-        this.sceneTable.registScene(this.getGearApplication(), PrimaryScene.class,
-                0, RoleController.ROLE_ALL);
-        this.sceneTable.registScene(this.getGearApplication(), SettingScene.class,
-                1, RoleController.ROLE_USER);
-        this.sceneTable.registScene(this.getGearApplication(), DevelopScene.class,
-                2, RoleController.ROLE_DEVELOPER);
-        this.sceneTable.registScene(this.getGearApplication(), CustomTableManagementScene.class,
-                3, RoleController.ROLE_DEVELOPER);
-        this.sceneTable.registScene(this.getGearApplication(), TraderEditScene.class,
-                4, RoleController.ROLE_USER);
-    }
-
     @Override
     public String getUserAccountKey() {
         return "displayname";

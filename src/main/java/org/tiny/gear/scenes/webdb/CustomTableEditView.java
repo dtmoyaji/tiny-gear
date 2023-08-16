@@ -81,6 +81,7 @@ public class CustomTableEditView extends AbstractView {
                 return (gtb.createTable(tableName, tableDef) instanceof Table);
             }
         };
+        this.filterAndEdit.getRecordEditor().buildForm(this);
         this.add(this.filterAndEdit);
     }
 

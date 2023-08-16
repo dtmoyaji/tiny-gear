@@ -86,7 +86,7 @@ public abstract class NavigationPanel extends Panel {
 
                 String sceneClass = item.getModelObject();
                 AbstractScene scene = ((GearApplication) this.getApplication())
-                        .getCachedAbstractScene(sceneClass);
+                        .getCachedScene(sceneClass);
 
                 AjaxLink link = new AjaxLink<>("menuItem") {
                     @Override

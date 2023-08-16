@@ -24,6 +24,11 @@ import org.tiny.gear.model.SystemVariables;
 import org.tiny.gear.scenes.AbstractScene;
 import org.tiny.gear.scenes.AbstractView;
 import org.tiny.gear.scenes.SceneTable;
+import org.tiny.gear.scenes.develop.DevelopScene;
+import org.tiny.gear.scenes.primary.PrimaryScene;
+import org.tiny.gear.scenes.setting.SettingScene;
+import org.tiny.gear.scenes.trader.TraderEditScene;
+import org.tiny.gear.scenes.webdb.CustomTableManagementScene;
 import org.tiny.wicket.SamlWicketApplication;
 import wicket.util.file.File;
 
@@ -44,10 +49,12 @@ public class GearApplication extends SamlWicketApplication implements IJdbcSuppl
     private HashMap<String, Properties> environments;
 
     private HashMap<String, AbstractScene> sceneCach = new HashMap<>();
+    private SceneTable sceneTable;
 
     private Cache<Table> tableCache;
 
     private Cache<AbstractView> viewCache;
+
 
     /**
      * @return WebPage
@@ -68,6 +75,22 @@ public class GearApplication extends SamlWicketApplication implements IJdbcSuppl
         // 暫定的に実装最終的には消す予定
         //getCspSettings().blocking().disabled();
         this.mountResources();
+    }
+
+    public void clearCache() {
+        if (this.tableCache != null) {
+            this.tableCache.clear();
+        }
+        if (this.systemVariableCache != null) {
+            this.systemVariableCache.clear();
+        }
+        if (this.viewCache != null) {
+            this.viewCache.clear();
+        }
+        if (this.sceneCach !=null){
+            this.sceneCach.clear();
+        }
+        
     }
 
     public void buildCache() {
@@ -95,8 +118,6 @@ public class GearApplication extends SamlWicketApplication implements IJdbcSuppl
                     return rvalue;
                 }
             };
-        }else{
-            this.tableCache.clear();
         }
 
         if (this.systemVariables == null) {
@@ -114,8 +135,6 @@ public class GearApplication extends SamlWicketApplication implements IJdbcSuppl
             } catch (SQLException ex) {
                 Logger.getLogger(GearApplication.class.getName()).log(Level.SEVERE, null, ex);
             }
-        }else{
-            this.systemVariableCache.clear();
         }
 
         if (this.viewCache == null) {
@@ -138,8 +157,6 @@ public class GearApplication extends SamlWicketApplication implements IJdbcSuppl
                     this.put(key, data);
                 }
             };
-        }else{
-            this.viewCache.clear();
         }
     }
 
@@ -274,7 +291,17 @@ public class GearApplication extends SamlWicketApplication implements IJdbcSuppl
         return rvalue;
     }
 
-    public AbstractScene getCachedAbstractScene(String sceneClassName) {
+    protected void initScenes() {
+        this.sceneTable = (SceneTable) this.getCachedTable(SceneTable.class);
+
+        this.sceneTable.registScene(this, PrimaryScene.class, 0, RoleController.ROLE_ALL);
+        this.sceneTable.registScene(this, SettingScene.class, 1, RoleController.ROLE_USER);
+        this.sceneTable.registScene(this, DevelopScene.class, 2, RoleController.ROLE_DEVELOPER);
+        this.sceneTable.registScene(this, CustomTableManagementScene.class, 3, RoleController.ROLE_DEVELOPER);
+        this.sceneTable.registScene(this, TraderEditScene.class, 4, RoleController.ROLE_USER);
+    }
+
+    public AbstractScene getCachedScene(String sceneClassName) {
         AbstractScene scene = null;
         if (this.sceneCach.containsKey(sceneClassName)) {
             scene = this.sceneCach.get(sceneClassName);
@@ -282,7 +309,7 @@ public class GearApplication extends SamlWicketApplication implements IJdbcSuppl
         } else {
             try {
                 SceneTable sceneTable = (SceneTable) this.getCachedTable(SceneTable.class);
-                scene = sceneTable.createScene(this, sceneClassName);
+                scene = this.sceneTable.createScene(this, sceneClassName);
                 this.sceneCach.put(sceneClassName, scene);
                 Logger.getLogger(this.getClass().getName()).log(Level.INFO, "SCENE: {0} Created.", sceneClassName);
             } catch (IllegalArgumentException | SecurityException ex) {
@@ -324,4 +351,5 @@ public class GearApplication extends SamlWicketApplication implements IJdbcSuppl
         this.systemVariableCache.put(key, rvalue);
         return rvalue;
     }
+
 }

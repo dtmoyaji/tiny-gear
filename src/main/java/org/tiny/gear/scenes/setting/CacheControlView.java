@@ -52,7 +52,7 @@ public class CacheControlView extends AbstractView {
     }
 
     public void reloadTableCache(AjaxRequestTarget target) {
-        this.getGearApplication().buildCache();
+        this.getGearApplication().clearCache();
         Logger.getLogger(this.getClass().getName()).log(Level.INFO, "CACHE CLEAR!!");
     }
 
