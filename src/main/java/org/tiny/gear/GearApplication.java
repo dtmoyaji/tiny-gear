@@ -19,15 +19,15 @@ import org.tiny.datawrapper.IJdbcSupplier;
 import org.tiny.datawrapper.Jdbc;
 import org.tiny.datawrapper.Table;
 import org.tiny.datawrapper.TinyDatabaseException;
-import org.tiny.gear.model.ObjectCachInfo;
+import org.tiny.gear.model.ObjectCacheInfo;
 import org.tiny.gear.model.SystemVariables;
 import org.tiny.gear.scenes.AbstractScene;
 import org.tiny.gear.scenes.AbstractView;
 import org.tiny.gear.scenes.SceneTable;
 import org.tiny.gear.scenes.develop.DevelopScene;
 import org.tiny.gear.scenes.primary.PrimaryScene;
+import org.tiny.gear.scenes.purchase.PurchaseScene;
 import org.tiny.gear.scenes.setting.SettingScene;
-import org.tiny.gear.scenes.trader.TraderEditScene;
 import org.tiny.gear.scenes.webdb.CustomTableManagementScene;
 import org.tiny.wicket.SamlWicketApplication;
 import wicket.util.file.File;
@@ -41,7 +41,7 @@ public class GearApplication extends SamlWicketApplication implements IJdbcSuppl
 
     private Jdbc jdbc;
 
-    private ObjectCachInfo objectCachInfo;
+    private ObjectCacheInfo objectCachInfo;
 
     private SystemVariables systemVariables;
     private HashMap<String, String> systemVariableCache;
@@ -54,7 +54,6 @@ public class GearApplication extends SamlWicketApplication implements IJdbcSuppl
     private Cache<Table> tableCache;
 
     private Cache<AbstractView> viewCache;
-
 
     /**
      * @return WebPage
@@ -78,28 +77,35 @@ public class GearApplication extends SamlWicketApplication implements IJdbcSuppl
     }
 
     public void clearCache() {
-        if (this.tableCache != null) {
-            this.tableCache.clear();
-        }
-        if (this.systemVariableCache != null) {
-            this.systemVariableCache.clear();
-        }
-        if (this.viewCache != null) {
-            this.viewCache.clear();
-        }
-        if (this.sceneCach !=null){
-            this.sceneCach.clear();
-        }
-        
+
+        this.tableCache.removeFromServer();
+        this.tableCache = null;
+
+        this.systemVariableCache = null;
+
+        this.viewCache.removeFromServer();
+        this.viewCache = null;
+        //this.sceneCach = null;
+
+        this.buildCache();
     }
 
     public void buildCache() {
         if (this.tableCache == null) {
-            this.tableCache = new Cache<>(this.getJdbc(), ObjectCachInfo.TYPE_TALBE) {
+            this.tableCache = new Cache<>() {
                 @Override
-                protected void afterNewInstance(String key, Table data) {
-                    data.alterOrCreateTable(getJdbc());
-                    this.put(key, data);
+                protected Table initializeObject(String key, Class[] constParam) {
+                    Table data = null;
+                    try {
+                        data = GearApplication.this.getCachedTable(key);
+                        Logger.getLogger(Cache.class.getCanonicalName())
+                                .log(Level.INFO, "TABLE: {0} instance created.", data.getClass().getName());
+                    } catch (SecurityException ex) {
+                        Logger.getLogger(Cache.class.getName()).log(Level.SEVERE, null, ex);
+                    } catch (IllegalArgumentException ex) {
+                        Logger.getLogger(GearApplication.class.getName()).log(Level.SEVERE, null, ex);
+                    }
+                    return data;
                 }
 
                 @Override
@@ -117,11 +123,17 @@ public class GearApplication extends SamlWicketApplication implements IJdbcSuppl
                     }
                     return rvalue;
                 }
+
             };
+            this.tableCache.sync(this, ObjectCacheInfo.TYPE_TALBE);
+            Logger.getLogger(this.getClass().getName()).log(Level.INFO, "Table cache created.");
         }
 
-        if (this.systemVariables == null) {
-            this.systemVariables = (SystemVariables) this.getCachedTable(SystemVariables.class);
+        if (this.systemVariableCache == null) {
+
+            this.systemVariables = new SystemVariables();
+            this.systemVariables.alterOrCreateTable(this.getJdbc());
+
             this.systemVariableCache = new HashMap<>();
             try (ResultSet rs = this.systemVariables.select()) {
                 while (rs.next()) {
@@ -135,10 +147,11 @@ public class GearApplication extends SamlWicketApplication implements IJdbcSuppl
             } catch (SQLException ex) {
                 Logger.getLogger(GearApplication.class.getName()).log(Level.SEVERE, null, ex);
             }
+            Logger.getLogger(this.getClass().getName()).log(Level.INFO, "System variable cache created.");
         }
 
         if (this.viewCache == null) {
-            this.viewCache = new Cache<>(this.getJdbc(), ObjectCachInfo.TYPE_VIEW, GearApplication.class) {
+            this.viewCache = new Cache<>() {
                 @Override
                 protected AbstractView onNewInstance(Constructor constructor) {
                     AbstractView rvalue = null;
@@ -153,10 +166,23 @@ public class GearApplication extends SamlWicketApplication implements IJdbcSuppl
                 }
 
                 @Override
-                protected void afterNewInstance(String key, AbstractView data) {
-                    this.put(key, data);
+                protected AbstractView initializeObject(String key, Class[] constParam) {
+                    AbstractView data = null;
+                    try {
+                        Class cls = Class.forName(key);
+                        Constructor constructor = cls.getConstructor(constParam);
+                        data = (AbstractView) this.onNewInstance(constructor);
+                        //this.put(key, data);
+                    } catch (ClassNotFoundException | NoSuchMethodException | SecurityException ex) {
+                        Logger.getLogger(Cache.class.getName()).log(Level.SEVERE, null, ex);
+                    }
+                    return data;
                 }
+
             };
+            this.viewCache.sync(this, ObjectCacheInfo.TYPE_VIEW, GearApplication.class);
+            Logger.getLogger(this.getClass().getName()).log(Level.INFO, "View cache created.");
+
         }
     }
 
@@ -226,34 +252,60 @@ public class GearApplication extends SamlWicketApplication implements IJdbcSuppl
         //return Application.DEVELOPMENT;
     }
 
-    public Table getCachedTable(String tableClassName) {
+    public Table getCachedCustomTable(String tableClassName) {
         Table rvalue = null;
-        if (this.tableCache.containsKey(tableClassName)) {
-            rvalue = this.tableCache.get(tableClassName);
-            if (rvalue == null) {
-                if (tableClassName.contains(GroovyTableBuilder.CUSTOM_TABLE_PACKAGE)) {
-                    GroovyTableBuilder gtb = new GroovyTableBuilder(this);
-                    String sqlName = GroovyTableBuilder.toSQLName(tableClassName);
-                    rvalue = gtb.createTable(sqlName);
-                }
+        if (CustomTableBuilder.isCustomTable(tableClassName)) {
+            if (this.tableCache.containsKey(tableClassName)) {
+                rvalue = this.tableCache.get(tableClassName);
             }
-        } else {
-            try {
-                Class<? extends Table> cls = (Class<? extends Table>) Class.forName(tableClassName);
-                rvalue = this.getCachedTable(cls);
-            } catch (ClassNotFoundException ex) {
-                Logger.getLogger(GearApplication.class.getName()).log(Level.SEVERE, null, ex);
+            if (rvalue == null) {
+                CustomTableBuilder gtb = new CustomTableBuilder(this);
+                String sqlName = CustomTableBuilder.toSQLName(tableClassName);
+                rvalue = gtb.createTable(sqlName);
+                this.tableCache.put(tableClassName, rvalue);
             }
         }
         return rvalue;
     }
 
+    public Table getCachedSystemTable(String tableClassName) {
+        Table rvalue = null;
+        if (this.tableCache.containsKey(tableClassName)) {
+            rvalue = this.tableCache.get(tableClassName);
+        } else {
+            try {
+                Class<? extends Table> cls = (Class<? extends Table>) Class.forName(tableClassName);
+                rvalue = cls.getConstructor().newInstance();
+                rvalue.alterOrCreateTable(this.getJdbc());
+                this.tableCache.put(tableClassName, rvalue);
+            } catch (ClassNotFoundException | NoSuchMethodException | SecurityException | InstantiationException | IllegalAccessException | IllegalArgumentException | InvocationTargetException ex) {
+                Logger.getLogger(GearApplication.class
+                        .getName()).log(Level.SEVERE, null, ex);
+            }
+        }
+        return rvalue;
+    }
+
+    public Table getCachedTable(String tableClassName) {
+        Table rvalue = this.getCachedCustomTable(tableClassName);
+        if (rvalue == null) {
+            rvalue = this.getCachedSystemTable(tableClassName);
+        }
+        return rvalue;
+    }
+
     public Table getCachedTable(Class<? extends Table> tableClass) {
-        Table rvalue = this.tableCache.get(tableClass.getName());
+        if (this.tableCache == null) {
+            return null;
+        }
+        Table rvalue = this.getCachedTable(tableClass.getName());
         return rvalue;
     }
 
     public boolean isTableCached(String tableClassName) {
+        if (this.tableCache == null) {
+            return false;
+        }
         boolean rvalue = this.tableCache.containsKey(tableClassName);
         if (rvalue) {
             rvalue = (this.tableCache.get(tableClassName) != null);
@@ -280,25 +332,52 @@ public class GearApplication extends SamlWicketApplication implements IJdbcSuppl
         try {
             Class<? extends AbstractView> cls = (Class<? extends AbstractView>) Class.forName(viewClassName);
             rvalue = this.getCachedView(cls);
+
         } catch (ClassNotFoundException ex) {
-            Logger.getLogger(GearApplication.class.getName()).log(Level.SEVERE, null, ex);
+            Logger.getLogger(GearApplication.class
+                    .getName()).log(Level.SEVERE, null, ex);
         }
         return rvalue;
     }
 
     public AbstractView getCachedView(Class<? extends AbstractView> viewClass) {
         AbstractView rvalue = this.viewCache.get(viewClass.getName());
+        if (rvalue == null) {
+            try {
+                rvalue = viewClass.getConstructor(GearApplication.class)
+                        .newInstance(this);
+                this.viewCache.put(viewClass.getName(), rvalue);
+                Logger.getLogger(this.getClass().getName()).log(Level.INFO, "VIEW : {0} instance created.", viewClass.getName());
+            } catch (NoSuchMethodException
+                    | SecurityException
+                    | InstantiationException
+                    | IllegalAccessException
+                    | IllegalArgumentException
+                    | InvocationTargetException ex) {
+                Logger.getLogger(GearApplication.class.getName()).log(Level.SEVERE, null, ex);
+            }
+        }
         return rvalue;
+
     }
 
     protected void initScenes() {
         this.sceneTable = (SceneTable) this.getCachedTable(SceneTable.class);
 
-        this.sceneTable.registScene(this, PrimaryScene.class, 0, RoleController.ROLE_ALL);
-        this.sceneTable.registScene(this, SettingScene.class, 1, RoleController.ROLE_USER);
-        this.sceneTable.registScene(this, DevelopScene.class, 2, RoleController.ROLE_DEVELOPER);
-        this.sceneTable.registScene(this, CustomTableManagementScene.class, 3, RoleController.ROLE_DEVELOPER);
-        this.sceneTable.registScene(this, TraderEditScene.class, 4, RoleController.ROLE_USER);
+        this.sceneTable.registScene(this, PrimaryScene.class,
+                0, RoleController.ROLE_ALL);
+
+        this.sceneTable.registScene(this, SettingScene.class,
+                1, RoleController.ROLE_USER);
+
+        this.sceneTable.registScene(this, DevelopScene.class,
+                2, RoleController.ROLE_DEVELOPER);
+
+        this.sceneTable.registScene(this, CustomTableManagementScene.class,
+                3, RoleController.ROLE_DEVELOPER);
+
+        this.sceneTable.registScene(this, PurchaseScene.class,
+                4, RoleController.ROLE_USER);
     }
 
     public AbstractScene getCachedScene(String sceneClassName) {
@@ -306,14 +385,18 @@ public class GearApplication extends SamlWicketApplication implements IJdbcSuppl
         if (this.sceneCach.containsKey(sceneClassName)) {
             scene = this.sceneCach.get(sceneClassName);
             //Logger.getLogger(this.getClass().getName()).log(Level.INFO, "Scene Cache Hit :{0}", sceneClassName);
+
         } else {
             try {
-                SceneTable sceneTable = (SceneTable) this.getCachedTable(SceneTable.class);
+                SceneTable sceneTable = (SceneTable) this.getCachedTable(SceneTable.class
+                );
                 scene = this.sceneTable.createScene(this, sceneClassName);
                 this.sceneCach.put(sceneClassName, scene);
                 Logger.getLogger(this.getClass().getName()).log(Level.INFO, "SCENE: {0} Created.", sceneClassName);
+
             } catch (IllegalArgumentException | SecurityException ex) {
-                Logger.getLogger(GearApplication.class.getName()).log(Level.SEVERE, null, ex);
+                Logger.getLogger(GearApplication.class
+                        .getName()).log(Level.SEVERE, null, ex);
             }
         }
         if (scene == null) {
@@ -341,11 +424,13 @@ public class GearApplication extends SamlWicketApplication implements IJdbcSuppl
                         if (rs.next()) {
                             rvalue = this.systemVariables.Value.of(rs);
                             rs.close();
+
                         }
                     }
                 }
             } catch (TinyDatabaseException | SQLException ex) {
-                Logger.getLogger(GearApplication.class.getName()).log(Level.SEVERE, null, ex);
+                Logger.getLogger(GearApplication.class
+                        .getName()).log(Level.SEVERE, null, ex);
             }
         }
         this.systemVariableCache.put(key, rvalue);

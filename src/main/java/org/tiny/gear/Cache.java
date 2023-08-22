@@ -19,10 +19,7 @@ import java.lang.reflect.Constructor;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.HashMap;
-import java.util.logging.Level;
-import java.util.logging.Logger;
-import org.tiny.datawrapper.Jdbc;
-import org.tiny.gear.model.ObjectCachInfo;
+import org.tiny.gear.model.ObjectCacheInfo;
 
 /**
  *
@@ -32,36 +29,37 @@ public abstract class Cache<T> extends HashMap<String, T> {
 
     private String cachType;
 
-    private Jdbc jdbc;
-    private ObjectCachInfo objectCachInfo;
-    
+    private GearApplication app;
+    private ObjectCacheInfo objectCachInfo;
+
     private Class[] constParam;
     
-    public Cache(Jdbc jdbc, String cachType, Class... constParam) {
+    public Cache(){
         super();
-        this.jdbc = jdbc;
+    }
+
+    public void sync(GearApplication app, String cachType, Class... constParam) {
+        this.clear();
+        this.app = app;
         this.cachType = cachType;
-        this.objectCachInfo = new ObjectCachInfo();
-        this.objectCachInfo.alterOrCreateTable(this.jdbc);
+        this.objectCachInfo = new ObjectCacheInfo();
+        this.objectCachInfo.alterOrCreateTable(this.app.getJdbc());
         this.constParam = constParam;
 
         String key = "";
         try (ResultSet rs = this.objectCachInfo.getTypeOf(this.cachType)) {
             while (rs.next()) {
                 key = this.objectCachInfo.ObjectName.of(rs);
-                Class cls = Class.forName(key);
-                Constructor constructor = cls.getConstructor(constParam);
-                T data = (T) this.onNewInstance(constructor);
+                T data = this.initializeObject(key, constParam);
                 super.put(key, data);
-                afterNewInstance(key, data);
             }
         } catch (SQLException
-                | ClassNotFoundException
-                | NoSuchMethodException
                 | SecurityException ex) {
-                super.put(key, null);
+            super.put(key, null);
         }
     }
+
+    protected abstract T initializeObject(String key, Class[] constParam);
 
     @Override
     public T put(String key, T data) {
@@ -75,33 +73,11 @@ public abstract class Cache<T> extends HashMap<String, T> {
 
         return rvalue;
     }
-
-    public T get(String key) {
-        T rvalue = null;
-        if (this.containsKey(key)) {
-            //Logger.getLogger(this.getClass().getName())
-            //        .log(Level.INFO, "Cache Name: {0} Type: {1} Hit.",
-            //                new Object[]{key, this.cachType});
-            rvalue = super.get(key);
-        } else {
-            try {
-                Class<? extends T> cls = (Class<? extends T>) Class.forName(key);
-                Constructor cst = cls.getConstructor(this.constParam);
-                rvalue = (T) this.onNewInstance(cst);
-                this.put(key, rvalue);
-                afterNewInstance(key, rvalue);
-            } catch (ClassNotFoundException
-                    | NoSuchMethodException
-                    | SecurityException
-                    | IllegalArgumentException ex) {
-                Logger.getLogger(Cache.class.getName()).log(Level.SEVERE, null, ex);
-            }
-        }
-        return rvalue;
-    }
     
-    protected abstract T onNewInstance(Constructor constructor);
+    public void removeFromServer(){
+        this.objectCachInfo.truncate();
+    }
 
-    protected abstract void afterNewInstance(String key, T data);
+    protected abstract T onNewInstance(Constructor constructor);
 
 }

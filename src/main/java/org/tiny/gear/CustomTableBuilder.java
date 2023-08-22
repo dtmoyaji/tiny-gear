@@ -3,7 +3,6 @@ package org.tiny.gear;
 import groovy.lang.Binding;
 import groovy.lang.GroovyShell;
 import java.sql.ResultSet;
-import java.sql.SQLException;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import org.tiny.datawrapper.NameDescriptor;
@@ -15,7 +14,7 @@ import org.tiny.gear.scenes.webdb.CustomTable;
  *
  * @author dtmoyaji
  */
-public class GroovyTableBuilder {
+public class CustomTableBuilder {
 
     public static final String CUSTOM_TABLE_PACKAGE = "org.tiny.gear.customtable";
 
@@ -24,12 +23,12 @@ public class GroovyTableBuilder {
     private String tableDefHeader = "";
     private String codeForInstance = "return new %s()";
 
-    public GroovyTableBuilder(GearApplication app) {
+    public CustomTableBuilder(GearApplication app) {
         this.app = app;
-        this.customTable = (CustomTable) app.getCachedTable(CustomTable.class);
+        this.customTable =  new CustomTable();
         this.customTable.setJdbc(app.getJdbc());
 
-        this.tableDefHeader += "package " + GroovyTableBuilder.CUSTOM_TABLE_PACKAGE + "\n";
+        this.tableDefHeader += "package " + CustomTableBuilder.CUSTOM_TABLE_PACKAGE + "\n";
         this.tableDefHeader += "import org.tiny.datawrapper.annotations.LogicalName \n";
         this.tableDefHeader += "import org.tiny.datawrapper.annotations.Comment \n";
         this.tableDefHeader += "import org.tiny.datawrapper.Table \n";
@@ -40,7 +39,7 @@ public class GroovyTableBuilder {
 
     }
 
-    public Table createTable(String tableName, String tableDef) {
+    public Table createTable(String tableName, String tableDef) throws Exception{
         Table rvalue = this.getTable(tableName);
         if (rvalue == null) {
             String cfi = String.format(codeForInstance, NameDescriptor.toJavaName(tableName));
@@ -49,14 +48,14 @@ public class GroovyTableBuilder {
             GroovyShell grshell = new GroovyShell(binding);
             rvalue = (Table) grshell.evaluate(tableDef);
             rvalue.alterOrCreateTable(this.app.getJdbc());
-            rvalue = this.app.stackTableOnCach(rvalue);
+            //rvalue = this.app.stackTableOnCach(rvalue);
         }
         return rvalue;
 
     }
 
     private Table getTable(String tableName) {
-        String tableClass = GroovyTableBuilder.CUSTOM_TABLE_PACKAGE + "." + NameDescriptor.toJavaName(tableName);
+        String tableClass = CustomTableBuilder.CUSTOM_TABLE_PACKAGE + "." + NameDescriptor.toJavaName(tableName);
         Table rvalue = (this.app.isTableCached(tableClass)) ? this.app.getCachedTable(tableClass) : null;
         return rvalue;
     }
@@ -71,17 +70,21 @@ public class GroovyTableBuilder {
                     rs.close();
                     rvalue = this.createTable(tableName, tableDef);
                 }
-            } catch (SQLException ex) {
-                Logger.getLogger(GroovyTableBuilder.class.getName()).log(Level.SEVERE, null, ex);
+            } catch (Exception ex) {
+                Logger.getLogger(CustomTableBuilder.class.getName()).log(Level.SEVERE, null, ex);
             }
         }
         return rvalue;
     }
 
     public static String toSQLName(String tblClass) {
-        tblClass = tblClass.replace(GroovyTableBuilder.CUSTOM_TABLE_PACKAGE + ".", "");
+        tblClass = tblClass.replace(CustomTableBuilder.CUSTOM_TABLE_PACKAGE + ".", "");
         String rvalue = NameDescriptor.toSqlName(tblClass);
         return rvalue;
+    }
+    
+    public static boolean isCustomTable(String tblClassName){
+        return tblClassName.contains(CustomTableBuilder.CUSTOM_TABLE_PACKAGE);
     }
 
 }

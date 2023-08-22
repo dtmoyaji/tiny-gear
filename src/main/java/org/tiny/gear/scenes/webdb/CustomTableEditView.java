@@ -3,11 +3,12 @@ package org.tiny.gear.scenes.webdb;
 import java.util.ArrayList;
 import org.apache.wicket.AttributeModifier;
 import org.apache.wicket.ajax.AjaxRequestTarget;
+import org.apache.wicket.markup.html.basic.Label;
 import org.apache.wicket.model.Model;
 import org.tiny.datawrapper.Column;
 import org.tiny.datawrapper.Table;
+import org.tiny.gear.CustomTableBuilder;
 import org.tiny.gear.GearApplication;
-import org.tiny.gear.GroovyTableBuilder;
 import org.tiny.gear.panels.crud.DataControl;
 import org.tiny.gear.panels.crud.DataTableView;
 import org.tiny.gear.panels.crud.FilterAndEdit;
@@ -24,21 +25,27 @@ public class CustomTableEditView extends AbstractView {
 
     private FilterAndEdit filterAndEdit;
 
+    private Label groovyMsg;
+
     public CustomTableEditView(GearApplication app) {
         super(app);
     }
-    
+
     @Override
-    public void redraw(){
+    public void redraw() {
         super.redraw();
-        
+
         this.customTable = (CustomTable) this.getTable(CustomTable.class);
         this.customTable.setAllowDeleteRow(true); // TODO: あとでfalseに変える。
 
+        this.groovyMsg = new Label("groovyMsg", Model.of(""));
+        this.groovyMsg.setOutputMarkupId(true);
+        this.add(this.groovyMsg);
+
         this.filterAndEdit = new FilterAndEdit("customTableEditor", this.customTable) {
-            
+
             public static final long serialVersionUID = -1L;
-            
+
             @Override
             public void beforeConstructDataTableView(Table myTable, DataTableView dataTableView) {
                 myTable.get(customTable.TableDef.getName()).setVisibleType(Column.VISIBLE_TYPE_HIDDEN);
@@ -63,22 +70,31 @@ public class CustomTableEditView extends AbstractView {
 
             @Override
             public boolean beforeSubmit(AjaxRequestTarget target, Table targetTable, ArrayList<DataControl> dataControls) {
+                CustomTableEditView.this.groovyMsg.setDefaultModelObject("");
+
                 String tableName = "";
                 String tableDef = "";
-                for(DataControl control: dataControls){
-                    if(control.getColumn().getName().equals(customTable.TableDef.getName())){
+                for (DataControl control : dataControls) {
+                    if (control.getColumn().getName().equals(customTable.TableDef.getName())) {
                         tableDef = control.getValue(DataControl.UNESCAPE);
                     }
-                    if(control.getColumn().getName().equals(customTable.TableName.getName())){
+                    if (control.getColumn().getName().equals(customTable.TableName.getName())) {
                         tableName = control.getValue(DataControl.UNESCAPE);
                     }
                 }
                 GearApplication ga = getGearApplication();
                 ga.removeTableCach(tableName);
                 ga.clearViewCach();
-                GroovyTableBuilder gtb = new GroovyTableBuilder(ga);
-                
-                return (gtb.createTable(tableName, tableDef) instanceof Table);
+                CustomTableBuilder gtb = new CustomTableBuilder(ga);
+
+                Table dummy = null;
+                try {
+                    dummy = gtb.createTable(tableName, tableDef);
+                } catch (Exception ex) {
+                    CustomTableEditView.this.groovyMsg.setDefaultModelObject(ex.toString());
+                }
+                target.add(CustomTableEditView.this.groovyMsg);
+                return dummy instanceof Table;
             }
         };
         this.filterAndEdit.getRecordEditor().buildForm(this);

@@ -194,12 +194,11 @@ public abstract class RecordEditor extends DataTableInfoPanel {
             } else {
                 targetTable.merge();
             }
-            
-            target.add(this);
-            
+
             this.delete.setVisible(this.isAllowDelete());
             target.add(this.delete);
         }
+        target.add(this);
     }
 
     /**

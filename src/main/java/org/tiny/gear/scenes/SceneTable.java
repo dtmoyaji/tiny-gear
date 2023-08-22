@@ -63,7 +63,6 @@ public class SceneTable extends Table implements Serializable{
     
     public void registScene(GearApplication application, Class<? extends AbstractScene> sceneClass, int ordinal, String RoleName){
         SceneTable stable = (SceneTable) application.getCachedTable(SceneTable.class);
-        stable.alterOrCreateTable(application.getJdbc());
         stable.merge(
                 stable.SceneClassName.setValue(sceneClass.getCanonicalName()),
                 stable.Ordinal.setValue(ordinal),
@@ -72,7 +71,8 @@ public class SceneTable extends Table implements Serializable{
     }
 
     public AbstractScene createScene(GearApplication application, String sceneClassName) {
-        SceneTable sceneTable = (SceneTable) application.getCachedTable(SceneTable.class);
+        SceneTable sceneTable = new SceneTable();
+        sceneTable.alterOrCreateTable(application.getJdbc());
         // sceneTable.setDebugMode(true);
         ResultSet rs = sceneTable.select(sceneTable.SceneClassName.sameValueOf(sceneClassName));
         AbstractScene scene = null;
@@ -93,6 +93,7 @@ public class SceneTable extends Table implements Serializable{
                     | IllegalAccessException
                     | IllegalArgumentException
                     | InvocationTargetException ex) {
+                sceneTable.delete(sceneTable.SceneClassName.sameValueOf(sceneClassName));
                 Logger.getLogger(Index.class.getName()).log(Level.SEVERE, null, ex);
             }
         }

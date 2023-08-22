@@ -11,7 +11,7 @@ import org.tiny.datawrapper.annotations.LogicalName;
  * @author dtmoyaji
  */
 @LogicalName("キャッシュ情報")
-public class ObjectCachInfo extends Table {
+public class ObjectCacheInfo extends Table {
 
     public static final String TYPE_TALBE = "table";
     public static final String TYPE_SCENE = "scene";

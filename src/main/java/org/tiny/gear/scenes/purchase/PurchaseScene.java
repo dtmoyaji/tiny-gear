@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.tiny.gear.scenes.trader;
+package org.tiny.gear.scenes.purchase;
 
 import org.apache.wicket.authroles.authorization.strategies.role.Roles;
 import org.tiny.gear.GearApplication;
@@ -24,15 +24,15 @@ import org.tiny.gear.scenes.AbstractScene;
  *
  * @author dtmoyaji
  */
-public class TraderEditScene extends AbstractScene{
+public class PurchaseScene extends AbstractScene{
 
-    public TraderEditScene(Roles allowed, GearApplication application){
+    public PurchaseScene(Roles allowed, GearApplication application){
         super(allowed, application);
     }
 
     @Override
     public void defineMenu() {
-        this.putMenu("仕入先編集",
+        this.putMenu("仕入",
                 TraderEditView.class,
                 RoleController.getUserRoles(),
                 true);
