@@ -17,7 +17,7 @@ import org.tiny.gear.scenes.AbstractView;
 
 /**
  *
- * @author bythe
+ * @author dtmoyaji
  */
 public abstract class RecordEditor extends DataTableInfoPanel {
 

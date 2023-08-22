@@ -9,7 +9,7 @@ import org.tiny.datawrapper.annotations.LogicalName;
 
 /**
  * システム変数の格納先
- * @author bythe
+ * @author dtmoyaji
  */
 @LogicalName("システム変数")
 public class SystemVariables extends Table{

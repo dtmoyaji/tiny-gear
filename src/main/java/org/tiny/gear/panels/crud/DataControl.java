@@ -11,7 +11,7 @@ import org.tiny.datawrapper.Column;
 /**
  * カラムの編集用。
  *
- * @author bythe
+ * @author dtmoyaji
  */
 public class DataControl extends Panel {
     

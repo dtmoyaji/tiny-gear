@@ -13,7 +13,7 @@ import org.tiny.gear.GearApplication;
 
 /**
  * データテーブル情報を格納するクラス
- * @author bythe
+ * @author dtmoyaji
  */
 public abstract class DataTableInfoPanel extends Panel implements IJdbcSupplier{
     

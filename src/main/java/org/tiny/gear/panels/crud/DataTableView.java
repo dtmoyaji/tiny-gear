@@ -23,7 +23,7 @@ import org.tiny.datawrapper.TinyDatabaseException;
 /**
  * テーブルのデータを表示するパネル
  *
- * @author bythe
+ * @author dtmoyaji
  */
 public abstract class DataTableView extends DataTableInfoPanel {
 

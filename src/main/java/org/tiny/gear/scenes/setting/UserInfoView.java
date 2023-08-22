@@ -14,7 +14,7 @@ import org.tiny.wicket.onelogin.SamlSession;
 
 /**
  *
- * @author bythe
+ * @author dtmoyaji
  */
 public class UserInfoView extends AbstractView {
 

@@ -25,7 +25,7 @@ import org.tiny.wicket.onelogin.SamlSession;
 /**
  * メインページ。 ここで、画面表示を全部制御する。
  *
- * @author bythe
+ * @author dtmoyaji
  */
 public class Index extends SamlMainPage implements IJdbcSupplier {
 

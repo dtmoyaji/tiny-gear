@@ -7,7 +7,7 @@ import org.tiny.gear.scenes.AbstractView;
 
 /**
  *
- * @author bythe
+ * @author dtmoyaji
  */
 public class ConnectionView extends AbstractView {
 

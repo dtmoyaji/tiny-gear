@@ -17,7 +17,7 @@ import org.tiny.gear.scenes.AbstractView;
 
 /**
  *
- * @author bythe
+ * @author dtmoyaji
  */
 public class CustomTableEditView extends AbstractView {
 

@@ -9,7 +9,7 @@ import org.tiny.datawrapper.annotations.LogicalName;
 /**
  * Groovyで定義するカスタムテーブル
  *
- * @author bythe
+ * @author dtmoyaji
  */
 @LogicalName("カスタムテーブル")
 public class CustomTable extends Table {

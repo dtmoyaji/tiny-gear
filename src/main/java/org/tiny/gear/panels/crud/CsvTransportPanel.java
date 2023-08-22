@@ -2,7 +2,7 @@ package org.tiny.gear.panels.crud;
 
 /**
  *
- * @author bythe
+ * @author dtmoyaji
  */
 public abstract class CsvTransportPanel extends DataTableInfoPanel{
 
