@@ -21,7 +21,7 @@ public abstract class AbstractPanel extends Panel {
         this.titleLabel = new Label("title", Model.of(this.getTitle()));
         this.add(this.titleLabel);
     }
-
+    
     public String getTitle() {
         return "AbstractPanel";
     }

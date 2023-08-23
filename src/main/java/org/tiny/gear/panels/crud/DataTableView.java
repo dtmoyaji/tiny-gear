@@ -169,7 +169,7 @@ public abstract class DataTableView extends DataTableInfoPanel {
         this.tableHeader.setOutputMarkupId(true);
         this.curdTableView.add(this.tableHeader);
 
-        this.csvTransPortPanelPlaceHolder = new CsvTransportPanel("csvTransPortPanelPlaceHolder") {
+        this.csvTransPortPanelPlaceHolder = new CsvTransportPanel("csvTransPortPanelPlaceHolder", this) {
             @Override
             public void beforeConstructView(Table myTable) {
             }

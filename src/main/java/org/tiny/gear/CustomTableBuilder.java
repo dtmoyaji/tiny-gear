@@ -11,7 +11,7 @@ import org.tiny.gear.scenes.webdb.CustomTable;
 
 /**
  * CustomTableで作成したGroovy形式のテーブル定義をインスタンス化するクラス
- *
+ * 指定するGroovyのソースコードは、パッケージ宣言とimport宣言を省略すること。
  * @author dtmoyaji
  */
 public class CustomTableBuilder {
@@ -55,8 +55,10 @@ public class CustomTableBuilder {
     }
 
     private Table getTable(String tableName) {
-        String tableClass = CustomTableBuilder.CUSTOM_TABLE_PACKAGE + "." + NameDescriptor.toJavaName(tableName);
-        Table rvalue = (this.app.isTableCached(tableClass)) ? this.app.getCachedTable(tableClass) : null;
+        String tableClass = CustomTableBuilder.CUSTOM_TABLE_PACKAGE 
+                + "." + NameDescriptor.toJavaName(tableName);
+        Table rvalue = (this.app.isTableCached(tableClass)) 
+                ? this.app.getCachedTable(tableClass) : null;
         return rvalue;
     }
 
@@ -64,21 +66,27 @@ public class CustomTableBuilder {
 
         Table rvalue = this.getTable(tableName);
         if (rvalue == null) {
-            try (ResultSet rs = this.customTable.select(this.customTable.TableName.sameValueOf(tableName))) {
+            try (ResultSet rs = this.customTable.select(
+                    this.customTable.TableName.sameValueOf(tableName)
+            )) {
                 if (rs.next()) {
                     String tableDef = this.customTable.TableDef.of(rs);
                     rs.close();
                     rvalue = this.createTable(tableName, tableDef);
                 }
             } catch (Exception ex) {
-                Logger.getLogger(CustomTableBuilder.class.getName()).log(Level.SEVERE, null, ex);
+                Logger.getLogger(CustomTableBuilder.class.getName())
+                        .log(Level.SEVERE, null, ex);
             }
         }
         return rvalue;
     }
 
     public static String toSQLName(String tblClass) {
-        tblClass = tblClass.replace(CustomTableBuilder.CUSTOM_TABLE_PACKAGE + ".", "");
+        tblClass = tblClass.replace(
+                CustomTableBuilder.CUSTOM_TABLE_PACKAGE + "."
+                , ""
+        );
         String rvalue = NameDescriptor.toSqlName(tblClass);
         return rvalue;
     }

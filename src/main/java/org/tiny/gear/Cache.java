@@ -7,8 +7,10 @@ import java.util.HashMap;
 import org.tiny.gear.model.ObjectCacheInfo;
 
 /**
- *
+ * キャッシュコンテナ
+ * GearApplication内で使用するオブジェクトキャッシュのテンプレートクラス。
  * @author dtmoyaji
+ * @param <T> 格納するオブジェクト
  */
 public abstract class Cache<T> extends HashMap<String, T> {
 
@@ -23,6 +25,12 @@ public abstract class Cache<T> extends HashMap<String, T> {
         super();
     }
 
+    /**
+     * アプリ起動時にデータベースからキャッシュ情報を読み込んで、オブジェクトを復元格納する。
+     * @param app GearApplication
+     * @param cachType キャッシュの種別: View | Table
+     * @param constParam オブジェクトのコンストラクタ引数で使われるクラス
+     */
     public void sync(GearApplication app, String cachType, Class... constParam) {
         this.clear();
         this.app = app;
@@ -35,7 +43,7 @@ public abstract class Cache<T> extends HashMap<String, T> {
         try (ResultSet rs = this.objectCachInfo.getTypeOf(this.cachType)) {
             while (rs.next()) {
                 key = this.objectCachInfo.ObjectName.of(rs);
-                T data = this.initializeObject(key, constParam);
+                T data = this.initializeObject(key, this.constParam);
                 super.put(key, data);
             }
         } catch (SQLException

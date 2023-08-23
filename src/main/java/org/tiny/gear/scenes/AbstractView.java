@@ -6,17 +6,17 @@ import java.util.HashMap;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import org.apache.wicket.markup.html.basic.Label;
-import org.apache.wicket.markup.html.panel.Panel;
 import org.apache.wicket.model.Model;
 import org.tiny.datawrapper.Table;
 import org.tiny.gear.GearApplication;
+import org.tiny.gear.panels.AbstractPanel;
 
 /**
  * シーンに含まれるビューの抽象クラス
  *
  * @author dtmoyaji
  */
-public abstract class AbstractView extends Panel{
+public abstract class AbstractView extends AbstractPanel{
 
     public static final long serialVersionUID = -1L;
 

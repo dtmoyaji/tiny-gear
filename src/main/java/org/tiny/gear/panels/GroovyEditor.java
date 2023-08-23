@@ -10,6 +10,7 @@ import org.apache.wicket.markup.html.basic.Label;
 import org.apache.wicket.markup.html.form.Form;
 import org.apache.wicket.markup.html.form.TextArea;
 import org.apache.wicket.model.Model;
+import org.tiny.gear.GroovyExecuteButton;
 
 /**
  *
@@ -24,6 +25,8 @@ public class GroovyEditor extends AbstractPanel {
     private TextArea<String> code;
 
     private AjaxButton btnRun;
+    
+    private GroovyExecuteButton btnRun2;
 
     private Label result;
 
@@ -35,6 +38,7 @@ public class GroovyEditor extends AbstractPanel {
         this.add(this.editor);
 
         this.code = new TextArea<>("code", Model.of("import org.tiny.gear.model.UserInfo\n\ndef jdbc = myApplication.getJdbc()\ndef uinfo = new UserInfo()\nuinfo.alterOrCreateTable(jdbc)\n\nreturn uinfo.toString()"));
+        this.code.setOutputMarkupId(true);
         this.editor.add(this.code);
 
         this.btnRun = new AjaxButton("btnRun", Model.of("実行")) {
@@ -71,6 +75,9 @@ public class GroovyEditor extends AbstractPanel {
 
         };
         this.editor.add(this.btnRun);
+        
+        this.btnRun2 = new GroovyExecuteButton("btnRun2", Model.of("組込"),this.getGearApplication(), this);
+        this.editor.add(this.btnRun2);
 
         this.result = new Label("lblResult", Model.of("よしなに。"));
         this.result.setEscapeModelStrings(false);

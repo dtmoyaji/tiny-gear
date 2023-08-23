@@ -54,6 +54,8 @@ public class GearApplication extends SamlWicketApplication implements IJdbcSuppl
     private Cache<Table> tableCache;
 
     private Cache<AbstractView> viewCache;
+    
+    private GroovyExecutor groovyExecutor;
 
     /**
      * @return WebPage
@@ -184,6 +186,7 @@ public class GearApplication extends SamlWicketApplication implements IJdbcSuppl
             Logger.getLogger(this.getClass().getName()).log(Level.INFO, "View cache created.");
 
         }
+        this.groovyExecutor = new GroovyExecutor(this);
     }
 
     public void mountResources() {
@@ -435,6 +438,10 @@ public class GearApplication extends SamlWicketApplication implements IJdbcSuppl
         }
         this.systemVariableCache.put(key, rvalue);
         return rvalue;
+    }
+    
+    public GroovyExecutor getGroovyExecutor(){
+        return this.groovyExecutor;
     }
 
 }
