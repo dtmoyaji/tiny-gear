@@ -9,18 +9,20 @@ import org.apache.wicket.ajax.AjaxRequestTarget;
 import org.apache.wicket.markup.html.panel.Panel;
 import org.tiny.datawrapper.Column;
 import org.tiny.datawrapper.Table;
+import org.tiny.gear.panels.IPanelPopupper;
+import org.tiny.gear.panels.PopUpPanel;
 
 /**
  * レコードを検索し、編集する。
  */
-abstract public class FilterAndEdit extends Panel {
+abstract public class FilterAndEdit extends Panel implements IPanelPopupper{
     
     private KeyValueList currentKeyValueList;
     
     private DataTableView dataTableView;
 
     private RecordEditor recordEditor;
-
+    
     public FilterAndEdit(String id, Table table) {
         super(id);
         
@@ -183,6 +185,16 @@ abstract public class FilterAndEdit extends Panel {
     
     public RecordEditor getRecordEditor(){
         return this.recordEditor;
+    }
+
+    @Override
+    public void setPopUpPanel(PopUpPanel panel) {
+        this.dataTableView.setPopUpPanel(panel);
+    }
+
+    @Override
+    public PopUpPanel getPopUpPanel() {
+        return this.dataTableView.getPopUpPanel();
     }
 
 }

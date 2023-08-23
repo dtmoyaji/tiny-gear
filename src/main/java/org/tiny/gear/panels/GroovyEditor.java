@@ -76,7 +76,10 @@ public class GroovyEditor extends AbstractPanel {
         };
         this.editor.add(this.btnRun);
         
-        this.btnRun2 = new GroovyExecuteButton("btnRun2", Model.of("組込"),this.getGearApplication(), this);
+        this.btnRun2 = new GroovyExecuteButton("btnRun2", Model.of("組込"),this.getGearApplication(), 
+                this, 
+                this.getClass().getName()
+        );
         this.editor.add(this.btnRun2);
 
         this.result = new Label("lblResult", Model.of("よしなに。"));

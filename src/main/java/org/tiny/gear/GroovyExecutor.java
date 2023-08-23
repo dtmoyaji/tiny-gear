@@ -25,6 +25,7 @@ public class GroovyExecutor implements Serializable {
     private GroovyStack gstack;
 
     private Panel panel;
+    private String panelName;
 
     private GearApplication application;
 
@@ -39,8 +40,9 @@ public class GroovyExecutor implements Serializable {
         this.gstack = (GroovyStack) this.application.getCachedTable(GroovyStack.class);
     }
 
-    public boolean execute(String scriptName, Panel panel) {
+    public boolean execute(String scriptName, Panel panel, String panelName) {
         this.panel = panel;
+        this.panelName = panelName;
         GroovyShell shell = new GroovyShell();
         this.updateComponents = new ArrayList<>();
         boolean rvalue = false;
@@ -73,10 +75,10 @@ public class GroovyExecutor implements Serializable {
                 this.application
         );
         shell.setVariable(
-                this.getParameterName(this.panel.getClass()),
+                this.panelName,
                 this.panel
         );
-        shell.setVariable("_UpdateComponent", this.updateComponents);
+        shell.setVariable("_UpdateComponents", this.updateComponents);
         if (classes == null) {
             return;
         }

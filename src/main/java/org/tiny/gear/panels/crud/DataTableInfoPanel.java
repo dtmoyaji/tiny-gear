@@ -10,14 +10,18 @@ import org.tiny.datawrapper.IJdbcSupplier;
 import org.tiny.datawrapper.Jdbc;
 import org.tiny.datawrapper.Table;
 import org.tiny.gear.GearApplication;
+import org.tiny.gear.panels.IPanelPopupper;
+import org.tiny.gear.panels.PopUpPanel;
 
 /**
  * データテーブル情報を格納するクラス
  * @author dtmoyaji
  */
-public abstract class DataTableInfoPanel extends Panel implements IJdbcSupplier{
+public abstract class DataTableInfoPanel extends Panel implements IJdbcSupplier, IPanelPopupper{
     
     protected Table targetTable;
+    
+    private PopUpPanel popupPanel;
     
     public DataTableInfoPanel(String id) {
         super(id);
@@ -78,6 +82,16 @@ public abstract class DataTableInfoPanel extends Panel implements IJdbcSupplier{
     
     public GearApplication getGearApplication(){
         return (GearApplication) this.getApplication();
+    }
+
+    @Override
+    public void setPopUpPanel(PopUpPanel panel) {
+        this.popupPanel = panel;
+    }
+
+    @Override
+    public PopUpPanel getPopUpPanel() {
+        return this.popupPanel;
     }
     
 }

@@ -17,9 +17,7 @@ public abstract class AbstractPanel extends Panel {
 
     public AbstractPanel(String id) {
         super(id);
-
-        this.titleLabel = new Label("title", Model.of(this.getTitle()));
-        this.add(this.titleLabel);
+        this.redraw();
     }
     
     public String getTitle() {
@@ -28,6 +26,12 @@ public abstract class AbstractPanel extends Panel {
     
     public GearApplication getGearApplication(){
         return (GearApplication) this.getApplication();
+    }
+    
+    public void redraw(){
+        this.removeAll();
+        this.titleLabel = new Label("title", Model.of(this.getTitle()));
+        this.add(this.titleLabel);
     }
 
 }

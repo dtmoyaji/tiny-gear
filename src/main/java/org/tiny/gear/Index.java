@@ -79,9 +79,9 @@ public class Index extends SamlMainPage implements IJdbcSupplier {
 
         this.currentView.setOutputMarkupId(true);
         this.add(this.currentView);
-
+        
     }
-
+    
     /**
      * ページリゾルバ
      *
