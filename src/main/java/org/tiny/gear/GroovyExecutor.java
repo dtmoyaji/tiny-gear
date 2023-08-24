@@ -96,13 +96,8 @@ public class GroovyExecutor implements Serializable {
     }
 
     private boolean isTableClass(String classname) {
-        try {
-            Class cls = Class.forName(classname);
-            return cls.isAssignableFrom(Table.class);
-        } catch (ClassNotFoundException ex) {
-            Logger.getLogger(GroovyExecutor.class.getName()).log(Level.SEVERE, null, ex);
-        }
-        return false;
+        Class cls = this.application.getCachedClass(classname);
+        return cls.isAssignableFrom(Table.class);
     }
 
     private String getParameterName(Class cls) {
@@ -112,12 +107,8 @@ public class GroovyExecutor implements Serializable {
 
     private String getParameterName(String clsName) {
         String rvalue = clsName;
-        try {
-            Class cls = Class.forName(clsName);
-            rvalue = getParameterName(cls);
-        } catch (ClassNotFoundException ex) {
-            Logger.getLogger(GroovyExecutor.class.getName()).log(Level.SEVERE, null, ex);
-        }
+        Class cls = this.application.getCachedClass(clsName);
+        rvalue = getParameterName(cls);
         return rvalue;
     }
     

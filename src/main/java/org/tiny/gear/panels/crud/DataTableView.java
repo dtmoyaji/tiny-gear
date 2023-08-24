@@ -186,12 +186,12 @@ public abstract class DataTableView extends DataTableInfoPanel {
         this.csvTransPortPanelPlaceHolder.setTable(table);
         this.csvTransPortPanelPlaceHolder.setOutputMarkupId(true);
         this.curdTableView.add(this.csvTransPortPanelPlaceHolder);
-
+        
         // データ取得
         this.redraw();
     }
 
-    public void treatButtonClicable() {
+    public void treatButtonClickable() {
         if (this.pagePrev != null) {
             if (this.currentPage == 1) {
                 this.pagePrev.setEnabled(false);
@@ -239,7 +239,7 @@ public abstract class DataTableView extends DataTableInfoPanel {
             // ヘッダ部分の描画
             this.drawTableHeader();
 
-            DataTableView.this.treatButtonClicable();
+            DataTableView.this.treatButtonClickable();
             DataTableView.this.lblCurPageNum.setDefaultModelObject(
                     DataTableView.this.currentPage
             );

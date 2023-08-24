@@ -17,10 +17,10 @@ public class GroovyExecuteButton extends AjaxButton {
 
     private Panel panel;
     private String panelName;
-    
+
     private GroovyExecutor groovyExecutor;
-    
-    public GroovyExecuteButton(String id, IModel<String> model, GearApplication app, Panel panel){
+
+    public GroovyExecuteButton(String id, IModel<String> model, GearApplication app, Panel panel) {
         super(id, model);
         this.application = app;
         this.panel = panel;
@@ -35,17 +35,19 @@ public class GroovyExecuteButton extends AjaxButton {
         this.panelName = panelName;
         this.groovyExecutor = new GroovyExecutor(this.application);
     }
-    
+
     @Override
-    public void onSubmit(AjaxRequestTarget target){
-        this.groovyExecutor.execute(
+    public void onSubmit(AjaxRequestTarget target) {
+        boolean result = this.groovyExecutor.execute(
                 this.getClassRelativePath(),
                 this.panel,
                 this.panelName
-                );
-        ArrayList<Component> updateComponents = this.groovyExecutor.getUpdateComponents();
-        for(Component cmp: updateComponents){
-            target.add(cmp);
+        );
+        if (result) {
+            ArrayList<Component> updateComponents = this.groovyExecutor.getUpdateComponents();
+            for (Component cmp : updateComponents) {
+                target.add(cmp);
+            }
         }
     }
 

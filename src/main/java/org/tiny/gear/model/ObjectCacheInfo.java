@@ -13,6 +13,7 @@ import org.tiny.datawrapper.annotations.LogicalName;
 @LogicalName("キャッシュ情報")
 public class ObjectCacheInfo extends Table {
 
+    public static final String TYPE_CLASS = "class";
     public static final String TYPE_TALBE = "table";
     public static final String TYPE_SCENE = "scene";
     public static final String TYPE_VIEW = "view";

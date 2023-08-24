@@ -627,3 +627,11 @@ p{
     margin: 1em;
 }
 
+.popUpPanel[popup='false']{
+    visibility:hidden;
+}
+
+.popUpPanel[popup='true']{
+    visibility: visible;
+}
+

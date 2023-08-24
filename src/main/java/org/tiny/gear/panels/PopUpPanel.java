@@ -1,5 +1,6 @@
 package org.tiny.gear.panels;
 
+import org.apache.wicket.AttributeModifier;
 import org.apache.wicket.markup.html.panel.Panel;
 
 /**
@@ -15,7 +16,6 @@ public class PopUpPanel extends AbstractPanel {
         
         this.redraw(childPanel);
         this.setOutputMarkupId(true);
-        this.setVisible(false);
     }
 
     @Override
@@ -29,4 +29,11 @@ public class PopUpPanel extends AbstractPanel {
         this.add(this.childPanel);
     }
     
+    public void popUp(){
+        this.add(AttributeModifier.replace("popup", "true"));
+    }
+    
+    public void hide(){
+        this.add(AttributeModifier.replace("popup", "false"));
+    }
 }

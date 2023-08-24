@@ -65,13 +65,12 @@ public class SceneTable extends Table implements Serializable{
             try {
                 if (rs.next()) {
                     String roleName = sceneTable.RoleName.of(rs);
-                    scene = (AbstractScene) Class.forName(sceneClassName)
+                    scene = (AbstractScene) application.getCachedClass(sceneClassName)
                             .getDeclaredConstructor(Roles.class, GearApplication.class)
                             .newInstance(RoleController.of(roleName), application);
                 }
                 rs.close();
             } catch (SQLException
-                    | ClassNotFoundException
                     | NoSuchMethodException
                     | SecurityException
                     | InstantiationException

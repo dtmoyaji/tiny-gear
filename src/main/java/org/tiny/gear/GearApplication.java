@@ -51,10 +51,12 @@ public class GearApplication extends SamlWicketApplication implements IJdbcSuppl
     private HashMap<String, AbstractScene> sceneCach = new HashMap<>();
     private SceneTable sceneTable;
 
+    private Cache<Class> classCache;
+
     private Cache<Table> tableCache;
 
     private Cache<AbstractView> viewCache;
-    
+
     private GroovyExecutor groovyExecutor;
 
     /**
@@ -80,6 +82,9 @@ public class GearApplication extends SamlWicketApplication implements IJdbcSuppl
 
     public void clearCache() {
 
+        this.classCache.removeFromServer();
+        this.classCache = null;
+
         this.tableCache.removeFromServer();
         this.tableCache = null;
 
@@ -93,6 +98,27 @@ public class GearApplication extends SamlWicketApplication implements IJdbcSuppl
     }
 
     public void buildCache() {
+
+        if (this.classCache == null) {
+            this.classCache = new Cache<>() {
+                @Override
+                protected Class initializeObject(String key, Class[] constParam) {
+                    Class cls = GearApplication.this.getCachedClass(key);
+                    Logger.getLogger(Cache.class.getCanonicalName())
+                            .log(Level.INFO, "CLASS: {0} created.", cls.getName());
+                    return cls;
+                }
+
+                @Override
+                protected Class onNewInstance(Constructor constructor) { // スタブ
+                    return null;
+                }
+
+            };
+            this.classCache.sync(this, ObjectCacheInfo.TYPE_CLASS);
+            Logger.getLogger(this.getClass().getName()).log(Level.INFO, "Class cache created.");
+        }
+
         if (this.tableCache == null) {
             this.tableCache = new Cache<>() {
                 @Override
@@ -159,8 +185,13 @@ public class GearApplication extends SamlWicketApplication implements IJdbcSuppl
                     AbstractView rvalue = null;
                     try {
                         rvalue = (AbstractView) constructor.newInstance(GearApplication.this);
-                        Logger.getLogger(Cache.class.getCanonicalName())
-                                .log(Level.INFO, "VIEW: {0} instance created.", rvalue.getClass().getName());
+                        if (rvalue != null) {
+                            Logger.getLogger(Cache.class.getCanonicalName())
+                                    .log(Level.INFO, "VIEW: {0} instance created.", rvalue.getClass().getName());
+                        } else {
+                            Logger.getLogger(Cache.class.getCanonicalName())
+                                    .log(Level.INFO, "ERROR VIEW: {0} instance can't create.", constructor.getDeclaringClass().getName());
+                        }
                     } catch (InstantiationException | IllegalAccessException | IllegalArgumentException | InvocationTargetException ex) {
                         Logger.getLogger(GearApplication.class.getName()).log(Level.SEVERE, null, ex);
                     }
@@ -171,11 +202,11 @@ public class GearApplication extends SamlWicketApplication implements IJdbcSuppl
                 protected AbstractView initializeObject(String key, Class[] constParam) {
                     AbstractView data = null;
                     try {
-                        Class cls = Class.forName(key);
+                        Class cls = GearApplication.this.getCachedClass(key);
                         Constructor constructor = cls.getConstructor(constParam);
                         data = (AbstractView) this.onNewInstance(constructor);
                         //this.put(key, data);
-                    } catch (ClassNotFoundException | NoSuchMethodException | SecurityException ex) {
+                    } catch (NoSuchMethodException | SecurityException ex) {
                         Logger.getLogger(Cache.class.getName()).log(Level.SEVERE, null, ex);
                     }
                     return data;
@@ -277,13 +308,28 @@ public class GearApplication extends SamlWicketApplication implements IJdbcSuppl
             rvalue = this.tableCache.get(tableClassName);
         } else {
             try {
-                Class<? extends Table> cls = (Class<? extends Table>) Class.forName(tableClassName);
+                Class<? extends Table> cls = (Class<? extends Table>) this.getCachedClass(tableClassName);
                 rvalue = cls.getConstructor().newInstance();
                 rvalue.alterOrCreateTable(this.getJdbc());
                 this.tableCache.put(tableClassName, rvalue);
-            } catch (ClassNotFoundException | NoSuchMethodException | SecurityException | InstantiationException | IllegalAccessException | IllegalArgumentException | InvocationTargetException ex) {
+            } catch (NoSuchMethodException | SecurityException | InstantiationException | IllegalAccessException | IllegalArgumentException | InvocationTargetException ex) {
                 Logger.getLogger(GearApplication.class
                         .getName()).log(Level.SEVERE, null, ex);
+            }
+        }
+        return rvalue;
+    }
+
+    public Class getCachedClass(String className) {
+        Class rvalue = null;
+        if (this.classCache.containsKey(className)) {
+            rvalue = this.classCache.get(className);
+        } else {
+            try {
+                rvalue = Class.forName(className);
+                this.classCache.put(className, rvalue);
+            } catch (ClassNotFoundException ex) {
+                Logger.getLogger(GearApplication.class.getName()).log(Level.SEVERE, null, ex);
             }
         }
         return rvalue;
@@ -332,14 +378,9 @@ public class GearApplication extends SamlWicketApplication implements IJdbcSuppl
 
     public AbstractView getCachedView(String viewClassName) {
         AbstractView rvalue = null;
-        try {
-            Class<? extends AbstractView> cls = (Class<? extends AbstractView>) Class.forName(viewClassName);
-            rvalue = this.getCachedView(cls);
-
-        } catch (ClassNotFoundException ex) {
-            Logger.getLogger(GearApplication.class
-                    .getName()).log(Level.SEVERE, null, ex);
-        }
+        Class<? extends AbstractView> cls = 
+                (Class<? extends AbstractView>) this.getCachedClass(viewClassName);
+        rvalue = this.getCachedView(cls);
         return rvalue;
     }
 
@@ -439,8 +480,8 @@ public class GearApplication extends SamlWicketApplication implements IJdbcSuppl
         this.systemVariableCache.put(key, rvalue);
         return rvalue;
     }
-    
-    public GroovyExecutor getGroovyExecutor(){
+
+    public GroovyExecutor getGroovyExecutor() {
         return this.groovyExecutor;
     }
 

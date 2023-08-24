@@ -34,6 +34,7 @@ public abstract class AbstractView extends AbstractPanel implements IPanelPopupp
 
     public AbstractView(GearApplication app) {
         super("scenePanel");
+        this.app = app;
 
         TablesForAbstractView tfav = (TablesForAbstractView) this.getTable(TablesForAbstractView.class);
 
@@ -42,7 +43,7 @@ public abstract class AbstractView extends AbstractPanel implements IPanelPopupp
                 this.prmaryTableClass = null;
                 while (tableref.next()) {
                     String tableName = tfav.TableClassName.of(tableref);
-                    Class cls = Class.forName(tableName);
+                    Class cls = this.app.getCachedClass(tableName);
                     this.getTable(cls);
                     if (this.prmaryTableClass == null) {
                         this.prmaryTableClass = cls;
@@ -50,7 +51,6 @@ public abstract class AbstractView extends AbstractPanel implements IPanelPopupp
                 }
             }
         } catch (SQLException
-                | ClassNotFoundException
                 | SecurityException
                 | IllegalArgumentException ex) {
             Logger.getLogger(AbstractView.class.getName()).log(Level.SEVERE, null, ex);
@@ -63,6 +63,9 @@ public abstract class AbstractView extends AbstractPanel implements IPanelPopupp
     }
 
     public Table getTable(Class<? extends Table> tableClass) {
+        if (this.tableClasses == null) {
+            this.tableClasses = new HashMap<>();
+        }
         this.tableClasses.put(tableClass.getCanonicalName(), tableClass);
         Table rvalue = this.getGearApplication().getCachedTable(tableClass);
         return rvalue;
@@ -100,6 +103,5 @@ public abstract class AbstractView extends AbstractPanel implements IPanelPopupp
     public PopUpPanel getPopUpPanel() {
         return this.popUpPanel;
     }
-
 
 }
