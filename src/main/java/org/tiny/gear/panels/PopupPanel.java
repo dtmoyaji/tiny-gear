@@ -11,14 +11,14 @@ import org.apache.wicket.model.Model;
  *
  * @author dtmoyaji
  */
-public class _PopupPanel extends AbstractPanel {
+public class PopupPanel extends AbstractPanel {
 
     private String title = "popUp";
     private Form popupControl;
     private AjaxButton closeButton;
     private Panel childPanel;
 
-    public _PopupPanel(String id, Panel childPanel) {
+    public PopupPanel(String id, Panel childPanel) {
         super(id);
 
         this.redraw(childPanel);
@@ -43,8 +43,8 @@ public class _PopupPanel extends AbstractPanel {
         this.closeButton = new AjaxButton("closeButton", Model.of("")) {
             @Override
             public void onSubmit(AjaxRequestTarget target) {
-                _PopupPanel.this.hide();
-                target.add(_PopupPanel.this);
+                PopupPanel.this.hide();
+                target.add(PopupPanel.this);
             }
         };
         this.popupControl.add(this.closeButton);

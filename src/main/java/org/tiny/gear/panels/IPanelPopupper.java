@@ -21,8 +21,8 @@ package org.tiny.gear.panels;
  */
 public interface IPanelPopupper {
     
-    public void setPopupPanel(_PopupPanel panel);
+    public void setPopupPanel(PopupPanel panel);
     
-    public _PopupPanel getPopupPanel();
+    public PopupPanel getPopupPanel();
     
 }
