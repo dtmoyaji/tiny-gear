@@ -70,7 +70,7 @@ public class GenericTableEditView extends AbstractView {
             }
         };
         this.filterAndEdit.setOutputMarkupId(true);
-        this.filterAndEdit.setPopUpPanel(this.getPopUpPanel());
+        this.filterAndEdit.setPopupPanel(this.getPopupPanel());
 
         this.tableSelector = new DataTableView("tableSelector", this.getTable(TableInfo.class)) {
             @Override

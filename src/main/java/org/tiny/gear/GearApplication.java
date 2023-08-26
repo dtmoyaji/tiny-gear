@@ -105,7 +105,7 @@ public class GearApplication extends SamlWicketApplication implements IJdbcSuppl
                 protected Class initializeObject(String key, Class[] constParam) {
                     Class cls = GearApplication.this.getCachedClass(key);
                     Logger.getLogger(Cache.class.getCanonicalName())
-                            .log(Level.INFO, "CLASS: {0} created.", cls.getName());
+                            .log(Level.INFO, "CLASS: {0} cached.", cls.getName());
                     return cls;
                 }
 
@@ -116,7 +116,7 @@ public class GearApplication extends SamlWicketApplication implements IJdbcSuppl
 
             };
             this.classCache.sync(this, ObjectCacheInfo.TYPE_CLASS);
-            Logger.getLogger(this.getClass().getName()).log(Level.INFO, "Class cache created.");
+            Logger.getLogger(this.getClass().getName()).log(Level.INFO, "Class cached.");
         }
 
         if (this.tableCache == null) {
@@ -127,7 +127,7 @@ public class GearApplication extends SamlWicketApplication implements IJdbcSuppl
                     try {
                         data = GearApplication.this.getCachedTable(key);
                         Logger.getLogger(Cache.class.getCanonicalName())
-                                .log(Level.INFO, "TABLE: {0} instance created.", data.getClass().getName());
+                                .log(Level.INFO, "TABLE: {0} instance cached.", data.getClass().getName());
                     } catch (SecurityException ex) {
                         Logger.getLogger(Cache.class.getName()).log(Level.SEVERE, null, ex);
                     } catch (IllegalArgumentException ex) {
@@ -142,7 +142,7 @@ public class GearApplication extends SamlWicketApplication implements IJdbcSuppl
                     try {
                         rvalue = (Table) constructor.newInstance();
                         Logger.getLogger(Cache.class.getCanonicalName())
-                                .log(Level.INFO, "TABLE: {0} instance created.", rvalue.getClass().getName());
+                                .log(Level.INFO, "TABLE: {0} instance cached.", rvalue.getClass().getName());
                     } catch (InstantiationException
                             | IllegalAccessException
                             | IllegalArgumentException
@@ -154,7 +154,7 @@ public class GearApplication extends SamlWicketApplication implements IJdbcSuppl
 
             };
             this.tableCache.sync(this, ObjectCacheInfo.TYPE_TALBE);
-            Logger.getLogger(this.getClass().getName()).log(Level.INFO, "Table cache created.");
+            Logger.getLogger(this.getClass().getName()).log(Level.INFO, "Table cached.");
         }
 
         if (this.systemVariableCache == null) {
@@ -175,7 +175,7 @@ public class GearApplication extends SamlWicketApplication implements IJdbcSuppl
             } catch (SQLException ex) {
                 Logger.getLogger(GearApplication.class.getName()).log(Level.SEVERE, null, ex);
             }
-            Logger.getLogger(this.getClass().getName()).log(Level.INFO, "System variable cache created.");
+            Logger.getLogger(this.getClass().getName()).log(Level.INFO, "System variable cacheed.");
         }
 
         if (this.viewCache == null) {
@@ -187,7 +187,7 @@ public class GearApplication extends SamlWicketApplication implements IJdbcSuppl
                         rvalue = (AbstractView) constructor.newInstance(GearApplication.this);
                         if (rvalue != null) {
                             Logger.getLogger(Cache.class.getCanonicalName())
-                                    .log(Level.INFO, "VIEW: {0} instance created.", rvalue.getClass().getName());
+                                    .log(Level.INFO, "VIEW: {0} instance cached.", rvalue.getClass().getName());
                         } else {
                             Logger.getLogger(Cache.class.getCanonicalName())
                                     .log(Level.INFO, "ERROR VIEW: {0} instance can't create.", constructor.getDeclaringClass().getName());
@@ -214,7 +214,7 @@ public class GearApplication extends SamlWicketApplication implements IJdbcSuppl
 
             };
             this.viewCache.sync(this, ObjectCacheInfo.TYPE_VIEW, GearApplication.class);
-            Logger.getLogger(this.getClass().getName()).log(Level.INFO, "View cache created.");
+            Logger.getLogger(this.getClass().getName()).log(Level.INFO, "View cached.");
 
         }
         this.groovyExecutor = new GroovyExecutor(this);
@@ -364,7 +364,7 @@ public class GearApplication extends SamlWicketApplication implements IJdbcSuppl
 
     public Table stackTableOnCach(Table table) {
         this.tableCache.put(table.getClass().getName(), table);
-        Logger.getLogger(this.getName()).log(Level.INFO, "TABLE: {0} instance created.", table.getClass().getName());
+        Logger.getLogger(this.getName()).log(Level.INFO, "TABLE: {0} instance catched.", table.getClass().getName());
         return table;
     }
 
@@ -391,7 +391,7 @@ public class GearApplication extends SamlWicketApplication implements IJdbcSuppl
                 rvalue = viewClass.getConstructor(GearApplication.class)
                         .newInstance(this);
                 this.viewCache.put(viewClass.getName(), rvalue);
-                Logger.getLogger(this.getClass().getName()).log(Level.INFO, "VIEW : {0} instance created.", viewClass.getName());
+                Logger.getLogger(this.getClass().getName()).log(Level.INFO, "VIEW : {0} instance catched.", viewClass.getName());
             } catch (NoSuchMethodException
                     | SecurityException
                     | InstantiationException
@@ -436,7 +436,7 @@ public class GearApplication extends SamlWicketApplication implements IJdbcSuppl
                 );
                 scene = this.sceneTable.createScene(this, sceneClassName);
                 this.sceneCach.put(sceneClassName, scene);
-                Logger.getLogger(this.getClass().getName()).log(Level.INFO, "SCENE: {0} Created.", sceneClassName);
+                Logger.getLogger(this.getClass().getName()).log(Level.INFO, "SCENE: {0} cached.", sceneClassName);
 
             } catch (IllegalArgumentException | SecurityException ex) {
                 Logger.getLogger(GearApplication.class

@@ -2,6 +2,7 @@ package org.tiny.gear.model;
 
 import java.sql.ResultSet;
 import org.tiny.datawrapper.Column;
+import org.tiny.datawrapper.ShortFlagZero;
 import org.tiny.datawrapper.Table;
 import org.tiny.datawrapper.TinyDatabaseException;
 import org.tiny.datawrapper.annotations.LogicalName;
@@ -26,6 +27,9 @@ public class ObjectCacheInfo extends Table {
     
     @LogicalName("初期化パラメータ")
     public Column<String> Initializer;
+    
+    @LogicalName("無効フラグ")
+    public ShortFlagZero Disable;
 
     @Override
     public void defineColumns() throws TinyDatabaseException {

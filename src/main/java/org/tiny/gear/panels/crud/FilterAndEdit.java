@@ -10,7 +10,7 @@ import org.apache.wicket.markup.html.panel.Panel;
 import org.tiny.datawrapper.Column;
 import org.tiny.datawrapper.Table;
 import org.tiny.gear.panels.IPanelPopupper;
-import org.tiny.gear.panels.PopUpPanel;
+import org.tiny.gear.panels.PopupPanel;
 
 /**
  * レコードを検索し、編集する。
@@ -188,13 +188,13 @@ abstract public class FilterAndEdit extends Panel implements IPanelPopupper{
     }
 
     @Override
-    public void setPopUpPanel(PopUpPanel panel) {
-        this.dataTableView.setPopUpPanel(panel);
+    public void setPopupPanel(PopupPanel panel) {
+        this.dataTableView.setPopupPanel(panel);
     }
 
     @Override
-    public PopUpPanel getPopUpPanel() {
-        return this.dataTableView.getPopUpPanel();
+    public PopupPanel getPopupPanel() {
+        return this.dataTableView.getPopupPanel();
     }
 
 }

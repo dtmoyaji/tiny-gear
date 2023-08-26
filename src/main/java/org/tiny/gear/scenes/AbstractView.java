@@ -12,7 +12,7 @@ import org.tiny.gear.GearApplication;
 import org.tiny.gear.panels.AbstractPanel;
 import org.tiny.gear.panels.BlankPanel;
 import org.tiny.gear.panels.IPanelPopupper;
-import org.tiny.gear.panels.PopUpPanel;
+import org.tiny.gear.panels.PopupPanel;
 
 /**
  * シーンに含まれるビューの抽象クラス
@@ -30,7 +30,7 @@ public abstract class AbstractView extends AbstractPanel implements IPanelPopupp
     private HashMap<String, Class<? extends Table>> tableClasses = new HashMap<>();
     private Class<? extends Table> prmaryTableClass = null;
 
-    private PopUpPanel popUpPanel;
+    private PopupPanel popupPanel;
 
     public AbstractView(GearApplication app) {
         super("scenePanel");
@@ -84,9 +84,9 @@ public abstract class AbstractView extends AbstractPanel implements IPanelPopupp
         this.title = new Label("panelTitle", Model.of(this.getTitle()));
         this.add(this.title);
 
-        this.popUpPanel = new PopUpPanel("popUpPanel", new BlankPanel("childPanel"));
-        this.popUpPanel.setOutputMarkupId(true);
-        this.add(this.popUpPanel);
+        this.popupPanel = new PopupPanel("popupPanel", new BlankPanel("childPanel"));
+        this.popupPanel.setOutputMarkupId(true);
+        this.add(this.popupPanel);
 
     }
 
@@ -95,13 +95,13 @@ public abstract class AbstractView extends AbstractPanel implements IPanelPopupp
     }
 
     @Override
-    public void setPopUpPanel(PopUpPanel panel) {
-        this.popUpPanel = panel;
+    public void setPopupPanel(PopupPanel panel) {
+        this.popupPanel = panel;
     }
 
     @Override
-    public PopUpPanel getPopUpPanel() {
-        return this.popUpPanel;
+    public PopupPanel getPopupPanel() {
+        return this.popupPanel;
     }
 
 }
