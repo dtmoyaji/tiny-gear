@@ -10,19 +10,23 @@
         <title>TODO supply a title</title>
         <meta charset="UTF-8" />
         <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-        <wicket:head>
-            <link rel="stylesheet" href="popuppanel.css" type="text/css" media="screen" title="Stylesheet" />
-        </wicket:head>
     </head>
     <body>
         <wicket:panel>
-            <div class="topBar">
-                <div wicket:id="title" class="title" />
-                <form class="popupControl" wicket:id="popupControl">
-                    <input type="button" wicket:id="closeButton" class="closeButton" />
-                </form>
+            <!-- TABLE EXPORT CONTROLLER -->
+            <div>
+                <ul>
+                    <li>
+                        テーブル全体をエクスポートする。
+                    </li>
+                    <li>
+                        絞込条件に一致するものをエクスポートする。
+                    </li>
+                    <li>
+                        今のページをエクスポートする。
+                    </li>
+                </ul>
             </div>
-            <div wicket:id="childPanel" class="childPanel" />
         </wicket:panel>
     </body>
 </html>

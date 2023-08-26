@@ -34,7 +34,7 @@ public class CustomTableManagementScene extends AbstractScene {
                 "カスタムテーブル定義", CustomTableEditView.class,
                 RoleController.getAllRoles(), true
         );
-        this.putMenu("テーブル編集", GenericTableEditView.class,
+        this.putMenu("汎用テーブル編集", GenericTableEditView.class,
                 new Class[]{SystemVariables.class, TableInfo.class},
                 RoleController.getAllRoles(),
                 false);
