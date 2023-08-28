@@ -41,7 +41,15 @@ public abstract class DataTableView extends DataTableInfoPanel {
 
     private int totalPageCount = -1;
 
+    /**
+     * 外部から与えられるフィルタ条件
+     */
     private Condition[] conditions = new Condition[]{};
+    
+    /**
+     * ページ範囲を含むフィルタ条件
+     */
+    private Condition[] consditonsForPage = new Condition[]{};
 
     private ListView<Column> tableHeader;
 
@@ -122,7 +130,6 @@ public abstract class DataTableView extends DataTableInfoPanel {
         this.curdTableView.add(this.tableRows);
 
         this.pageNext = new AjaxButton("pageNext") {
-
             @Override
             protected void onSubmit(AjaxRequestTarget target) {
                 DataTableView.this.currentPage += 1;
@@ -228,6 +235,7 @@ public abstract class DataTableView extends DataTableInfoPanel {
 
         ResultSet rvalue = null;
         this.conditions = conditions;
+        
         try {
             // データの描画
             int recordCount = this.getTable().getCount(
@@ -270,8 +278,9 @@ public abstract class DataTableView extends DataTableInfoPanel {
             int offset = (this.currentPage - 1) * this.rowsPerPage;
             Condition[] newCnd = this.addCondition(conditions, new ConditionForRegion(ConditionForRegion.LIMIT, this.rowsPerPage));
             newCnd = this.addCondition(newCnd, new ConditionForRegion(ConditionForRegion.OFFSET, offset));
+            this.consditonsForPage = newCnd;
 
-            ResultSet rs = this.targetTable.select(newCnd);
+            ResultSet rs = this.targetTable.select(this.consditonsForPage);
             this.tableData.clear();
             while (rs.next()) {
                 KeyValueList row = new KeyValueList();
@@ -313,6 +322,10 @@ public abstract class DataTableView extends DataTableInfoPanel {
 
     public Condition[] getConditions() {
         return this.conditions;
+    }
+    
+    public Condition[] getConditionsForPage(){
+        return this.consditonsForPage;
     }
     
     public KeyValueList getFirstKeyValueList(){

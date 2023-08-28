@@ -78,12 +78,13 @@
         <dependency>
             <groupId>org.wicketstuff</groupId>
             <artifactId>wicketstuff-tinymce4</artifactId>
-            <version>8.6.0</version>
+            <version>${wicket.version}</version>
         </dependency>
         <dependency>
             <groupId>org.apache.poi</groupId>
-            <artifactId>poi</artifactId>
+            <artifactId>poi-ooxml</artifactId>
             <version>5.2.3</version>
+            <type>jar</type>
         </dependency>
     </dependencies>
     

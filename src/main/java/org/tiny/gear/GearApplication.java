@@ -484,5 +484,11 @@ public class GearApplication extends SamlWicketApplication implements IJdbcSuppl
     public GroovyExecutor getGroovyExecutor() {
         return this.groovyExecutor;
     }
+    
+    public String getRealPath(String path) {
+        String realpath = this.getServletContext().getRealPath(path);
+        return realpath;
+    }
+
 
 }
