@@ -13,6 +13,9 @@ import org.tiny.gear.panels.crud.DataTableView;
  * @author dtmoyaji
  */
 public class TableExportController extends Panel {
+    
+    // TODO: AjaxDownLoadBehaviorを使って、ダウンロード処理を実装する。
+    // TODO: GroovyExecuteButtonに、afterExecuteを作って、AjaxDownLoadBehaviorと連携させる。
 
     private Form controllerForm;
 

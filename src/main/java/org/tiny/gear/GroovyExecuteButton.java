@@ -44,11 +44,16 @@ public class GroovyExecuteButton extends AjaxButton {
                 this.panelName
         );
         if (result) {
+            this.afterGroovyExecute(target);
             ArrayList<Component> updateComponents = this.groovyExecutor.getUpdateComponents();
             for (Component cmp : updateComponents) {
                 target.add(cmp);
             }
         }
+    }
+    
+    public void afterGroovyExecute(AjaxRequestTarget target){
+        
     }
 
 }
