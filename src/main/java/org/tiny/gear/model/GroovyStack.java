@@ -12,6 +12,9 @@ import org.tiny.datawrapper.annotations.LogicalName;
 @LogicalName("GroovyScript")
 public class GroovyStack extends Table {
 
+    @LogicalName("エイリアス名")
+    public Column<String> ScriptAlias;
+    
     @LogicalName("スクリプト名")
     public Column<String> ScriptName;
     
@@ -29,6 +32,10 @@ public class GroovyStack extends Table {
     
     @Override
     public void defineColumns() {
+
+        this.ScriptAlias.setAllowNull(true)
+                .setLength(Column.SIZE_512);
+        
         this.ScriptName.setAllowNull(false)
                 .setLength(Column.SIZE_512)
                 .setPrimaryKey(true);

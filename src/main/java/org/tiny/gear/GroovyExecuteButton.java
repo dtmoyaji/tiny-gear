@@ -53,7 +53,7 @@ public class GroovyExecuteButton extends AjaxButton {
     }
     
     public void afterGroovyExecute(AjaxRequestTarget target){
-        
+        // スタブ
     }
-
+    
 }

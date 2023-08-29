@@ -1,5 +1,6 @@
 package org.tiny.gear;
 
+import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.sql.ResultSet;
@@ -16,11 +17,9 @@ import org.apache.poi.ss.usermodel.Row;
 import org.apache.poi.ss.usermodel.Sheet;
 import org.apache.poi.ss.usermodel.Workbook;
 import org.apache.poi.xssf.usermodel.XSSFWorkbook;
-import org.apache.wicket.request.handler.resource.ResourceStreamRequestHandler;
-import org.apache.wicket.util.resource.FileSystemResourceStream;
+import org.apache.wicket.request.flow.RedirectToUrlException;
 import org.tiny.datawrapper.Condition;
 import org.tiny.gear.panels.crud.DataTableView;
-import wicket.util.file.File;
 
 /**
  * エクセルファイルを生成する。
@@ -29,14 +28,14 @@ import wicket.util.file.File;
  */
 public class ExcelFileGenerator {
 
+    private String excelFilePath = "";
+
     public ExcelFileGenerator() {
     }
 
     public void generate(DataTableView src, Condition... conditions) {
-        
-        String excelFilePath = this.getFileName(src);
-        ResourceStreamRequestHandler rvalue = null;
 
+        this.excelFilePath = this.getFileName(src);
         try (ResultSet rs = src.getTable().select(conditions); Workbook book = new XSSFWorkbook()) {
 
             Sheet sheet = book.createSheet();
@@ -72,15 +71,13 @@ public class ExcelFileGenerator {
                 }
                 rowoffset++;
             }
+
             FileOutputStream fos = new FileOutputStream(excelFilePath);
             book.write(fos);
-            File file = new File(excelFilePath);
-            FileSystemResourceStream frs = new FileSystemResourceStream(file.toPath());
-            rvalue = new ResourceStreamRequestHandler(
-                    frs,
-                    excelFilePath
-            );
-            src.getRequestCycle().scheduleRequestHandlerAfterCurrent(rvalue);
+            fos.flush();
+            
+            File f = new File(excelFilePath);
+            throw new RedirectToUrlException("./files/" + f.getName());
 
         } catch (SQLException | IOException ex) {
             Logger.getLogger(ExcelFileGenerator.class.getName()).log(Level.SEVERE, null, ex);

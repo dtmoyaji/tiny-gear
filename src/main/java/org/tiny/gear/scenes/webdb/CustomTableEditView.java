@@ -97,6 +97,7 @@ public class CustomTableEditView extends AbstractView {
                 return dummy instanceof Table;
             }
         };
+        this.filterAndEdit.setPopupPanel(this.getPopupPanel());
         this.filterAndEdit.getRecordEditor().buildForm(this);
         this.add(this.filterAndEdit);
     }

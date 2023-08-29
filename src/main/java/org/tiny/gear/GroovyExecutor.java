@@ -34,12 +34,12 @@ public class GroovyExecutor implements Serializable {
     private Object returnValue;
     
     private ArrayList<Component> updateComponents;
-
+    
     public GroovyExecutor(GearApplication app) {
         this.application = app;
         this.gstack = (GroovyStack) this.application.getCachedTable(GroovyStack.class);
     }
-
+    
     public boolean execute(String scriptName, Panel panel, String panelName) {
         this.panel = panel;
         this.panelName = panelName;
@@ -79,6 +79,7 @@ public class GroovyExecutor implements Serializable {
                 this.panel
         );
         shell.setVariable("_UpdateComponents", this.updateComponents);
+
         if (classes == null) {
             return;
         }

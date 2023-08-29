@@ -13,23 +13,14 @@
     </head>
     <body>
         <wicket:panel>
-            <!-- TABLE EXPORT CONTROLLER -->
-            <div>
-                <ul>
-                    <li>
-                        テーブル全体をエクスポートする。
-                    </li>
-                    <li>
-                        絞込条件に一致するものをエクスポートする。
-                    </li>
-                    <li>
-                        今のページをエクスポートする。
-                    </li>
-                </ul>
-            </div>
-            <form wicket:id="controllerForm">
-                <input type="button" wicket:id="exportAll" class="exportAll"/>
+            <!-- TABLE IMPORT CONTROLLER -->
+            <form wicket:id ="importForm" class="importForm">
+                <div>
+                    <label wicket:id ="targetTableName" class="tableName">target</label>
+                    <input type="file" wicket:id="fileUploadField" class="filename" />
+                </div>
             </form>
+
         </wicket:panel>
     </body>
 </html>

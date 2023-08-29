@@ -621,3 +621,23 @@ p{
 .genericTableEditView .tableSelector .rows{
     background-color: white;
 }
+
+.export{
+    height: 24px;
+    width: 24px;
+    background-image: url("./img/export.png");
+    background-repeat: no-repeat;
+    background-size: 20px 20px;
+    background-position: 2px;
+    font-size: 0;
+}
+
+.import{
+    height: 24px;
+    width: 24px;
+    background-image: url("./img/import.png");
+    background-repeat: no-repeat;
+    background-size: 20px 20px;
+    background-position: 2px;
+    font-size: 0;
+}

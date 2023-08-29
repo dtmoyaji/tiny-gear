@@ -15,17 +15,17 @@ import org.tiny.gear.panels.PopupPanel;
 /**
  * レコードを検索し、編集する。
  */
-abstract public class FilterAndEdit extends Panel implements IPanelPopupper{
-    
+abstract public class FilterAndEdit extends Panel implements IPanelPopupper {
+
     private KeyValueList currentKeyValueList;
-    
+
     private DataTableView dataTableView;
 
     private RecordEditor recordEditor;
-    
+
     public FilterAndEdit(String id, Table table) {
         super(id);
-        
+
         this.dataTableView = new DataTableView("dataTableView", table) {
             @Override
             public Class<? extends Panel> getExtraColumn() {
@@ -51,9 +51,9 @@ abstract public class FilterAndEdit extends Panel implements IPanelPopupper{
         this.add(this.dataTableView);
 
         this.recordEditor = new RecordEditor("recordEditor") {
-            
+
             @Override
-            public boolean beforeSubmit(AjaxRequestTarget target, Table targetTable, ArrayList<DataControl> dataControls){
+            public boolean beforeSubmit(AjaxRequestTarget target, Table targetTable, ArrayList<DataControl> dataControls) {
                 return FilterAndEdit.this.beforeSubmit(target, targetTable, dataControls);
             }
 
@@ -93,21 +93,21 @@ abstract public class FilterAndEdit extends Panel implements IPanelPopupper{
         this.recordEditor.buildForm(table);
 
     }
-    
+
     /**
-     * 
-     * @param target 
+     *
+     * @param target
      */
-    public void reloadRecordEditor(AjaxRequestTarget target){
+    public void reloadRecordEditor(AjaxRequestTarget target) {
         // 最初の行を取得する
-        if(this.currentKeyValueList==null){
+        if (this.currentKeyValueList == null) {
             this.currentKeyValueList = this.dataTableView.getFirstKeyValueList();
         }
         this.onRowClicked(target, currentKeyValueList);
     }
 
     private void onRowClicked(AjaxRequestTarget target, KeyValueList modelObject) {
-        
+
         this.currentKeyValueList = modelObject;
 
         try {
@@ -128,10 +128,11 @@ abstract public class FilterAndEdit extends Panel implements IPanelPopupper{
             Column primaryKeyColumn = targetTable.get(primaryColumn);
 
             try (ResultSet rs = targetTable.select(primaryKeyColumn.sameValueOf(primaryKeyValue))) {
-                rs.next();
-                this.recordEditor.clearValues();
-                this.recordEditor.setValues(rs);
-                rs.close();
+                if (rs.next()) {
+                    this.recordEditor.clearValues();
+                    this.recordEditor.setValues(rs);
+                    rs.close();
+                }
             }
             target.add(this.recordEditor);
         } catch (SQLException ex) {
@@ -173,17 +174,18 @@ abstract public class FilterAndEdit extends Panel implements IPanelPopupper{
 
     /**
      * 更新ボタンを押した直後の処理（確認などに使う）
+     *
      * @param target
      * @param targetTable
-     * @return 
+     * @return
      */
     public abstract boolean beforeSubmit(AjaxRequestTarget target, Table targetTable, ArrayList<DataControl> dataControls);
-    
-    public DataTableView getDataTableView(){
+
+    public DataTableView getDataTableView() {
         return this.dataTableView;
     }
-    
-    public RecordEditor getRecordEditor(){
+
+    public RecordEditor getRecordEditor() {
         return this.recordEditor;
     }
 

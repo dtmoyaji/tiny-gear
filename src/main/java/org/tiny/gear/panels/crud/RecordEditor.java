@@ -95,7 +95,7 @@ public abstract class RecordEditor extends DataTableInfoPanel {
         this.btnNew = new AjaxButton("btnNew") {
             @Override
             protected void onSubmit(AjaxRequestTarget target) {
-                RecordEditor.this.onBtnNew(target, targetTable);
+                RecordEditor.this.onNew(target, targetTable);
             }
         };
         this.editorForm.add(this.btnNew);
@@ -238,7 +238,7 @@ public abstract class RecordEditor extends DataTableInfoPanel {
      * @param target
      * @param targetTable
      */
-    private void onBtnNew(AjaxRequestTarget target, Table targetTable) {
+    public void onNew(AjaxRequestTarget target, Table targetTable) {
         this.targetTable.clearValues();
         target.add(this);
     }

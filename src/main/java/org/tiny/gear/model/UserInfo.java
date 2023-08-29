@@ -2,7 +2,6 @@ package org.tiny.gear.model;
 
 import java.sql.Timestamp;
 import org.tiny.datawrapper.Column;
-import org.tiny.datawrapper.IncrementalKey;
 import org.tiny.datawrapper.ShortFlagZero;
 import org.tiny.datawrapper.Table;
 import org.tiny.datawrapper.TinyDatabaseException;
@@ -19,9 +18,6 @@ import org.tiny.datawrapper.annotations.LogicalName;
 public class UserInfo extends Table {
 
     public static final long serialVersionUID = -1L;
-
-    @LogicalName("レコード番号")
-    public IncrementalKey RecordId;
 
     @LogicalName("ユーザーID")
     @Comment("KeycloakのUUIDを格納する")
@@ -45,8 +41,6 @@ public class UserInfo extends Table {
 
     @Override
     public void defineColumns() throws TinyDatabaseException {
-        this.RecordId.setPrimaryKey(false)
-                .setVisibleType(Column.VISIBLE_TYPE_LABEL);
         
         this.UserId.setLength(Column.SIZE_64)
                 .setAllowNull(false)
