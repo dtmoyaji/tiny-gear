@@ -15,11 +15,19 @@
         <wicket:panel>
             <!-- TABLE IMPORT CONTROLLER -->
             <form wicket:id ="importForm" class="importForm">
-                <div>
+                <div class="row">
                     <label wicket:id ="targetTableName" class="tableName">target</label>
+                </div>
+                <div class="row">
                     <input type="file" wicket:id="fileUploadField" class="filename" />
                 </div>
+                <div class="row">
+                    <input type="button" wicket:id="startImport" class="button startImport" />
+                </div>
             </form>
+            <div class="row">
+                <label wicket:id="massageArea" class="messageArea"/>
+            </div>
 
         </wicket:panel>
     </body>

@@ -165,6 +165,9 @@ public abstract class DataTableView extends DataTableInfoPanel {
                 Column column = item.getModelObject();
                 if (column.getVisibleType() != Column.VISIBLE_TYPE_HIDDEN) {
                     String caption = DataTableView.this.targetTable.getColumnLogicalName(column);
+                    if(column.isPrimaryKey()){
+                        caption += "*";
+                    }
                     Label captionLabel = new Label("columnName", Model.of(caption));
                     item.add(captionLabel);
                 } else {

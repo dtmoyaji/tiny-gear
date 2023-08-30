@@ -16,12 +16,18 @@ public class CustomTable extends Table {
 
     @LogicalName("テーブル名")
     public Column<String> TableName;
+    
+    @LogicalName("論理名")
+    public Column<String> LogicalName;
 
     @LogicalName("バージョン")
     public Column<String> Version;
     
     @LogicalName("カスタムテーブル")
     public ShortFlagZero CustomTable;
+    
+    @LogicalName("編集権限")
+    public Column<String> AuthLimit;
 
     @LogicalName("テーブル定義")
     public Column<String> TableDef;
@@ -41,8 +47,12 @@ public class CustomTable extends Table {
         this.TableName.setAllowNull(false).setLength(Column.SIZE_256)
                 .setPrimaryKey(true);
         
+        this.LogicalName.setLength(Column.SIZE_256);
+        
         this.CustomTable.setDefault("0")
                 .setAllowNull(false);
+        
+        this.AuthLimit.setLength(Column.SIZE_64);
         
         this.TableDef.setLength(Column.SIZE_4096)
         .setAllowNull(false)
