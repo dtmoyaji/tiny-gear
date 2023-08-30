@@ -29,6 +29,7 @@ import org.tiny.gear.scenes.primary.PrimaryScene;
 import org.tiny.gear.scenes.purchase.PurchaseScene;
 import org.tiny.gear.scenes.setting.SettingScene;
 import org.tiny.gear.scenes.webdb.CustomTableManagementScene;
+import org.tiny.gear.scenes.webdb.CustomTableRecordScene;
 import org.tiny.wicket.SamlWicketApplication;
 import wicket.util.file.File;
 
@@ -422,6 +423,9 @@ public class GearApplication extends SamlWicketApplication implements IJdbcSuppl
 
         this.sceneTable.registScene(this, PurchaseScene.class,
                 4, RoleController.ROLE_USER);
+        
+        this.sceneTable.registScene(this,CustomTableRecordScene.class,
+                5, RoleController.ROLE_USER);
     }
 
     public AbstractScene getCachedScene(String sceneClassName) {

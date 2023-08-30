@@ -51,6 +51,7 @@ public class Index extends SamlMainPage implements IJdbcSupplier {
         String svtitle = (String) this.getGearApplication()
                 .getProperties("tiny.gear")
                 .get("tiny.gear.service.title");
+        svtitle = this.getGearApplication().getSystemVariable("tiny.gear.service.Title", svtitle);
 
         this.serviceTitle = new Label("serviceTitle", Model.of(svtitle));
         this.add(this.serviceTitle);
@@ -61,12 +62,12 @@ public class Index extends SamlMainPage implements IJdbcSupplier {
 
         String sceneName = parameters.get("scene").toString();
         String panelName = parameters.get("view").toString();
-        this.resolvePage(sceneName, panelName);
+        this.resolvePage(sceneName, panelName, null);
 
         this.nav = new NavigationPanel("menus", this) {
             @Override
-            public void onMenuItemClick(AjaxRequestTarget target, String sceneName, String panelName) {
-                Index.this.resolvePage(sceneName, panelName);
+            public void onMenuItemClick(AjaxRequestTarget target, String sceneName, String panelName, HashMap<String, String> arguments) {
+                Index.this.resolvePage(sceneName, panelName, arguments);
                 target.add(Index.this.currentView);
                 target.add(Index.this.nav);
             }
@@ -87,7 +88,7 @@ public class Index extends SamlMainPage implements IJdbcSupplier {
      *
      * @param parameters
      */
-    private void resolvePage(String sceneName, String viewName) {
+    private void resolvePage(String sceneName, String viewName, HashMap<String, String> arguments) {
 
         // 指定された状態に応じたシーンを表示する処理
         if (sceneName == null) {
@@ -162,8 +163,8 @@ public class Index extends SamlMainPage implements IJdbcSupplier {
         return app.getJdbc();
     }
 
-    public void onMenuItemClick(AjaxRequestTarget target, String sceneName, String panelName) {
-        this.resolvePage(sceneName, panelName);
+    public void onMenuItemClick(AjaxRequestTarget target, String sceneName, String panelName, HashMap<String, String> arguments) {
+        this.resolvePage(sceneName, panelName, arguments);
         target.add(this.currentView);
         target.add(this.nav);
     }

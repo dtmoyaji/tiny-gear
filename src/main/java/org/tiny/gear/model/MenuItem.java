@@ -1,6 +1,7 @@
 package org.tiny.gear.model;
 
 import java.io.Serializable;
+import java.util.HashMap;
 import org.apache.wicket.authroles.authorization.strategies.role.Roles;
 import org.tiny.gear.IRoleChecker;
 import org.tiny.gear.RoleController;
@@ -21,6 +22,7 @@ public class MenuItem implements Serializable, IRoleChecker {
 
     private Class<? extends AbstractScene> scene;
     private Class<? extends AbstractView> view;
+    private HashMap<String, String> arguments;
 
     public MenuItem(String text, Roles allowed) {
         this.text = text;
@@ -33,7 +35,7 @@ public class MenuItem implements Serializable, IRoleChecker {
         this.view = view;
         this.allowed = allowed;
     }
-
+    
     public boolean isMatchedScene(Class<? extends AbstractScene> scene) {
         return this.scene.getName().equals(scene.getName());
     }
@@ -90,6 +92,13 @@ public class MenuItem implements Serializable, IRoleChecker {
     
     public String getViewClassName(){
         return this.view.getName();
+    }
+
+    public HashMap<String, String> getArguments() {
+        if(arguments == null){
+            this.arguments = new HashMap<>();
+        }
+        return arguments;
     }
 
 }

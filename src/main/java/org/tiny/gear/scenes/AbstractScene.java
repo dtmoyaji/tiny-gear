@@ -74,6 +74,10 @@ public abstract class AbstractScene implements Serializable, IRoleChecker {
     public int getOrdinal() {
         return this.ordinal;
     }
+    
+    public Roles getRoles(){
+        return this.allowed;
+    }
 
     public abstract String getSceneName();
 
@@ -121,9 +125,10 @@ public abstract class AbstractScene implements Serializable, IRoleChecker {
         return false;
     }
 
-    public void putMenu(String menuName, Class<? extends AbstractView> view, Roles roles, boolean primary) {
+    public MenuItem putMenu(String menuName, Class<? extends AbstractView> view, Roles roles, boolean primary) {
+        MenuItem rvalue = new MenuItem(menuName, this.getClass(), roles, view);
         try {
-            this.getMenus().add(new MenuItem(menuName, this.getClass(), roles, view));
+            this.getMenus().add(rvalue);
             this.getPanelNames().put(view.getName(), view.getCanonicalName());
             if (primary) {
                 this.defaultPanelName = view.getCanonicalName();
@@ -131,9 +136,10 @@ public abstract class AbstractScene implements Serializable, IRoleChecker {
         } catch (SecurityException | IllegalArgumentException ex) {
             Logger.getLogger(AbstractScene.class.getName()).log(Level.SEVERE, null, ex);
         }
+        return rvalue;
     }
 
-    public void putMenu(String menuName, Class<? extends AbstractView> view, Class[] refTables, Roles roles, boolean primary) {
+    public MenuItem putMenu(String menuName, Class<? extends AbstractView> view, Class[] refTables, Roles roles, boolean primary) {
 
         TablesForAbstractView tfav = new TablesForAbstractView();
         tfav.alterOrCreateTable(this.application.getJdbc());
@@ -148,7 +154,7 @@ public abstract class AbstractScene implements Serializable, IRoleChecker {
             this.getGearApplication().getCachedTable(table);
         }
 
-        this.putMenu(menuName, view, roles, primary);
+        return this.putMenu(menuName, view, roles, primary);
     }
     
     public abstract Class getDefaultViewClass();

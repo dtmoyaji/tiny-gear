@@ -1,6 +1,7 @@
 package org.tiny.gear.scenes;
 
 import java.io.Serializable;
+import java.lang.reflect.Constructor;
 import java.lang.reflect.InvocationTargetException;
 import java.sql.ResultSet;
 import java.sql.SQLException;
@@ -65,9 +66,9 @@ public class SceneTable extends Table implements Serializable{
             try {
                 if (rs.next()) {
                     String roleName = sceneTable.RoleName.of(rs);
-                    scene = (AbstractScene) application.getCachedClass(sceneClassName)
-                            .getDeclaredConstructor(Roles.class, GearApplication.class)
-                            .newInstance(RoleController.of(roleName), application);
+                    Class sceneClass = application.getCachedClass(sceneClassName);
+                    Constructor constructor = sceneClass.getDeclaredConstructor(Roles.class, GearApplication.class);
+                    scene = (AbstractScene) constructor.newInstance(RoleController.of(roleName), application);
                 }
                 rs.close();
             } catch (SQLException

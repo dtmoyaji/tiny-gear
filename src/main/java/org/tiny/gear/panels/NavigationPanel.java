@@ -3,6 +3,7 @@ package org.tiny.gear.panels;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -81,7 +82,8 @@ public abstract class NavigationPanel extends Panel {
                         NavigationPanel.this.onMenuItemClick(
                                 target,
                                 scene.getSceneKey(),
-                                scene.getDefaultViewClass().getCanonicalName()
+                                scene.getDefaultViewClass().getCanonicalName(),
+                                null
                         );
                     }
 
@@ -112,7 +114,8 @@ public abstract class NavigationPanel extends Panel {
                                 NavigationPanel.this.onMenuItemClick(
                                         target,
                                         scene.getSceneKey(),
-                                        itemObject.getViewClassName()
+                                        itemObject.getViewClassName(),
+                                        itemObject.getArguments()
                                 );
                             }
 
@@ -183,6 +186,6 @@ public abstract class NavigationPanel extends Panel {
         return rvalue;
     }
 
-    public abstract void onMenuItemClick(AjaxRequestTarget target, String sceneName, String panelName);
+    public abstract void onMenuItemClick(AjaxRequestTarget target, String sceneName, String panelName, HashMap<String,String> arguments);
 
 }
