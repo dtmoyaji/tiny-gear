@@ -186,13 +186,14 @@ public abstract class AbstractScene implements Serializable, IRoleChecker {
      * @param roles
      * @return
      */
-    public boolean isAuthenticated(AbstractView abstractView, Roles roles ){
+    public boolean isAuthenticated(AbstractView abstractView, Roles roles) {
         boolean rvalue = false;
         ArrayList<MenuItem> menuItems = this.getSubmenuItems();
         for (MenuItem menuItem : menuItems) {
             if (menuItem.getView().getName().equals(abstractView.getClass().getCanonicalName())) {
-                rvalue = menuItem.isAuthenticated(roles);
-                break;
+                if (!rvalue) {
+                    rvalue = menuItem.isAuthenticated(roles);
+                }
             }
         }
         return rvalue;
