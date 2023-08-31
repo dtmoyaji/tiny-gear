@@ -8,5 +8,5 @@ import org.apache.wicket.authroles.authorization.strategies.role.Roles;
  */
 public interface IRoleChecker {
 
-    public boolean isAllowed(Roles roles);
+    public boolean isAuthenticated(Roles roles);
 }

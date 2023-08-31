@@ -24,10 +24,18 @@ public class SettingScene extends AbstractScene {
 
     @Override
     public void defineMenu() {
-
-        this.putMenu("マイアカウント", UserInfoView.class, RoleController.getUserRoles(), true);
-        this.putMenu("接続設定", ConnectionView.class, RoleController.getAdminRoles(), false);
-        this.putMenu("キャッシュ", CacheControlView.class, RoleController.getDevelopmentRoles(), false);
+        
+        this.createMenuItem("マイアカウント", UserInfoView.class)
+                .setRoles(RoleController.getUserRoles())
+                .setPrimary(true);
+        
+        this.createMenuItem("接続設定", ConnectionView.class)
+                .setRoles(RoleController.getAdminRoles())
+                .setPrimary(false);
+        
+        this.createMenuItem("キャッシュ", CacheControlView.class)
+                .setRoles(RoleController.getDevelopmentRoles())
+                .setPrimary(false);
     }
 
     @Override

@@ -9,93 +9,94 @@ import org.tiny.gear.scenes.AbstractScene;
 import org.tiny.gear.scenes.AbstractView;
 
 /**
- *
  * @author dtmoyaji
  */
 public class MenuItem implements Serializable, IRoleChecker {
 
     public static final long serialVersionUID = -1L;
 
-    private String text;
+    private String text = "";
 
-    private Roles allowed;
+    private Roles roles;
 
     private Class<? extends AbstractScene> scene;
     private Class<? extends AbstractView> view;
     private HashMap<String, String> arguments;
 
-    public MenuItem(String text, Roles allowed) {
-        this.text = text;
-        this.allowed = allowed;
+    private boolean primary = false;
+
+    public MenuItem() {
+        this.arguments = new HashMap();
     }
 
-    public MenuItem(String text, Class<? extends AbstractScene> scene, Roles allowed, Class<? extends AbstractView> view) {
-        this.text = text;
-        this.scene = scene;
-        this.view = view;
-        this.allowed = allowed;
+    public MenuItem setPrimary(boolean primary) {
+        this.primary = primary;
+        return this;
     }
-    
+
+    public boolean isPrimary() {
+        return this.primary;
+    }
+
+    public MenuItem setText(String text) {
+        this.text = text;
+        return this;
+    }
+
+    public String getText() {
+        return this.text;
+    }
+
+    public MenuItem setRoles(Roles roles) {
+        this.roles = roles;
+        return this;
+    }
+
+    public Roles getRoles() {
+        return this.roles;
+    }
+
+    @Override
+    public boolean isAuthenticated(Roles roles) {
+        return RoleController.isRolesMatched(this.roles, roles);
+    }
+
+    public MenuItem setScene(Class<? extends AbstractScene> scene) {
+        this.scene = scene;
+        return this;
+    }
+
+    public Class<? extends AbstractScene> getScene() {
+        return this.scene;
+    }
+
     public boolean isMatchedScene(Class<? extends AbstractScene> scene) {
         return this.scene.getName().equals(scene.getName());
     }
 
-    public boolean isMatchedMainPanel(Class<? extends AbstractView> panel) {
+    public MenuItem setView(Class<? extends AbstractView> view) {
+        this.view = view;
+        return this;
+    }
+
+    public Class<? extends AbstractView> getView() {
+        return this.view;
+    }
+
+    public boolean isMatchedView(Class<? extends AbstractView> view) {
         if (this.view == null) {
             return false;
         }
-        return this.view.getName().equals(panel.getName());
+        return this.view.getName().equals(view.getName());
     }
 
-    /**
-     * @return the text
-     */
-    public String getText() {
-        return text;
-    }
-
-    /**
-     * @param text the text to set
-     */
-    public void setText(String text) {
-        this.text = text;
-    }
-
-    public String mapUrl(Class scene, Class mainPanel) {
-        String urlTemplate = "?scene=%s&view=%s";
-        urlTemplate = String.format(
-                urlTemplate,
-                scene.getName(),
-                mainPanel.getName()
-        );
-        return urlTemplate;
-    }
-
-    /**
-     * @return the allowed
-     */
-    public Roles getAllowed() {
-        return allowed;
-    }
-
-    /**
-     * @param allowed the allowed to set
-     */
-    public void setAllowed(Roles allowed) {
-        this.allowed = allowed;
-    }
-
-    @Override
-    public boolean isAllowed(Roles roles) {
-        return RoleController.isRolesMatched(this.allowed, roles);
-    }
-    
-    public String getViewClassName(){
-        return this.view.getName();
+    public MenuItem setArguments(HashMap<String, String> args) {
+        this.arguments = args;
+        return this;
     }
 
     public HashMap<String, String> getArguments() {
-        if(arguments == null){
+        if (arguments == null) {
             this.arguments = new HashMap<>();
         }
         return arguments;

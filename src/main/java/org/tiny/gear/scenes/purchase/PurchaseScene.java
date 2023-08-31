@@ -9,18 +9,17 @@ import org.tiny.gear.scenes.AbstractScene;
  *
  * @author dtmoyaji
  */
-public class PurchaseScene extends AbstractScene{
+public class PurchaseScene extends AbstractScene {
 
-    public PurchaseScene(Roles allowed, GearApplication application){
+    public PurchaseScene(Roles allowed, GearApplication application) {
         super(allowed, application);
     }
 
     @Override
     public void defineMenu() {
-        this.putMenu("仕入",
-                TraderEditView.class,
-                RoleController.getUserRoles(),
-                true);
+        this.createMenuItem("仕入", TraderEditView.class)
+                .setRoles(RoleController.getUserRoles())
+                .setPrimary(true);
     }
 
     @Override
@@ -32,5 +31,5 @@ public class PurchaseScene extends AbstractScene{
     public String getSceneName() {
         return "取引先編集";
     }
-    
+
 }

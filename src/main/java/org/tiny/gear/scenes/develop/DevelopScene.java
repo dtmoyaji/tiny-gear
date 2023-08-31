@@ -21,10 +21,9 @@ public class DevelopScene extends AbstractScene {
 
     @Override
     public void defineMenu() {
-        this.putMenu(
-                "Groovy編集", SimpleDevelopmentView.class,
-                RoleController.getDevelopmentRoles(), true
-        );
+        this.createMenuItem("Groovy編集", SimpleDevelopmentView.class)
+                .setRoles(RoleController.getDevelopmentRoles())
+                .setPrimary(true);
     }
 
     @Override

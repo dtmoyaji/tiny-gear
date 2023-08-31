@@ -3,7 +3,6 @@ package org.tiny.gear.panels;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -36,7 +35,7 @@ public abstract class NavigationPanel extends Panel {
     public static final long serialVersionUID = -1L;
 
     //private Label menuMoc;
-    private ListView<String> scenes;
+    private ListView<String> sceneNameList;
 
     private SceneTable sceneTable;
 
@@ -63,28 +62,39 @@ public abstract class NavigationPanel extends Panel {
 
         this.resolve(index);
 
-        ArrayList<String> sceneNames = this.getScenes();
-        this.scenes = new ListView<String>("menus", sceneNames) {
+        ArrayList<String> sceneClassNames = this.getSceneClassNames();
+        this.sceneNameList = new ListView<String>("menus", sceneClassNames) {
             public static final long serialVersionUID = -1L;
 
             @Override
-            protected void populateItem(ListItem<String> item) {
+            protected void populateItem(ListItem<String> sceneClassNameItem) {
 
-                String sceneClass = item.getModelObject();
+                String sceneClassName = sceneClassNameItem.getModelObject();
                 AbstractScene scene = ((GearApplication) this.getApplication())
-                        .getCachedScene(sceneClass);
+                        .getCachedScene(sceneClassName);
 
-                AjaxLink link = new AjaxLink<>("menuItem") {
+                AjaxLink menuLink = new AjaxLink<>("menuItem") {
                     @Override
                     public void onClick(AjaxRequestTarget target) {
                         target.add(this);
                         // 既定のビューに遷移
+                        NavigationPanel.this.currentScene = scene;
                         NavigationPanel.this.onMenuItemClick(
                                 target,
                                 scene.getSceneKey(),
                                 scene.getDefaultViewClass().getCanonicalName(),
                                 null
                         );
+                        ArrayList<MenuItem> items = scene.getSubmenuItems();
+                        if (items.size() > 0) {
+                            for (int i = 0; i < items.size(); i++) {
+                                if(i==0){
+                                    items.get(i).setPrimary(true);
+                                }else{
+                                    items.get(i).setPrimary(false);
+                                }
+                            }
+                        }
                     }
 
                     @Override
@@ -93,15 +103,16 @@ public abstract class NavigationPanel extends Panel {
                         NavigationPanel.this.addReloadEvent(attributes);
                     }
                 };
-                link.setOutputMarkupId(true);
-                link.add(new Label("menuCaption", Model.of(scene.getSceneName())));
-                item.add(link);
+                menuLink.setOutputMarkupId(true);
+                menuLink.add(new Label("menuCaption", Model.of(scene.getSceneName())));
+                sceneClassNameItem.add(menuLink);
 
-                if (!scene.isAllowed(currentRoles)) {
-                    item.setVisible(false);
+                if (!scene.isAuthenticated(NavigationPanel.this.currentRoles)) {
+                    sceneClassNameItem.setVisible(false);
                 }
 
-                ListView<MenuItem> submenu = new ListView<MenuItem>("subMenu", scene.getMenus()) {
+                ArrayList<MenuItem> submenuItems = scene.getSubmenuItems();
+                ListView<MenuItem> submenu = new ListView<MenuItem>("subMenu", submenuItems) {
                     public static final long serialVersionUID = -1L;
 
                     @Override
@@ -114,9 +125,18 @@ public abstract class NavigationPanel extends Panel {
                                 NavigationPanel.this.onMenuItemClick(
                                         target,
                                         scene.getSceneKey(),
-                                        itemObject.getViewClassName(),
-                                        itemObject.getArguments()
+                                        itemObject.getView().getName(),
+                                        itemObject
                                 );
+
+                                ArrayList<MenuItem> menuitems = scene.getSubmenuItems();
+                                for (MenuItem item : menuitems) {
+                                    if (item.equals(itemObject)) {
+                                        itemObject.setPrimary(true);
+                                    } else {
+                                        item.setPrimary(false);
+                                    }
+                                }
                             }
 
                             @Override
@@ -128,29 +148,33 @@ public abstract class NavigationPanel extends Panel {
                         link.add(new Label("subMenuCaption", Model.of(itemObject.getText())));
                         item.add(link);
 
-                        if (itemObject.isMatchedMainPanel(currentPanel.getClass())) {
+                        if (itemObject.isPrimary()) {
                             link.add(AttributeModifier.append("current", "true"));
                             item.add(AttributeModifier.append("current", "true"));
+                        } else {
+                            link.add(AttributeModifier.append("current", "false"));
+                            item.add(AttributeModifier.append("current", "false"));
                         }
 
-                        if (!itemObject.isAllowed(currentRoles)) {
+                        if (!itemObject.isAuthenticated(currentRoles)) {
                             item.setVisible(false);
                         }
                     }
                 };
 
-                item.add(submenu);
+                sceneClassNameItem.add(submenu);
 
                 if (!currentScene.getClass()
                         .getName().equals(scene.getClass().getName())) {
                     submenu.setVisible(false);
                 } else {
-                    item.add(AttributeModifier.append("current", "true"));
+                    submenu.setVisible(true);
+                    sceneClassNameItem.add(AttributeModifier.append("current", "true"));
                 }
             }
         };
 
-        this.add(this.scenes);
+        this.add(this.sceneNameList);
 
     }
 
@@ -170,7 +194,7 @@ public abstract class NavigationPanel extends Panel {
         listeners.add(listener);
     }
 
-    public final ArrayList<String> getScenes() {
+    public final ArrayList<String> getSceneClassNames() {
         ArrayList<String> rvalue = new ArrayList<>();
         try {
             SceneTable sr = new SceneTable();
@@ -186,6 +210,6 @@ public abstract class NavigationPanel extends Panel {
         return rvalue;
     }
 
-    public abstract void onMenuItemClick(AjaxRequestTarget target, String sceneName, String panelName, HashMap<String,String> arguments);
+    public abstract void onMenuItemClick(AjaxRequestTarget target, String sceneName, String panelName, MenuItem menuItem);
 
 }

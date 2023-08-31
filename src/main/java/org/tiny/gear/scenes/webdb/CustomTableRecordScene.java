@@ -21,7 +21,7 @@ import org.tiny.gear.scenes.primary.PrimaryView;
  * @author dtmoyaji
  */
 public class CustomTableRecordScene extends AbstractScene {
-    
+
     public static final String ARG_TARGET_TABLECLASS = "TargetTableClass";
 
     private CustomTable customTable;
@@ -43,20 +43,21 @@ public class CustomTableRecordScene extends AbstractScene {
                 tableName = NameDescriptor.toJavaName(tableName);
                 Table tables = this.getGearApplication().getCachedTable(
                         CustomTableBuilder.CUSTOM_TABLE_PACKAGE
-                                + "." +
-                                tableName);
+                        + "."
+                        + tableName);
                 String roleString = this.customTable.AuthLimit.of(rs);
-                MenuItem item = this.putMenu(
-                        menuCaption,
-                        PrimaryView.class,
-                        RoleController.of(roleString),
-                        primary);
+                MenuItem item = this.createMenuItem(menuCaption, PrimaryView.class)
+                        .setRoles(RoleController.of(roleString))
+                        .setPrimary(primary);
+
+                Logger.getLogger(this.getClass().getName())
+                        .log(Level.INFO, "RECORD EDIT {0} - {1} - {2}", new Object[]{menuCaption, primary, roleString});
                 HashMap<String, String> args = item.getArguments();
                 args.put(ARG_TARGET_TABLECLASS, tables.getClass().getName());
                 primary = false;
             }
             rs.close();
-            
+
         } catch (SQLException ex) {
             Logger.getLogger(CustomTableRecordScene.class.getName()).log(Level.SEVERE, null, ex);
         }

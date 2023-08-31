@@ -2,7 +2,6 @@ package org.tiny.gear;
 
 import java.sql.Timestamp;
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import org.apache.wicket.ajax.AjaxRequestTarget;
@@ -12,6 +11,7 @@ import org.apache.wicket.model.Model;
 import org.apache.wicket.request.mapper.parameter.PageParameters;
 import org.tiny.datawrapper.IJdbcSupplier;
 import org.tiny.datawrapper.Jdbc;
+import org.tiny.gear.model.MenuItem;
 import org.tiny.gear.model.UserInfo;
 import org.tiny.gear.panels.HumbergerIcon;
 import org.tiny.gear.panels.NavigationPanel;
@@ -60,14 +60,12 @@ public class Index extends SamlMainPage implements IJdbcSupplier {
         this.currentScene = this.getGearApplication().getCachedScene(PrimaryScene.class.getName());
         this.currentView = this.currentScene.createDefaultView();
 
-        String sceneName = parameters.get("scene").toString();
-        String panelName = parameters.get("view").toString();
-        this.resolvePage(sceneName, panelName, null);
+        this.resolvePage(null, null, null);
 
         this.nav = new NavigationPanel("menus", this) {
             @Override
-            public void onMenuItemClick(AjaxRequestTarget target, String sceneName, String panelName, HashMap<String, String> arguments) {
-                Index.this.resolvePage(sceneName, panelName, arguments);
+            public void onMenuItemClick(AjaxRequestTarget target, String sceneName, String panelName, MenuItem menuItem) {
+                Index.this.resolvePage(sceneName, panelName, menuItem);
                 target.add(Index.this.currentView);
                 target.add(Index.this.nav);
             }
@@ -88,7 +86,7 @@ public class Index extends SamlMainPage implements IJdbcSupplier {
      *
      * @param parameters
      */
-    private void resolvePage(String sceneName, String viewName, HashMap<String, String> arguments) {
+    private void resolvePage(String sceneName, String viewName, MenuItem menuItem) {
 
         // 指定された状態に応じたシーンを表示する処理
         if (sceneName == null) {
@@ -99,8 +97,7 @@ public class Index extends SamlMainPage implements IJdbcSupplier {
         if (viewName == null) {
             this.currentView = this.currentScene.createDefaultView();
         } else {
-            HashMap<String, String> panels = this.currentScene.getPanelNames();
-            if (panels.containsValue(viewName)) {
+            if (this.currentScene.getViewClasses().containsKey(viewName)) {
                 try {
                     this.currentView = (AbstractView) this.getGearApplication().getCachedView(viewName);
                 } catch (SecurityException | IllegalArgumentException ex) {
@@ -163,8 +160,8 @@ public class Index extends SamlMainPage implements IJdbcSupplier {
         return app.getJdbc();
     }
 
-    public void onMenuItemClick(AjaxRequestTarget target, String sceneName, String panelName, HashMap<String, String> arguments) {
-        this.resolvePage(sceneName, panelName, arguments);
+    public void onMenuItemClick(AjaxRequestTarget target, String sceneName, String panelName, MenuItem menuItem) {
+        this.resolvePage(sceneName, panelName, menuItem);
         target.add(this.currentView);
         target.add(this.nav);
     }

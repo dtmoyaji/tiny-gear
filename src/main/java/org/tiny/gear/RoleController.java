@@ -19,7 +19,7 @@ public class RoleController {
         boolean rvalue = false;
         for (String usrrole : userRole) {
             for (String menurole : menuRole) {
-                if (menurole.equals(usrrole)) {
+                if (menurole.toLowerCase().equals(usrrole.toLowerCase())) {
                     rvalue = true;
                     break;
                 }
@@ -32,7 +32,10 @@ public class RoleController {
     }
     
     public static Roles of(String RoleName){
+        
         Roles role = null;
+        RoleName = RoleName.toUpperCase();
+        
         switch(RoleName){
             case RoleController.ROLE_ADMIN:
                 role = RoleController.getAdminRoles();

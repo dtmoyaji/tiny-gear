@@ -31,9 +31,9 @@ public abstract class AbstractScene implements Serializable, IRoleChecker {
 
     private ArrayList<MenuItem> menus;
 
-    private HashMap<String, String> panels;
+    private HashMap<String, Class<? extends AbstractView>> viewClasses;
 
-    private Roles allowed;
+    private Roles roles;
 
     private String defaultPanelName;
 
@@ -42,16 +42,16 @@ public abstract class AbstractScene implements Serializable, IRoleChecker {
     public AbstractScene(Roles allowed, GearApplication app) {
         this.setInitializer(allowed, app);
     }
-    
-    public AbstractScene(){
+
+    public AbstractScene() {
     }
-    
-    public void setInitializer(Roles allowed, GearApplication app){
-        this.allowed = allowed;
+
+    public void setInitializer(Roles allowed, GearApplication app) {
+        this.roles = allowed;
         this.application = app;
 
         this.menus = new ArrayList<>();
-        this.panels = new HashMap<>();
+        this.viewClasses = new HashMap<>();
 
         this.defineMenu();
 
@@ -63,8 +63,8 @@ public abstract class AbstractScene implements Serializable, IRoleChecker {
     public abstract void defineMenu();
 
     @Override
-    public boolean isAllowed(Roles role) {
-        return RoleController.isRolesMatched(this.allowed, role);
+    public boolean isAuthenticated(Roles role) {
+        return RoleController.isRolesMatched(this.roles, role);
     }
 
     public void setOrdinal(int order) {
@@ -74,9 +74,9 @@ public abstract class AbstractScene implements Serializable, IRoleChecker {
     public int getOrdinal() {
         return this.ordinal;
     }
-    
-    public Roles getRoles(){
-        return this.allowed;
+
+    public Roles getRoles() {
+        return this.roles;
     }
 
     public abstract String getSceneName();
@@ -92,7 +92,7 @@ public abstract class AbstractScene implements Serializable, IRoleChecker {
     /**
      * @return the menus
      */
-    public ArrayList<MenuItem> getMenus() {
+    public ArrayList<MenuItem> getSubmenuItems() {
         return menus;
     }
 
@@ -104,32 +104,47 @@ public abstract class AbstractScene implements Serializable, IRoleChecker {
     }
 
     /**
-     * @return the panels
+     * @return the viewClasses
      */
-    public HashMap<String, String> getPanelNames() {
-        return panels;
+    public HashMap<String, Class<? extends AbstractView>> getViewClasses() {
+        return viewClasses;
     }
 
-    public String getPanel(String key) {
-        return this.panels.get(key);
+    public Class<? extends AbstractView> getViewClass(String key) {
+        return this.viewClasses.get(key);
     }
 
     /**
-     * @param panels the panels to set
+     * @param views the viewClasses to set
      */
-    public void setPanels(HashMap<String, String> panels) {
-        this.panels = panels;
+    public void setViews(HashMap<String, Class<? extends AbstractView>> views) {
+        this.viewClasses = views;
     }
 
     public boolean isPrimary() {
         return false;
     }
 
+    public MenuItem createMenuItem(String caption, Class<? extends AbstractView> viewClass) {
+        MenuItem rvalue = new MenuItem()
+                .setText(caption)
+                .setView(viewClass);
+        this.getSubmenuItems().add(rvalue);
+        if (viewClass != null) {
+            this.getViewClasses().put(viewClass.getName(), viewClass);
+        }
+
+        return rvalue;
+    }
+
     public MenuItem putMenu(String menuName, Class<? extends AbstractView> view, Roles roles, boolean primary) {
-        MenuItem rvalue = new MenuItem(menuName, this.getClass(), roles, view);
+        MenuItem rvalue = new MenuItem().setText(menuName)
+                .setScene(this.getClass())
+                .setRoles(roles)
+                .setView(view);
         try {
-            this.getMenus().add(rvalue);
-            this.getPanelNames().put(view.getName(), view.getCanonicalName());
+            this.getSubmenuItems().add(rvalue);
+            this.getViewClasses().put(view.getName(), view);
             if (primary) {
                 this.defaultPanelName = view.getCanonicalName();
             }
@@ -156,7 +171,7 @@ public abstract class AbstractScene implements Serializable, IRoleChecker {
 
         return this.putMenu(menuName, view, roles, primary);
     }
-    
+
     public abstract Class getDefaultViewClass();
 
     public AbstractView createDefaultView() {
@@ -167,23 +182,23 @@ public abstract class AbstractScene implements Serializable, IRoleChecker {
     /**
      * ユーザーが表示権限を持っているかどうかをチェックする。
      *
-     * @param target
-     * @param userRole
+     * @param abstractView
+     * @param roles
      * @return
      */
-    public boolean isAuthenticated(AbstractView target, Roles userRole) {
+    public boolean isAuthenticated(AbstractView abstractView, Roles roles ){
         boolean rvalue = false;
-        ArrayList<MenuItem> menus = this.getMenus();
-        for (MenuItem menu : menus) {
-            if(menu.getViewClassName().equals(target.getClass().getCanonicalName())){
-                rvalue = menu.isAllowed(userRole);
+        ArrayList<MenuItem> menuItems = this.getSubmenuItems();
+        for (MenuItem menuItem : menuItems) {
+            if (menuItem.getView().getName().equals(abstractView.getClass().getCanonicalName())) {
+                rvalue = menuItem.isAuthenticated(roles);
                 break;
             }
         }
         return rvalue;
     }
-    
-    public GearApplication getGearApplication(){
+
+    public GearApplication getGearApplication() {
         return this.application;
     }
 }

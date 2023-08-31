@@ -24,8 +24,8 @@ public class PrimaryScene extends AbstractScene {
 
     @Override
     public void defineMenu() {
-        this.getPanelNames().put(AbstractScene.DEFAULT_VIEW,
-                PrimaryView.class.getCanonicalName()
+        this.getViewClasses().put(AbstractScene.DEFAULT_VIEW,
+                PrimaryView.class
         );
     }
 
