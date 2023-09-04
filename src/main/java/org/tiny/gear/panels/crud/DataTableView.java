@@ -45,11 +45,16 @@ public abstract class DataTableView extends DataTableInfoPanel {
      * 外部から与えられるフィルタ条件
      */
     private Condition[] conditions = new Condition[]{};
-    
+
     /**
      * ページ範囲を含むフィルタ条件
      */
     private Condition[] consditonsForPage = new Condition[]{};
+
+    /**
+     * 並べ替え条件
+     */
+    private Condition[] conditionsForOrdinal = new Condition[]{};
 
     private ListView<Column> tableHeader;
 
@@ -165,7 +170,7 @@ public abstract class DataTableView extends DataTableInfoPanel {
                 Column column = item.getModelObject();
                 if (column.getVisibleType() != Column.VISIBLE_TYPE_HIDDEN) {
                     String caption = DataTableView.this.targetTable.getColumnLogicalName(column);
-                    if(column.isPrimaryKey()){
+                    if (column.isPrimaryKey()) {
                         caption += "*";
                     }
                     Label captionLabel = new Label("columnName", Model.of(caption));
@@ -180,7 +185,7 @@ public abstract class DataTableView extends DataTableInfoPanel {
         this.curdTableView.add(this.tableHeader);
 
         this.csvTransPortPanelPlaceHolder = new CsvTransportPanel(
-                "csvTransPortPanelPlaceHolder", 
+                "csvTransPortPanelPlaceHolder",
                 this,
                 "_DataTableView"
         ) {
@@ -196,7 +201,7 @@ public abstract class DataTableView extends DataTableInfoPanel {
         this.csvTransPortPanelPlaceHolder.setTable(table);
         this.csvTransPortPanelPlaceHolder.setOutputMarkupId(true);
         this.curdTableView.add(this.csvTransPortPanelPlaceHolder);
-        
+
         // データ取得
         this.redraw();
     }
@@ -230,6 +235,13 @@ public abstract class DataTableView extends DataTableInfoPanel {
         return rvalue;
     }
 
+    public Condition[] margeConditions(Condition[] src, Condition[] additive) {
+        Condition[] rvalue = new Condition[src.length + additive.length + 1];
+        System.arraycopy(src, 0, rvalue, 0, src.length);
+        System.arraycopy(additive, 0, rvalue, src.length, additive.length);
+        return rvalue;
+    }
+
     public ResultSet redraw(Condition... conditions) {
 
         this.beforeConstructView(targetTable);
@@ -238,7 +250,16 @@ public abstract class DataTableView extends DataTableInfoPanel {
 
         ResultSet rvalue = null;
         this.conditions = conditions;
-        
+
+        // とくにソート指定がない場合は、主キーを使って並び変える。
+        if (this.conditions.length < 1) {
+            for (Column column : this.targetTable) {
+                if (column.isPrimaryKey()) {
+                    this.conditions = this.addCondition(this.conditions, column.asc());
+                }
+            }
+        }
+
         try {
             // データの描画
             int recordCount = this.getTable().getCount(
@@ -326,12 +347,12 @@ public abstract class DataTableView extends DataTableInfoPanel {
     public Condition[] getConditions() {
         return this.conditions;
     }
-    
-    public Condition[] getConditionsForPage(){
+
+    public Condition[] getConditionsForPage() {
         return this.consditonsForPage;
     }
-    
-    public KeyValueList getFirstKeyValueList(){
+
+    public KeyValueList getFirstKeyValueList() {
         return this.tableData.get(0);
     }
 

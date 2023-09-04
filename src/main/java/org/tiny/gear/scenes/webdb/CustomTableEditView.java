@@ -66,6 +66,7 @@ public class CustomTableEditView extends AbstractView {
                 if (control != null) {
                     control.getVisibleComponent().add(new AttributeModifier("style", Model.of("height: 12em;")));
                 }
+
             }
 
             @Override
@@ -74,22 +75,37 @@ public class CustomTableEditView extends AbstractView {
 
                 String tableName = "";
                 String tableDef = "";
+                String jdbcStackName = "";
+                DataControl defControl = null;
                 for (DataControl control : dataControls) {
                     if (control.getColumn().getName().equals(customTable.TableDef.getName())) {
                         tableDef = control.getValue(DataControl.UNESCAPE);
+                        defControl = control;
                     }
                     if (control.getColumn().getName().equals(customTable.TableName.getName())) {
                         tableName = control.getValue(DataControl.UNESCAPE);
+                    }
+                    if (control.getColumn().getName().equals(customTable.JdbcStackName.getName())) {
+                        jdbcStackName = control.getValue(DataControl.UNESCAPE);
                     }
                 }
                 GearApplication ga = getGearApplication();
                 ga.removeTableCach(tableName);
                 ga.clearViewCach();
+
                 CustomTableBuilder gtb = new CustomTableBuilder(ga);
 
                 Table dummy = null;
                 try {
-                    dummy = gtb.createTable(tableName, tableDef);
+                    if (tableDef.isEmpty()) {
+                        tableDef = gtb.getExternalTableGoovySource(tableName, jdbcStackName);
+                        System.out.println(tableDef);
+                        defControl.setDefaultModel(Model.of(tableDef));
+                        defControl.setOutputMarkupId(true);
+                        target.add(defControl);
+                    } else {
+                        dummy = gtb.createTable(tableName, tableDef, jdbcStackName);
+                    }
                 } catch (Exception ex) {
                     CustomTableEditView.this.groovyMsg.setDefaultModelObject(ex.toString());
                 }

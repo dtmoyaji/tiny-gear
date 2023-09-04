@@ -294,9 +294,9 @@ public class GearApplication extends SamlWicketApplication implements IJdbcSuppl
                 rvalue = this.tableCache.get(tableClassName);
             }
             if (rvalue == null) {
-                CustomTableBuilder gtb = new CustomTableBuilder(this);
+                CustomTableBuilder ctb = new CustomTableBuilder(this);
                 String sqlName = CustomTableBuilder.toSQLName(tableClassName);
-                rvalue = gtb.createTable(sqlName);
+                rvalue = ctb.createTable(sqlName);
                 this.tableCache.put(tableClassName, rvalue);
             }
         }

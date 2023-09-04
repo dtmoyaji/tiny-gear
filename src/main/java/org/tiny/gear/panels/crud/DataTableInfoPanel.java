@@ -46,7 +46,7 @@ public abstract class DataTableInfoPanel extends Panel implements IJdbcSupplier,
             this.targetTable = clone;
             this.targetTable.setAllowDeleteRow(target.isAllowDeleteRow());
             this.targetTable.setDebugMode(target.getDebugMode());
-            this.targetTable.setJdbc(this.getJdbc());
+            this.targetTable.setJdbc(target.getJdbc());
             this.beforeConstructView(this.targetTable);
         } catch (SecurityException 
                 | IllegalArgumentException 

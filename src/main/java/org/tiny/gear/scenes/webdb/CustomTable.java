@@ -26,6 +26,9 @@ public class CustomTable extends Table {
     @LogicalName("カスタムテーブル")
     public ShortFlagZero CustomTable;
     
+    @LogicalName("JDBC_STACK_NAME")
+    public Column<String> JdbcStackName;
+    
     @LogicalName("編集権限")
     public Column<String> AuthLimit;
 
@@ -51,6 +54,8 @@ public class CustomTable extends Table {
         
         this.CustomTable.setDefault("0")
                 .setAllowNull(false);
+        
+        this.JdbcStackName.setLength(Column.SIZE_256);
         
         this.AuthLimit.setLength(Column.SIZE_64);
         
