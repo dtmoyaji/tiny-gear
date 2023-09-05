@@ -21,6 +21,8 @@ import org.tiny.gear.scenes.AbstractView;
  */
 public class CustomTableEditView extends AbstractView {
 
+    public static String KEY_DEFAULT_ROWS_PER_PAGE = "CustomTableEditView.DefaultRowsPerPage";
+
     private CustomTable customTable;
 
     private FilterAndEdit filterAndEdit;
@@ -48,7 +50,9 @@ public class CustomTableEditView extends AbstractView {
 
             @Override
             public void beforeConstructDataTableView(Table myTable, DataTableView dataTableView) {
+
                 myTable.get(customTable.TableDef.getName()).setVisibleType(Column.VISIBLE_TYPE_HIDDEN);
+                // リストの表示行数を定義する。
             }
 
             @Override
@@ -116,6 +120,15 @@ public class CustomTableEditView extends AbstractView {
         this.filterAndEdit.setPopupPanel(this.getPopupPanel());
         this.filterAndEdit.getRecordEditor().buildForm(this);
         this.add(this.filterAndEdit);
+
+        int defaultRowsPerPage = Integer.parseInt(
+                CustomTableEditView.this.getGearApplication().getSystemVariable(
+                        CustomTableEditView.KEY_DEFAULT_ROWS_PER_PAGE,
+                        "2")
+        );
+        this.filterAndEdit.getDataTableView().setRowsPerPage(defaultRowsPerPage);
+        this.filterAndEdit.getDataTableView().redraw();
+
     }
 
     @Override
