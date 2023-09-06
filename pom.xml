@@ -86,14 +86,23 @@
             <version>5.2.3</version>
             <type>jar</type>
         </dependency>
+        
+        <dependency>
+            <groupId>org.mariadb.jdbc</groupId>
+            <artifactId>mariadb-java-client</artifactId>
+            <version>3.2.0</version>
+        </dependency>
+        
+        <dependency>
+            <groupId>mysql</groupId>
+            <artifactId>mysql-connector-java</artifactId>
+            <version>8.0.33</version>
+        </dependency>
+
     </dependencies>
     
-
-
     <build>
-    
         <resources>
-
             <resource>
                 <filtering>false</filtering>
                 <directory>src/main/resources</directory>
@@ -149,7 +158,6 @@
     </build>
 
     <repositories>
-        
         <repository>
             <id>Apache Nexus</id>
             <url>https://repository.apache.org/content/repositories/releases/</url>
@@ -182,6 +190,6 @@
                 <enabled>true</enabled>
             </snapshots>
         </repository>
-        
     </repositories>
+
 </project>

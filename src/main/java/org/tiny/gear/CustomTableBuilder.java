@@ -3,7 +3,6 @@ package org.tiny.gear;
 import groovy.lang.Binding;
 import groovy.lang.GroovyShell;
 import java.sql.ResultSet;
-import java.sql.ResultSetMetaData;
 import java.sql.SQLException;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -35,9 +34,12 @@ public class CustomTableBuilder {
         this.customTable.setJdbc(app.getJdbc());
 
         this.tableDefHeader += "package " + CustomTableBuilder.CUSTOM_TABLE_PACKAGE + "\n";
+        this.tableDefHeader += "import java.sql.Timestamp \n";
+        this.tableDefHeader += "import org.tiny.gear.GearApplication \n";
         this.tableDefHeader += "import org.tiny.datawrapper.annotations.LogicalName \n";
         this.tableDefHeader += "import org.tiny.datawrapper.annotations.Comment \n";
         this.tableDefHeader += "import org.tiny.datawrapper.Table \n";
+        this.tableDefHeader += "import org.tiny.datawrapper.View \n";
         this.tableDefHeader += "import org.tiny.datawrapper.Column \n";
         this.tableDefHeader += "import org.tiny.datawrapper.IncrementalKey \n";
         this.tableDefHeader += "import org.tiny.datawrapper.ShortFlagZero \n";
@@ -61,9 +63,24 @@ public class CustomTableBuilder {
             jdbc = this.app.getJdbc();
             rvalue.alterOrCreateTable(jdbc);
         } else {
+            rvalue.recordInfo(this.app.getJdbc());
             jdbc = this.getExternalJdbc(jdbcStackName);
             rvalue.setJdbc(jdbc);
         }
+        return rvalue;
+    }
+
+    public Table createTable(String tableName, String tableDef, String postConstruct, String jdbcStackName) throws Exception {
+        Table rvalue = this.createTable(tableName, tableDef, jdbcStackName);
+        if ((postConstruct == null) || postConstruct.isEmpty()) {
+            return rvalue;
+        }
+        Binding binding = new Binding();
+        binding.setVariable("_GearApplication", this.app);
+        binding.setVariable("_Table", rvalue);
+        GroovyShell grshell = new GroovyShell(binding);
+        postConstruct += "\n return _rvalue;";
+        grshell.evaluate(postConstruct);
         return rvalue;
     }
 
@@ -73,34 +90,10 @@ public class CustomTableBuilder {
             String cfi = String.format(codeForInstance, NameDescriptor.toJavaName(tableName));
             tableDef = tableDefHeader + "\n" + tableDef + "\n" + cfi;
             Binding binding = new Binding();
+            binding.setVariable("_GearApplication", this.app);
             GroovyShell grshell = new GroovyShell(binding);
             rvalue = (Table) grshell.evaluate(tableDef);
         }
-        return rvalue;
-    }
-
-    public String getExternalTableGoovySource(String tableName, String jdbcStackName) {
-        String rvalue = "";
-        String classHead = "package " + CustomTableBuilder.CUSTOM_TABLE_PACKAGE + "; \n";
-        classHead += "public class " + tableName + " extends Table {\n";
-        String columnDef = "";
-        String defineHead = "public void defineColumns() throws TinyDatabaseException {\n";
-        String defineBody = "";
-        String defineFoot = "}\n";
-        String classFoot = "}\n";
-        try {
-            Jdbc jdbc = this.getExternalJdbc(jdbcStackName);
-            ResultSet rs = jdbc.select("select * from " + tableName);
-            ResultSetMetaData rsmeta = rs.getMetaData();
-            for (int i = 1; i < rsmeta.getColumnCount() + 1; i++) {
-                String defline = "public Column<" + rsmeta.getColumnTypeName(i) + "> "
-                        + NameDescriptor.toJavaName(rsmeta.getColumnName(i)) + "\n";
-                columnDef += defline;
-            }
-        } catch (SQLException ex) {
-            Logger.getLogger(CustomTableBuilder.class.getName()).log(Level.SEVERE, null, ex);
-        }
-        rvalue = classHead + columnDef + defineHead + defineBody + defineFoot + classFoot;
         return rvalue;
     }
 
@@ -139,8 +132,9 @@ public class CustomTableBuilder {
                 if (rs.next()) {
                     String tableDef = this.customTable.TableDef.of(rs);
                     String jdbcName = this.customTable.JdbcStackName.of(rs);
+                    String postConstruct = this.customTable.PostConstructed.of(rs);
                     rs.close();
-                    rvalue = this.createTable(tableName, tableDef, jdbcName);
+                    rvalue = this.createTable(tableName, tableDef, postConstruct, jdbcName);
                 }
             } catch (Exception ex) {
                 Logger.getLogger(CustomTableBuilder.class.getName())

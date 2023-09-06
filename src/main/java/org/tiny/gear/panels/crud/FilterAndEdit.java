@@ -87,6 +87,11 @@ abstract public class FilterAndEdit extends Panel implements IPanelPopupper {
             public void afterConstructView(Table myTable) {
                 FilterAndEdit.this.afterConstructRecordEditor(myTable, FilterAndEdit.this.recordEditor);
             }
+
+            @Override
+            public void afterSubmit(AjaxRequestTarget target, Table targetTable, ArrayList<DataControl> dataControls) {
+                FilterAndEdit.this.afterSubmit(target, targetTable, dataControls);
+            }
         };
         this.add(this.recordEditor);
         this.recordEditor.setOutputMarkupId(true);
@@ -197,6 +202,9 @@ abstract public class FilterAndEdit extends Panel implements IPanelPopupper {
     @Override
     public PopupPanel getPopupPanel() {
         return this.dataTableView.getPopupPanel();
+    }
+
+    public void afterSubmit(AjaxRequestTarget target, Table targetTable, ArrayList<DataControl> dataControls) {
     }
 
 }

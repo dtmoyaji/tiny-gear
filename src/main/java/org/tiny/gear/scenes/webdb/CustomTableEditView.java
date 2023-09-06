@@ -28,6 +28,8 @@ public class CustomTableEditView extends AbstractView {
     private FilterAndEdit filterAndEdit;
 
     private Label groovyMsg;
+    
+    private String generatedTableClassName;
 
     public CustomTableEditView(GearApplication app) {
         super(app);
@@ -70,7 +72,6 @@ public class CustomTableEditView extends AbstractView {
                 if (control != null) {
                     control.getVisibleComponent().add(new AttributeModifier("style", Model.of("height: 12em;")));
                 }
-
             }
 
             @Override
@@ -94,27 +95,28 @@ public class CustomTableEditView extends AbstractView {
                     }
                 }
                 GearApplication ga = getGearApplication();
-                ga.removeTableCach(tableName);
+                ga.removeTableCache(tableName);
                 ga.clearViewCach();
 
                 CustomTableBuilder gtb = new CustomTableBuilder(ga);
 
                 Table dummy = null;
                 try {
-                    if (tableDef.isEmpty()) {
-                        tableDef = gtb.getExternalTableGoovySource(tableName, jdbcStackName);
-                        System.out.println(tableDef);
-                        defControl.setDefaultModel(Model.of(tableDef));
-                        defControl.setOutputMarkupId(true);
-                        target.add(defControl);
-                    } else {
+                    if (!tableDef.isEmpty()) {
                         dummy = gtb.createTable(tableName, tableDef, jdbcStackName);
+                        generatedTableClassName = dummy.getClass().getName();
                     }
                 } catch (Exception ex) {
                     CustomTableEditView.this.groovyMsg.setDefaultModelObject(ex.toString());
                 }
                 target.add(CustomTableEditView.this.groovyMsg);
                 return dummy instanceof Table;
+            }
+            
+            @Override
+            public void afterSubmit(AjaxRequestTarget target, Table targetTable, ArrayList<DataControl> dataControls){
+                getGearApplication().removeTableCache(generatedTableClassName);
+                getGearApplication().removeSceneCache(CustomTableRecordScene.class.getName());
             }
         };
         this.filterAndEdit.setPopupPanel(this.getPopupPanel());

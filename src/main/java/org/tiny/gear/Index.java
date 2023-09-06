@@ -23,7 +23,8 @@ import org.tiny.wicket.onelogin.SamlAuthInfo;
 import org.tiny.wicket.onelogin.SamlSession;
 
 /**
- * メインページ。 ここで、画面表示を全部制御する。
+ * メインページ。
+ * ここで、画面表示を全部制御する。
  *
  * @author dtmoyaji
  */
@@ -117,6 +118,7 @@ public class Index extends SamlMainPage implements IJdbcSupplier {
             this.currentScene = new PrimaryScene(RoleController.getGuestRoles(), this.getGearApplication());
             this.currentView = this.currentScene.createDefaultView();
         } else { //表示に問題がないときは、ユーザー情報を上書きに行く
+            
             SamlAuthInfo ainfo = ((SamlSession) this.getSession()).getSamlAuthInfo();
             if (ainfo != null) {
                 UserInfo uinfo = (UserInfo) this.getGearApplication().getCachedTable(UserInfo.class);
@@ -126,6 +128,7 @@ public class Index extends SamlMainPage implements IJdbcSupplier {
                 uinfo.AttributeJson.setValue(ainfo.toJson()); // TODO: JSONの生成ロジックを作ること。
                 uinfo.merge();
             }
+            
         }
         
         this.currentView.redraw();

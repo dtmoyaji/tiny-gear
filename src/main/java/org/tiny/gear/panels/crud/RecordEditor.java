@@ -199,6 +199,7 @@ public abstract class RecordEditor extends DataTableInfoPanel {
             target.add(this.delete);
         }
         target.add(this);
+        this.afterSubmit(target, targetTable, dataControls);
     }
 
     /**
@@ -210,6 +211,9 @@ public abstract class RecordEditor extends DataTableInfoPanel {
      */
     public boolean beforeSubmit(AjaxRequestTarget target, Table targetTable, ArrayList<DataControl> dataControls1) {
         return true;
+    }
+    
+    public void afterSubmit(AjaxRequestTarget target, Table targetTable, ArrayList<DataControl> dataControls){
     }
 
     /**

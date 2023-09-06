@@ -49,7 +49,7 @@ public class GearApplication extends SamlWicketApplication implements IJdbcSuppl
 
     private HashMap<String, Properties> environments;
 
-    private HashMap<String, AbstractScene> sceneCach = new HashMap<>();
+    private HashMap<String, AbstractScene> sceneCache = new HashMap<>();
     private SceneTable sceneTable;
 
     private Cache<Class> classCache;
@@ -221,6 +221,14 @@ public class GearApplication extends SamlWicketApplication implements IJdbcSuppl
         this.groovyExecutor = new GroovyExecutor(this);
     }
 
+    public void removeTableCache(String key) {
+        this.tableCache.remove(key);
+    }
+    
+    public void removeSceneCache(String key){
+        this.sceneCache.remove(key);
+    }
+
     public void mountResources() {
         String classesPath = this.getServletContext().getRealPath("/");
         // img のパスをurlにマッピングする
@@ -369,18 +377,14 @@ public class GearApplication extends SamlWicketApplication implements IJdbcSuppl
         return table;
     }
 
-    public void removeTableCach(String tableClassName) {
-        this.tableCache.remove(tableClassName);
-    }
-
     public void clearViewCach() {
         this.viewCache.clear();
     }
 
     public AbstractView getCachedView(String viewClassName) {
         AbstractView rvalue = null;
-        Class<? extends AbstractView> cls = 
-                (Class<? extends AbstractView>) this.getCachedClass(viewClassName);
+        Class<? extends AbstractView> cls
+                = (Class<? extends AbstractView>) this.getCachedClass(viewClassName);
         rvalue = this.getCachedView(cls);
         return rvalue;
     }
@@ -423,15 +427,15 @@ public class GearApplication extends SamlWicketApplication implements IJdbcSuppl
 
         this.sceneTable.registScene(this, PurchaseScene.class,
                 4, RoleController.ROLE_USER);
-        
-        this.sceneTable.registScene(this,CustomTableRecordScene.class,
+
+        this.sceneTable.registScene(this, CustomTableRecordScene.class,
                 5, RoleController.ROLE_USER);
     }
 
     public AbstractScene getCachedScene(String sceneClassName) {
         AbstractScene scene = null;
-        if (this.sceneCach.containsKey(sceneClassName)) {
-            scene = this.sceneCach.get(sceneClassName);
+        if (this.sceneCache.containsKey(sceneClassName)) {
+            scene = this.sceneCache.get(sceneClassName);
             //Logger.getLogger(this.getClass().getName()).log(Level.INFO, "Scene Cache Hit :{0}", sceneClassName);
 
         } else {
@@ -439,7 +443,7 @@ public class GearApplication extends SamlWicketApplication implements IJdbcSuppl
                 SceneTable sceneTable = (SceneTable) this.getCachedTable(SceneTable.class
                 );
                 scene = this.sceneTable.createScene(this, sceneClassName);
-                this.sceneCach.put(sceneClassName, scene);
+                this.sceneCache.put(sceneClassName, scene);
                 Logger.getLogger(this.getClass().getName()).log(Level.INFO, "SCENE: {0} cached.", sceneClassName);
 
             } catch (IllegalArgumentException | SecurityException ex) {
@@ -448,7 +452,7 @@ public class GearApplication extends SamlWicketApplication implements IJdbcSuppl
             }
         }
         if (scene == null) {
-            this.sceneCach.remove(sceneClassName);
+            this.sceneCache.remove(sceneClassName);
         }
         return scene;
     }
@@ -488,11 +492,10 @@ public class GearApplication extends SamlWicketApplication implements IJdbcSuppl
     public GroovyExecutor getGroovyExecutor() {
         return this.groovyExecutor;
     }
-    
+
     public String getRealPath(String path) {
         String realpath = this.getServletContext().getRealPath(path);
         return realpath;
     }
-
 
 }
