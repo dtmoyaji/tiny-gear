@@ -26,7 +26,6 @@ import org.tiny.gear.scenes.AbstractView;
 import org.tiny.gear.scenes.SceneTable;
 import org.tiny.gear.scenes.develop.DevelopScene;
 import org.tiny.gear.scenes.primary.PrimaryScene;
-import org.tiny.gear.scenes.purchase.PurchaseScene;
 import org.tiny.gear.scenes.setting.SettingScene;
 import org.tiny.gear.scenes.webdb.CustomTableManagementScene;
 import org.tiny.gear.scenes.webdb.CustomTableRecordScene;
@@ -224,8 +223,8 @@ public class GearApplication extends SamlWicketApplication implements IJdbcSuppl
     public void removeTableCache(String key) {
         this.tableCache.remove(key);
     }
-    
-    public void removeSceneCache(String key){
+
+    public void removeSceneCache(String key) {
         this.sceneCache.remove(key);
     }
 
@@ -321,7 +320,12 @@ public class GearApplication extends SamlWicketApplication implements IJdbcSuppl
                 rvalue = cls.getConstructor().newInstance();
                 rvalue.alterOrCreateTable(this.getJdbc());
                 this.tableCache.put(tableClassName, rvalue);
-            } catch (NoSuchMethodException | SecurityException | InstantiationException | IllegalAccessException | IllegalArgumentException | InvocationTargetException ex) {
+            } catch (NoSuchMethodException
+                    | SecurityException
+                    | InstantiationException
+                    | IllegalAccessException
+                    | IllegalArgumentException
+                    | InvocationTargetException ex) {
                 Logger.getLogger(GearApplication.class
                         .getName()).log(Level.SEVERE, null, ex);
             }
@@ -338,7 +342,9 @@ public class GearApplication extends SamlWicketApplication implements IJdbcSuppl
                 rvalue = Class.forName(className);
                 this.classCache.put(className, rvalue);
             } catch (ClassNotFoundException ex) {
-                Logger.getLogger(GearApplication.class.getName()).log(Level.SEVERE, null, ex);
+                Logger.getLogger(GearApplication.class.getName())
+                        .log(Level.SEVERE, null, ex);
+                this.sceneTable.delete(this.sceneTable.SceneClassName.sameValueOf(className));
             }
         }
         return rvalue;
@@ -349,7 +355,7 @@ public class GearApplication extends SamlWicketApplication implements IJdbcSuppl
         if (rvalue == null) {
             rvalue = this.getCachedSystemTable(tableClassName);
         }
-        return rvalue;
+        return rvalue.clone(); // メモリ上で複製する
     }
 
     public Table getCachedTable(Class<? extends Table> tableClass) {
@@ -373,7 +379,8 @@ public class GearApplication extends SamlWicketApplication implements IJdbcSuppl
 
     public Table stackTableOnCach(Table table) {
         this.tableCache.put(table.getClass().getName(), table);
-        Logger.getLogger(this.getName()).log(Level.INFO, "TABLE: {0} instance catched.", table.getClass().getName());
+        Logger.getLogger(this.getName())
+                .log(Level.INFO, "TABLE: {0} instance catched.", table.getClass().getName());
         return table;
     }
 
@@ -425,11 +432,8 @@ public class GearApplication extends SamlWicketApplication implements IJdbcSuppl
         this.sceneTable.registScene(this, CustomTableManagementScene.class,
                 3, RoleController.ROLE_DEVELOPER);
 
-        this.sceneTable.registScene(this, PurchaseScene.class,
-                4, RoleController.ROLE_USER);
-
         this.sceneTable.registScene(this, CustomTableRecordScene.class,
-                5, RoleController.ROLE_USER);
+                4, RoleController.ROLE_USER);
     }
 
     public AbstractScene getCachedScene(String sceneClassName) {
@@ -440,8 +444,7 @@ public class GearApplication extends SamlWicketApplication implements IJdbcSuppl
 
         } else {
             try {
-                SceneTable sceneTable = (SceneTable) this.getCachedTable(SceneTable.class
-                );
+                SceneTable sceneTable = (SceneTable) this.getCachedTable(SceneTable.class);
                 scene = this.sceneTable.createScene(this, sceneClassName);
                 this.sceneCache.put(sceneClassName, scene);
                 Logger.getLogger(this.getClass().getName()).log(Level.INFO, "SCENE: {0} cached.", sceneClassName);

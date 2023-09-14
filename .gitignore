@@ -1,6 +1,7 @@
 /src/main/resources/*.properties
 /target
 /bin
+/asset
 
 jshell.history
 nb-configuration.xml
@@ -8,3 +9,5 @@ nb-configuration.xml
 .devcontainer
 .vscode
 
+*.xlsx
+*.xls

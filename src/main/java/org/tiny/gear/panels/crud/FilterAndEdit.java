@@ -7,7 +7,7 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 import org.apache.wicket.ajax.AjaxRequestTarget;
 import org.apache.wicket.markup.html.panel.Panel;
-import org.tiny.datawrapper.Column;
+import org.tiny.datawrapper.Condition;
 import org.tiny.datawrapper.Table;
 import org.tiny.gear.panels.IPanelPopupper;
 import org.tiny.gear.panels.PopupPanel;
@@ -116,23 +116,26 @@ abstract public class FilterAndEdit extends Panel implements IPanelPopupper {
         this.currentKeyValueList = modelObject;
 
         try {
+            Table targetTable = (Table) this.dataTableView.getTable().clone();
+            targetTable.clearValues();
+
             // キーカラムとキー値の取得
             String primaryKeyValue = "";
             String primaryColumn = "";
+            ArrayList<Condition> keyCond = new ArrayList<>();
             for (KeyValue keyValue : modelObject) {
                 if (keyValue.isPrimaryKey()) {
                     primaryColumn = (String) keyValue.getKey();
                     primaryKeyValue = (String) keyValue.getValue();
-                    break;
+                    keyCond.add(targetTable.get(primaryColumn).sameValueOf(primaryKeyValue));
                 }
             }
 
-            // キー値からResultSetを取得してレコードエディタに受け渡し
-            Table targetTable = (Table) this.dataTableView.getTable().clone();
-            targetTable.clearValues();
-            Column primaryKeyColumn = targetTable.get(primaryColumn);
-
-            try (ResultSet rs = targetTable.select(primaryKeyColumn.sameValueOf(primaryKeyValue))) {
+            Condition[] filter = new Condition[keyCond.size()];
+            for(int i=0;i<filter.length;i++){
+                filter[i] = keyCond.get(i);
+            }
+            try (ResultSet rs = targetTable.select(filter)) {
                 if (rs.next()) {
                     this.recordEditor.clearValues();
                     this.recordEditor.setValues(rs);

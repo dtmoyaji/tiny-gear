@@ -52,9 +52,8 @@ public class CustomTableEditView extends AbstractView {
 
             @Override
             public void beforeConstructDataTableView(Table myTable, DataTableView dataTableView) {
-
                 myTable.get(customTable.TableDef.getName()).setVisibleType(Column.VISIBLE_TYPE_HIDDEN);
-                // リストの表示行数を定義する。
+                myTable.get(customTable.RelationInfo.getName()).setVisibleType(Column.VISIBLE_TYPE_HIDDEN);
             }
 
             @Override

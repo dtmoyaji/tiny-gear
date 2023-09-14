@@ -4,8 +4,10 @@ import groovy.lang.Binding;
 import groovy.lang.GroovyShell;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.util.ArrayList;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import org.tiny.datawrapper.Column;
 import org.tiny.datawrapper.Jdbc;
 import org.tiny.datawrapper.NameDescriptor;
 import org.tiny.datawrapper.Table;
@@ -77,10 +79,32 @@ public class CustomTableBuilder {
         }
         Binding binding = new Binding();
         binding.setVariable("_GearApplication", this.app);
-        binding.setVariable("_Table", rvalue);
+        ArrayList<String> relationInfo = new ArrayList<>();
+        binding.setVariable("_RelationInfo", relationInfo);
         GroovyShell grshell = new GroovyShell(binding);
-        postConstruct += "\n return _rvalue;";
-        grshell.evaluate(postConstruct);
+        postConstruct += "\n return _RelationInfo;";
+        relationInfo = (ArrayList<String>) grshell.evaluate(postConstruct);
+        for (String clsName : relationInfo) {
+            String[] relInfo = clsName.split(",");
+            String myColumn = relInfo[0];
+            Table relateTable = this.app.getCachedTable(relInfo[1]);
+            switch (relInfo.length) {
+                case 2:
+                    rvalue.get(myColumn).addRelationWith(
+                            relateTable.getClass()
+                    ); 
+                    break;
+                case 3:
+                    Column relateColumn = relateTable.get(relInfo[2]);
+                    rvalue.get(myColumn).addRelationWith(
+                            relateTable.getClass(),
+                            relateColumn
+                    );
+                    break;
+                default:
+                    throw new Exception("arguments not matched.");
+            }
+        }
         return rvalue;
     }
 
@@ -132,7 +156,7 @@ public class CustomTableBuilder {
                 if (rs.next()) {
                     String tableDef = this.customTable.TableDef.of(rs);
                     String jdbcName = this.customTable.JdbcStackName.of(rs);
-                    String postConstruct = this.customTable.PostConstructed.of(rs);
+                    String postConstruct = this.customTable.RelationInfo.of(rs);
                     rs.close();
                     rvalue = this.createTable(tableName, tableDef, postConstruct, jdbcName);
                 }
