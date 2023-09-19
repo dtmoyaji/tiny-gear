@@ -98,5 +98,5 @@ public abstract class Cache<T> extends HashMap<String, T> {
     }
 
     protected abstract T onNewInstance(Constructor constructor);
-
+    
 }

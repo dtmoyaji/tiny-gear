@@ -35,8 +35,8 @@ public class CustomTable extends Table {
     @LogicalName("テーブル定義")
     public Column<String> TableDef;
     
-    @LogicalName("インスタンス化後の処理")
-    public Column<String> PostConstructed;
+    @LogicalName("リレーション情報")
+    public Column<String> RelationInfo;
 
     @LogicalName("備考")
     public Column<String> Memo;
@@ -66,7 +66,7 @@ public class CustomTable extends Table {
         .setAllowNull(false)
         .setVisibleType(Column.VISIBLE_TYPE_TEXTAREA);
         
-        this.PostConstructed.setLength(Column.SIZE_4096)
+        this.RelationInfo.setLength(Column.SIZE_4096)
         .setVisibleType(Column.VISIBLE_TYPE_TEXTAREA);
 
         this.Version.setLength(Column.SIZE_32);

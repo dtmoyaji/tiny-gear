@@ -78,23 +78,25 @@ public abstract class NavigationPanel extends Panel {
                     public void onClick(AjaxRequestTarget target) {
                         target.add(this);
                         // 既定のビューに遷移
-                        NavigationPanel.this.currentScene = scene;
-                        NavigationPanel.this.onMenuItemClick(
-                                target,
-                                scene.getSceneKey(),
-                                scene.getDefaultViewClass().getCanonicalName(),
-                                null
-                        );
                         ArrayList<MenuItem> items = scene.getSubmenuItems();
+                        MenuItem overrayItem = null;
                         if (items.size() > 0) {
                             for (int i = 0; i < items.size(); i++) {
                                 if(i==0){
                                     items.get(i).setPrimary(true);
+                                    overrayItem = items.get(i);
                                 }else{
                                     items.get(i).setPrimary(false);
                                 }
                             }
                         }
+                        NavigationPanel.this.currentScene = scene;
+                        NavigationPanel.this.onMenuItemClick(
+                                target,
+                                scene.getSceneKey(),
+                                scene.getDefaultViewClass().getCanonicalName(),
+                                overrayItem
+                        );
                     }
 
                     @Override

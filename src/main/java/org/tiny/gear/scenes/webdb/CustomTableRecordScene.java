@@ -13,7 +13,6 @@ import org.tiny.gear.GearApplication;
 import org.tiny.gear.RoleController;
 import org.tiny.gear.model.MenuItem;
 import org.tiny.gear.scenes.AbstractScene;
-import org.tiny.gear.scenes.primary.PrimaryView;
 
 /**
  * カスタムテーブルのレコード編集用
@@ -46,7 +45,7 @@ public class CustomTableRecordScene extends AbstractScene {
                         + "."
                         + tableName);
                 String roleString = this.customTable.AuthLimit.of(rs);
-                MenuItem item = this.createMenuItem(menuCaption, PrimaryView.class)
+                MenuItem item = this.createMenuItem(menuCaption, GenericTableEditView.class)
                         .setRoles(RoleController.of(roleString))
                         .setPrimary(primary);
 
@@ -54,6 +53,7 @@ public class CustomTableRecordScene extends AbstractScene {
                         .log(Level.INFO, "RECORD EDIT {0} - {1} - {2}", new Object[]{menuCaption, primary, roleString});
                 HashMap<String, String> args = item.getArguments();
                 args.put(ARG_TARGET_TABLECLASS, tables.getClass().getName());
+                item.setArguments(args);
                 primary = false;
             }
             rs.close();
@@ -70,7 +70,7 @@ public class CustomTableRecordScene extends AbstractScene {
 
     @Override
     public Class getDefaultViewClass() {
-        return PrimaryView.class; // 後で直す
+        return GenericTableEditView.class; // 後で直す
     }
 
 }

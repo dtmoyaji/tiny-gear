@@ -3,6 +3,7 @@ package org.tiny.gear.panels.crud;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import org.apache.wicket.ajax.AjaxEventBehavior;
@@ -17,6 +18,7 @@ import org.apache.wicket.model.Model;
 import org.tiny.datawrapper.Column;
 import org.tiny.datawrapper.Condition;
 import org.tiny.datawrapper.ConditionForRegion;
+import org.tiny.datawrapper.RelationInfo;
 import org.tiny.datawrapper.Table;
 import org.tiny.datawrapper.TinyDatabaseException;
 
@@ -59,6 +61,8 @@ public abstract class DataTableView extends DataTableInfoPanel {
     private ListView<Column> tableHeader;
 
     private ArrayList<KeyValueList> tableData = new ArrayList<>();
+
+    private HashMap<String, Table> subTable = new HashMap<>();
 
     private ListView<KeyValueList> tableRows;
     private ArrayList<Column> visibleHeader;
@@ -302,13 +306,30 @@ public abstract class DataTableView extends DataTableInfoPanel {
             int offset = (this.currentPage - 1) * this.rowsPerPage;
             Condition[] newCnd = this.addCondition(conditions, new ConditionForRegion(ConditionForRegion.LIMIT, this.rowsPerPage));
             newCnd = this.addCondition(newCnd, new ConditionForRegion(ConditionForRegion.OFFSET, offset));
+
+            // 外部テーブルデータをSELECT文に追加
+            for (Column col : this.targetTable) {
+                newCnd = this.addCondition(newCnd, col.setSelectable(true));
+                if (col.hasRelation()) {
+                    RelationInfo rinfo = (RelationInfo) col.get(0);
+                    Table subt = this.getGearApplication().getCachedTable(rinfo.getTableClass());
+                    for (Column subc : subt) {
+                        if (subc.isMatchedRelationType(Column.TARGET_FOR_EXTERNAL_RELATION)) {
+                            newCnd = this.addCondition(newCnd, subc.setSelectable(true));
+                        }
+                    }
+                }
+            }
             this.consditonsForPage = newCnd;
 
+            //this.targetTable.setDebugMode(true);
             ResultSet rs = this.targetTable.select(this.consditonsForPage);
             this.tableData.clear();
             while (rs.next()) {
                 KeyValueList row = new KeyValueList();
                 for (Column column : targetTable) {
+                    
+                    // 内部フィールドの描画
                     if (!column.isMatchedVisibleType(Column.VISIBLE_TYPE_HIDDEN)) {
                         String cellName = column.getSplitedName();
                         String cellData = column.of(rs) != null ? column.of(rs).toString() : null;
@@ -316,6 +337,23 @@ public abstract class DataTableView extends DataTableInfoPanel {
                         keyValue.setPrimaryKey(column.isPrimaryKey());
                         row.add(keyValue);
                     }
+                    
+                    // 外部フィールドの自動追加
+                    if (column.hasRelation()) {
+                        RelationInfo relinfo = (RelationInfo) column.get(0);
+                        Table externalTable = this.getGearApplication().getCachedTable(relinfo.getTableClass());
+                        for (Column extcol : externalTable) {
+                            if (!extcol.isMatchedVisibleType(Column.VISIBLE_TYPE_HIDDEN) 
+                                    && extcol.isMatchedRelationType(Column.TARGET_FOR_EXTERNAL_RELATION)) {
+                                String extcellName = extcol.getSplitedName();
+                                String extcellData = extcol.of(rs) != null ? extcol.of(rs).toString() : null;
+                                KeyValue extkeyValue = new KeyValue(extcellName, extcellData);
+                                extkeyValue.setPrimaryKey(extcol.isPrimaryKey());
+                                row.add(extkeyValue);
+                            }
+                        }
+                    }
+
                 }
                 // 操作用の拡張フィールド
                 Class extra = this.getExtraColumn();
@@ -340,6 +378,17 @@ public abstract class DataTableView extends DataTableInfoPanel {
         for (Column column : this.targetTable) {
             if (column.getVisibleType() != Column.VISIBLE_TYPE_HIDDEN) {
                 visibleHeader.add(column);
+            }
+            // 外部フィールドの自動追加
+            if (column.hasRelation()) {
+                RelationInfo relinfo = (RelationInfo) column.get(0);
+                Table externalTable = this.getGearApplication().getCachedTable(relinfo.getTableClass());
+                for (Column extcol : externalTable) {
+                    if (extcol.isMatchedRelationType(Column.TARGET_FOR_EXTERNAL_RELATION)
+                            && !extcol.isMatchedVisibleType(Column.VISIBLE_TYPE_HIDDEN)) {
+                        this.visibleHeader.add(extcol);
+                    }
+                }
             }
         }
     }

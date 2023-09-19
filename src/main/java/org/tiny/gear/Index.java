@@ -23,8 +23,7 @@ import org.tiny.wicket.onelogin.SamlAuthInfo;
 import org.tiny.wicket.onelogin.SamlSession;
 
 /**
- * メインページ。
- * ここで、画面表示を全部制御する。
+ * メインページ。 ここで、画面表示を全部制御する。
  *
  * @author dtmoyaji
  */
@@ -79,15 +78,19 @@ public class Index extends SamlMainPage implements IJdbcSupplier {
 
         this.currentView.setOutputMarkupId(true);
         this.add(this.currentView);
-        
+
     }
-    
+
     /**
      * ページリゾルバ
      *
      * @param parameters
      */
     private void resolvePage(String sceneName, String viewName, MenuItem menuItem) {
+        
+        if(menuItem!=null){
+            this.getSession().setAttribute("menuItem", menuItem);
+        }
 
         // 指定された状態に応じたシーンを表示する処理
         if (sceneName == null) {
@@ -100,11 +103,16 @@ public class Index extends SamlMainPage implements IJdbcSupplier {
         } else {
             if (this.currentScene.getViewClasses().containsKey(viewName)) {
                 try {
-                    this.currentView = (AbstractView) this.getGearApplication().getCachedView(viewName);
+                    this.currentView = (AbstractView) this.getGearApplication()
+                            .getCachedView(viewName);
                 } catch (SecurityException | IllegalArgumentException ex) {
                     Logger.getLogger(Index.class.getName()).log(Level.SEVERE, null, ex);
                 }
             }
+        }
+
+        if (menuItem != null && ! menuItem.getArguments().isEmpty()) {
+            this.currentView.setArguments(menuItem.getArguments());
         }
 
         // ロールをチェックし、権限が無い場合は初期ページに強制遷移する
@@ -118,7 +126,7 @@ public class Index extends SamlMainPage implements IJdbcSupplier {
             this.currentScene = new PrimaryScene(RoleController.getGuestRoles(), this.getGearApplication());
             this.currentView = this.currentScene.createDefaultView();
         } else { //表示に問題がないときは、ユーザー情報を上書きに行く
-            
+
             SamlAuthInfo ainfo = ((SamlSession) this.getSession()).getSamlAuthInfo();
             if (ainfo != null) {
                 UserInfo uinfo = (UserInfo) this.getGearApplication().getCachedTable(UserInfo.class);
@@ -128,9 +136,9 @@ public class Index extends SamlMainPage implements IJdbcSupplier {
                 uinfo.AttributeJson.setValue(ainfo.toJson()); // TODO: JSONの生成ロジックを作ること。
                 uinfo.merge();
             }
-            
+
         }
-        
+
         this.currentView.redraw();
         this.currentView.setOutputMarkupId(true);
 
@@ -144,6 +152,7 @@ public class Index extends SamlMainPage implements IJdbcSupplier {
     public final GearApplication getGearApplication() {
         return (GearApplication) this.getApplication();
     }
+
     @Override
     public String getUserAccountKey() {
         return "displayname";
@@ -161,12 +170,6 @@ public class Index extends SamlMainPage implements IJdbcSupplier {
     public Jdbc getJdbc() {
         GearApplication app = (GearApplication) this.getApplication();
         return app.getJdbc();
-    }
-
-    public void onMenuItemClick(AjaxRequestTarget target, String sceneName, String panelName, MenuItem menuItem) {
-        this.resolvePage(sceneName, panelName, menuItem);
-        target.add(this.currentView);
-        target.add(this.nav);
     }
 
 }
