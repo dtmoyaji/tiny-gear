@@ -26,7 +26,6 @@ public class UserInfoView extends AbstractView {
     private ListView<String> KeySet;
 
     public UserInfoView(GearApplication app) {
-
         super(app);
     }
     

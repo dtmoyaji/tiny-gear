@@ -27,13 +27,17 @@ public abstract class AbstractView extends AbstractPanel implements IPanelPopupp
 
     protected GearApplication app;
 
-    private HashMap<String, Class<? extends Table>> tableClasses = new HashMap<>();
+    private HashMap<String, Class<? extends Table>> tableClasses = null;
     private Class<? extends Table> prmaryTableClass = null;
+
+    private HashMap<String, String> arguments = null;
 
     private PopupPanel popupPanel;
 
     public AbstractView(GearApplication app) {
         super("scenePanel");
+        this.tableClasses = new HashMap<>();
+        this.arguments = new HashMap<>();
         this.app = app;
 
         TablesForAbstractView tfav = (TablesForAbstractView) this.getTable(TablesForAbstractView.class);
@@ -62,12 +66,21 @@ public abstract class AbstractView extends AbstractPanel implements IPanelPopupp
         return this.getTable(this.prmaryTableClass);
     }
 
+    public Table getTable(String tableClassName) {
+        if(this.tableClasses==null){
+            this.tableClasses = new HashMap();
+        }
+        Table rvalue = this.getGearApplication().getCachedTable(tableClassName);
+        this.tableClasses.put(rvalue.getClass().getCanonicalName(), rvalue.getClass());
+        return rvalue;
+    }
+
     public Table getTable(Class<? extends Table> tableClass) {
         if (this.tableClasses == null) {
             this.tableClasses = new HashMap<>();
         }
-        this.tableClasses.put(tableClass.getCanonicalName(), tableClass);
         Table rvalue = this.getGearApplication().getCachedTable(tableClass);
+        this.tableClasses.put(tableClass.getCanonicalName(), tableClass);
         return rvalue;
     }
 
@@ -102,6 +115,14 @@ public abstract class AbstractView extends AbstractPanel implements IPanelPopupp
     @Override
     public PopupPanel getPopupPanel() {
         return this.popupPanel;
+    }
+
+    public void setArguments(HashMap<String, String> hashMap) {
+        this.arguments = hashMap;
+    }
+
+    public HashMap<String, String> getArguments() {
+        return this.arguments;
     }
 
 }

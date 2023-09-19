@@ -400,8 +400,8 @@ public class GearApplication extends SamlWicketApplication implements IJdbcSuppl
         AbstractView rvalue = this.viewCache.get(viewClass.getName());
         if (rvalue == null) {
             try {
-                rvalue = viewClass.getConstructor(GearApplication.class)
-                        .newInstance(this);
+                Constructor constructor = viewClass.getConstructor(GearApplication.class);
+                rvalue = (AbstractView) constructor.newInstance(this);
                 this.viewCache.put(viewClass.getName(), rvalue);
                 Logger.getLogger(this.getClass().getName()).log(Level.INFO, "VIEW : {0} instance catched.", viewClass.getName());
             } catch (NoSuchMethodException

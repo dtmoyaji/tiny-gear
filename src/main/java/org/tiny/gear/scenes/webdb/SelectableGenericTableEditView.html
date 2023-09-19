@@ -10,8 +10,10 @@
     </head>
     <body>
         <wicket:extend>
-            <div wicket:id="customTableEditor" />
-            <div wicket:id="groovyMsg" />
+            <div class="genericTableEditView">
+                <div wicket:id="genericTableEditor"　class="tableEditor"/>
+                <div wicket:id="tableSelector" class="tableSelector"/>
+            </div>
         </wicket:extend>
     </body>
 </html>

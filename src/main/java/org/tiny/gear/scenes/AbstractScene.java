@@ -175,7 +175,8 @@ public abstract class AbstractScene implements Serializable, IRoleChecker {
     public abstract Class getDefaultViewClass();
 
     public AbstractView createDefaultView() {
-        AbstractView rvalue = this.getGearApplication().getCachedView(this.getDefaultViewClass());
+        AbstractView rvalue = this.getGearApplication()
+                .getCachedView(this.getDefaultViewClass());
         return rvalue;
     }
 

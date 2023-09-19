@@ -555,6 +555,10 @@ p{
     background-color: silver;
 }
 
+.crud.tableview th{
+    font-size: 0.8em;
+}
+
 .crud.tableview .column {
     border-style: solid;
     border-width: 1px;
