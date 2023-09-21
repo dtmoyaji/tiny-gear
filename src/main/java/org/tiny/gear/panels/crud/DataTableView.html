@@ -15,7 +15,7 @@
         <wicket:panel>
             <form wicket:id="curdTableView">
                 <div class="crudTableInfoBar">
-                    <span  wicket:id="lblTableName" class="captionItem caption">TableName</span>
+                    <span wicket:id="lblTableName" class="captionItem caption">TableName</span>
                     <div wicket:id="csvTransPortPanelPlaceHolder" class="captionItem controller" />
                 </div>
                 <div>
@@ -24,6 +24,7 @@
                             <tr class="header">
                                 <th class="column" wicket:id="tableHeader">
                                     <span wicket:id="columnName">Name</span>
+                                    <div wicket:id="sortingControl">SORT</div>
                                 </th>
                             </tr>
                         </thead>

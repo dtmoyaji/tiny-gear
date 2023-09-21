@@ -4,6 +4,7 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.Set;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import org.apache.wicket.ajax.AjaxEventBehavior;
@@ -65,7 +66,9 @@ public abstract class DataTableView extends DataTableInfoPanel {
     private HashMap<String, Table> subTable = new HashMap<>();
 
     private ListView<KeyValueList> tableRows;
+
     private ArrayList<Column> visibleHeader;
+    private HashMap<String, SortingControl> sortingControls;
 
     private AjaxButton pageNext;
     private AjaxButton pagePrev;
@@ -168,6 +171,7 @@ public abstract class DataTableView extends DataTableInfoPanel {
 
         //ヘッダの初期化
         this.visibleHeader = new ArrayList<>();
+        this.sortingControls = new HashMap<>();
         this.tableHeader = new ListView<>("tableHeader", this.visibleHeader) {
             @Override
             protected void populateItem(ListItem<Column> item) {
@@ -179,6 +183,17 @@ public abstract class DataTableView extends DataTableInfoPanel {
                     }
                     Label captionLabel = new Label("columnName", Model.of(caption));
                     item.add(captionLabel);
+                    SortingControl sortingControl = sortingControls.get(column.getName());
+                    if (sortingControl == null) {
+                        sortingControl = new SortingControl("sortingControl", column) {
+                            @Override
+                            public void onClick(AjaxRequestTarget target) {
+                                DataTableView.this.sortOrderChanged(target);
+                            }
+                        };
+                        sortingControls.put(column.getName(), sortingControl);
+                    }
+                    item.add(sortingControl);
                 } else {
                     Logger.getLogger(this.getClass().getName()).log(Level.INFO, column.getName() + " SKIPPED.");
                     System.out.println("SKIP " + column.getName());
@@ -208,6 +223,21 @@ public abstract class DataTableView extends DataTableInfoPanel {
 
         // データ取得
         this.redraw();
+    }
+
+    public void sortOrderChanged(AjaxRequestTarget target) {
+        this.conditionsForOrdinal = new Condition[]{};
+        Set<String> keys = this.sortingControls.keySet();
+        for (String key : keys) {
+            SortingControl scontrol = this.sortingControls.get(key);
+            if (scontrol.getOrder() != null) {
+                this.conditionsForOrdinal
+                        = this.addCondition(
+                                this.conditionsForOrdinal,
+                                scontrol.getOrder()
+                        );
+            }
+        }
     }
 
     public void treatButtonClickable() {
@@ -256,13 +286,18 @@ public abstract class DataTableView extends DataTableInfoPanel {
         this.conditions = conditions;
 
         // とくにソート指定がない場合は、主キーを使って並び変える。
-        if (this.conditions.length < 1) {
+        if (this.conditionsForOrdinal.length < 1) {
             for (Column column : this.targetTable) {
                 if (column.isPrimaryKey()) {
-                    this.conditions = this.addCondition(this.conditions, column.asc());
+                    this.conditionsForOrdinal
+                            = this.addCondition(this.conditionsForOrdinal, column.asc());
                 }
             }
         }
+        this.conditions = this.margeConditions(
+                this.conditions,
+                this.conditionsForOrdinal
+        );
 
         try {
             // データの描画
@@ -328,7 +363,7 @@ public abstract class DataTableView extends DataTableInfoPanel {
             while (rs.next()) {
                 KeyValueList row = new KeyValueList();
                 for (Column column : targetTable) {
-                    
+
                     // 内部フィールドの描画
                     if (!column.isMatchedVisibleType(Column.VISIBLE_TYPE_HIDDEN)) {
                         String cellName = column.getSplitedName();
@@ -337,13 +372,13 @@ public abstract class DataTableView extends DataTableInfoPanel {
                         keyValue.setPrimaryKey(column.isPrimaryKey());
                         row.add(keyValue);
                     }
-                    
+
                     // 外部フィールドの自動追加
                     if (column.hasRelation()) {
                         RelationInfo relinfo = (RelationInfo) column.get(0);
                         Table externalTable = this.getGearApplication().getCachedTable(relinfo.getTableClass());
                         for (Column extcol : externalTable) {
-                            if (!extcol.isMatchedVisibleType(Column.VISIBLE_TYPE_HIDDEN) 
+                            if (!extcol.isMatchedVisibleType(Column.VISIBLE_TYPE_HIDDEN)
                                     && extcol.isMatchedRelationType(Column.TARGET_FOR_EXTERNAL_RELATION)) {
                                 String extcellName = extcol.getSplitedName();
                                 String extcellData = extcol.of(rs) != null ? extcol.of(rs).toString() : null;
