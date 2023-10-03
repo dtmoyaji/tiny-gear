@@ -31,6 +31,9 @@ public class CustomTable extends Table {
     
     @LogicalName("編集権限")
     public Column<String> AuthLimit;
+    
+    @LogicalName("並び順")
+    public Column<Integer> Ordinal;
 
     @LogicalName("テーブル定義")
     public Column<String> TableDef;
@@ -61,6 +64,8 @@ public class CustomTable extends Table {
         this.JdbcStackName.setLength(Column.SIZE_256);
         
         this.AuthLimit.setLength(Column.SIZE_64);
+        
+        this.Ordinal.setDefault("0");
         
         this.TableDef.setLength(Column.SIZE_4096)
         .setAllowNull(false)

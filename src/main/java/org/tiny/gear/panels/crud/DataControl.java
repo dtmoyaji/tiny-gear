@@ -7,6 +7,15 @@ import org.apache.wicket.markup.html.form.TextField;
 import org.apache.wicket.markup.html.panel.Panel;
 import org.apache.wicket.model.Model;
 import org.tiny.datawrapper.Column;
+import org.tiny.datawrapper.RelationInfo;
+import org.tiny.datawrapper.Table;
+import org.tiny.gear.GearApplication;
+import org.tiny.gear.model.Attribute;
+import org.tiny.gear.panels.crud.ColumnView.AbstractColumnView;
+import org.tiny.gear.panels.crud.ColumnView.VisibleTypeLabel;
+import org.tiny.gear.panels.crud.ColumnView.VisibleTypeText;
+import org.tiny.gear.panels.crud.ColumnView.VisibleTypeTextArea;
+import org.wicketstuff.datetime.markup.html.form.DateTextField;
 
 /**
  * カラムの編集用。
@@ -14,7 +23,7 @@ import org.tiny.datawrapper.Column;
  * @author dtmoyaji
  */
 public class DataControl extends Panel {
-    
+
     public static final int ESCAPE = 0;
     public static final int UNESCAPE = 1;
 
@@ -24,10 +33,13 @@ public class DataControl extends Panel {
 
     private TextArea columnValueTextArea;
 
-    private Label columnValueLabel;
+//    private Label columnValueLabel;
+    private DateTextField columnDateTextField;
 
     private Component visibleComponent;
     private Model<String> fieldData;
+
+    private AbstractColumnView colView;
 
     private Column targetColumn;
 
@@ -41,36 +53,60 @@ public class DataControl extends Panel {
         this.columnCaption = new Label("columnCaption", Model.of(caption));
         this.add(this.columnCaption);
 
+        // AbstractColumnView 系のコントロール
+        this.colView = null;
+        boolean defaultControl;
+        switch (this.targetColumn.getVisibleType()) {
+            case Column.VISIBLE_TYPE_LABEL:
+                this.colView = new VisibleTypeLabel("columnValuePanel", new Model(this.targetColumn));
+                break;
+            case Column.VISIBLE_TYPE_TEXT:
+                defaultControl = true;
+                if (this.targetColumn.getType().equals(Integer.class.getSimpleName())) {
+                    if (this.targetColumn.hasRelation()) {//リレーションがあるとき
+                        RelationInfo rinfo = (RelationInfo) this.targetColumn.get(0);
+                        Table relTable = ((GearApplication) this.getApplication()).getCachedTable(rinfo.getTableClass());
+                        for (Column relcol : relTable) {
+                            if (relcol.getAttributes().containsKey(Attribute.CAPTION_FOR_SELECTION)) {
+                                System.out.println(relTable.getClass().getSimpleName() + " - " + relcol.getJavaName());
+                            }
+                        }
+                    }
+                }
+                if (defaultControl) {
+                    this.colView = new VisibleTypeText("columnValuePanel", new Model(this.targetColumn));
+                }
+                break;
+            case Column.VISIBLE_TYPE_TEXTAREA:
+                defaultControl = true;
+                if (this.targetColumn.getType().equals(Integer.class.getSimpleName())) {
+                    if (this.targetColumn.hasRelation()) {//リレーションがあるとき
+                        RelationInfo rinfo = (RelationInfo) this.targetColumn.get(0);
+                        Table relTable = ((GearApplication) this.getApplication()).getCachedTable(rinfo.getTableClass());
+                        for (Column relcol : relTable) {
+                            if (relcol.getAttributes().containsKey(Attribute.CAPTION_FOR_SELECTION)) {
+                                System.out.println(relTable.getClass().getSimpleName() + " - " + relcol.getJavaName());
+                            }
+                        }
+                    }
+                }
+                if (defaultControl) {
+                    this.colView = new VisibleTypeTextArea("columnValuePanel", new Model(this.targetColumn));
+                }
+                break;
+            default:
+                this.colView = new VisibleTypeLabel("columnValuePanel", new Model(this.targetColumn));
+                break;
+        }
+        this.add(this.colView);
+
         // 必要となりそうなコントロールは全て格納しデータモデルを割り当てる。
         this.fieldData = new Model("");
         if (this.targetColumn.getValue() != null) {
             this.fieldData = new Model(this.targetColumn.getValue().toString());
         }
-        this.columnValueLabel = new Label("columnValueLabel", this.fieldData);
-        this.add(this.columnValueLabel);
-        this.columnValueTextField = new TextField("columnValueTextField", this.fieldData);
-        this.add(this.columnValueTextField);
-        this.columnValueTextArea = new TextArea("columnValueTextArea", this.fieldData);
-        this.columnValueTextArea.setOutputMarkupId(true);
-        this.add(this.columnValueTextArea);
-
-        // 一旦全部不可視に設定する。
-        this.columnValueLabel.setVisible(false);
-        this.columnValueTextField.setVisible(false);
-        this.columnValueTextArea.setVisible(false);
-
-        // データの入出力に対応するコントロールを抽象型のvisibleComponentでポイントする。
-        // データIOはこれを使って行う。
-        switch (this.targetColumn.getVisibleType()) {
-            case Column.VISIBLE_TYPE_LABEL:
-                this.visibleComponent = this.columnValueLabel;
-                break;
-            case Column.VISIBLE_TYPE_TEXT:
-                this.visibleComponent = this.columnValueTextField;
-                break;
-            case Column.VISIBLE_TYPE_TEXTAREA:
-                this.visibleComponent = this.columnValueTextArea;
-                break;
+        if (this.visibleComponent == null) {
+            this.visibleComponent = this.colView;
         }
         this.visibleComponent.setVisible(true);
         this.visibleComponent.setOutputMarkupId(true);
@@ -81,29 +117,42 @@ public class DataControl extends Panel {
     }
 
     public void setValue(String value) {
-        this.visibleComponent.setDefaultModelObject(value);
-    }
-    
-    public String getValue(int escaping){
-        String rvalue = null;
-        switch(escaping){
-            case DataControl.ESCAPE:
-                this.visibleComponent.setEscapeModelStrings(true);
-                rvalue = this.visibleComponent.getDefaultModelObjectAsString();
-                break;
-            case DataControl.UNESCAPE:
-                this.visibleComponent.setEscapeModelStrings(false);
-                rvalue = this.visibleComponent.getDefaultModelObjectAsString();
-                break;
+        if (this.visibleComponent instanceof AbstractColumnView) {
+            AbstractColumnView cview = (AbstractColumnView) this.visibleComponent;
+            cview.setColumnValue(value);
+        } else {
+            this.visibleComponent.setDefaultModelObject(value);
         }
-        this.visibleComponent.setEscapeModelStrings(false);
+    }
+
+    public String getValue(int escaping) {
+        String rvalue = null;
+
+        if (this.visibleComponent instanceof AbstractColumnView) {
+            AbstractColumnView cview = (AbstractColumnView) this.visibleComponent;
+            rvalue = cview.getColumnValue();
+            if(rvalue.contains("&")){
+                System.out.println("ABYOH");
+            }
+        } else {
+            switch (escaping) {
+                case DataControl.ESCAPE:
+                    this.visibleComponent.setEscapeModelStrings(true);
+                    rvalue = this.visibleComponent.getDefaultModelObjectAsString();
+                    break;
+                case DataControl.UNESCAPE:
+                    this.visibleComponent.setEscapeModelStrings(false);
+                    rvalue = this.visibleComponent.getDefaultModelObjectAsString();
+                    break;
+            }
+            this.visibleComponent.setEscapeModelStrings(false);
+        }
         return rvalue;
     }
 
     public String getValue() {
         return this.getValue(DataControl.UNESCAPE);
     }
-    
 
     public Component getVisibleComponent() {
         return this.visibleComponent;

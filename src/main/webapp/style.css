@@ -73,12 +73,6 @@ table{
     color: var(--sidebar-bg-color);
 }
 
-.row div{
-    display: inline-block;
-    height: 100%;
-    vertical-align: middle;
-}
-
 /* ヘッダー領域の描画 */
 .content.header{
     display: none;
@@ -471,29 +465,16 @@ p{
     min-height: 2em;
 }
 
-.crud.recordeditor .row div{
-    display: inline-block;
-    width: 100%;
-}
-
-.crud.recordeditor .row div div{
-    width: inherit;
-}
-.crud.recordeditor .row div wicket{
-    display: inherit;
-    width: 100%;
-}
-
 .crud.recordeditor .field.caption{
-    display: inline-table;
+    display: inline-block;
     vertical-align: middle;
     padding-right: 1em;
     text-align: right;
-    height: 100%;
     width: 25%;
 }
 
 .crud.recordeditor .field.edit{
+    display: inline-table;
     vertical-align: middle;
     min-width: 50%;
     min-height: 2em;
@@ -501,8 +482,14 @@ p{
     padding-right: 3pt;
 }
 
-.crud.recordeditor .field.edit.textarea{
-    height: 6em;
+.crud.recordeditor .dataholder {
+    width: 100%;
+    min-height: 2em;
+}
+
+.crud.recordeditor .dataholder.textarea{
+    height: 8em;
+    left: 0;
 }
 
 .crud.recordeditor .submitbuttons{
@@ -644,4 +631,38 @@ p{
     background-size: 20px 20px;
     background-position: 2px;
     font-size: 0;
+}
+
+.TableHeaderText{
+    display: inline-block;
+    color: var(--caption-bg-color);
+}
+
+.tableHeaderElement, .sortingForm{
+    display: inline-block;
+    width: 1em;
+}
+
+.sortingControl{
+    display: inline-block;
+}
+
+.sortSwitch{
+    display: inline-block;
+    height: 1em;
+    width: 1em;
+    background-size: contain;
+    background-repeat: no-repeat;
+}
+
+.sortSwitch[sort='none']{
+    background-image: url("./img/sort_updown.png");
+}
+
+.sortSwitch[sort='asc']{
+    background-image: url("./img/amount_sort_down_icon_195542.png");
+}
+
+.sortSwitch[sort='desc']{
+    background-image: url("./img/sort_up_amount_icon_195515.png");
 }

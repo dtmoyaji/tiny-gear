@@ -23,12 +23,14 @@
                         <thead>
                             <tr class="header">
                                 <th class="column" wicket:id="tableHeader">
-                                    <span wicket:id="columnName">Name</span>
-                                    <div wicket:id="sortingControl">SORT</div>
+                                    <span class="tableHeaderContent">
+                                        <div wicket:id="columnName" class="TableHeaderText">Name</div>
+                                        <div wicket:id="sortingControl" class="sortingControl">SORT</div>
+                                    </span>
                                 </th>
                             </tr>
                         </thead>
-                        <tbody>
+                        <tbody wicket:id="tableBody">
                             <tr class="rows" wicket:id="tableRows">
                                 <td class="column" wicket:id="tableRow">
                                     <span wicket:id="tableCell">Name</span>

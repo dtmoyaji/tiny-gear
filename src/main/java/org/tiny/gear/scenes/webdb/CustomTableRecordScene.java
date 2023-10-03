@@ -6,6 +6,7 @@ import java.util.HashMap;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import org.apache.wicket.authroles.authorization.strategies.role.Roles;
+import org.tiny.datawrapper.ConditionForOrder;
 import org.tiny.datawrapper.NameDescriptor;
 import org.tiny.datawrapper.Table;
 import org.tiny.gear.CustomTableBuilder;
@@ -34,7 +35,11 @@ public class CustomTableRecordScene extends AbstractScene {
         this.customTable = (CustomTable) this.getGearApplication()
                 .getCachedTable(CustomTable.class);
 
-        try (ResultSet rs = this.customTable.select()) {
+        try (ResultSet rs = this.customTable.select(
+                new ConditionForOrder(
+                        this.customTable.Ordinal,
+                         ConditionForOrder.ORDER_ASC
+                ))) {
             boolean primary = true;
             while (rs.next()) {
                 String menuCaption = this.customTable.LogicalName.of(rs);

@@ -61,7 +61,7 @@ abstract public class FilterAndEdit extends Panel implements IPanelPopupper {
             public void onSubmit(AjaxRequestTarget target, Table targetTable) {
                 super.onSubmit(target, targetTable);
                 DataTableView dataTableView = FilterAndEdit.this.dataTableView;
-                dataTableView.redraw(dataTableView.getConditions());
+                dataTableView.redraw();
                 target.add(dataTableView);
                 FilterAndEdit.this.reloadRecordEditor(target);
             }
@@ -71,7 +71,7 @@ abstract public class FilterAndEdit extends Panel implements IPanelPopupper {
                 super.onDelete(target, targetTable);
                 FilterAndEdit.this.reloadRecordEditor(target);
                 DataTableView dataTableView = FilterAndEdit.this.dataTableView;
-                dataTableView.redraw(dataTableView.getConditions());
+                dataTableView.redraw();
                 target.add(dataTableView);
             }
 

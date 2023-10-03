@@ -46,6 +46,7 @@ public class CustomTableBuilder {
         this.tableDefHeader += "import org.tiny.datawrapper.IncrementalKey \n";
         this.tableDefHeader += "import org.tiny.datawrapper.ShortFlagZero \n";
         this.tableDefHeader += "import org.tiny.datawrapper.CurrentTimestamp \n";
+        this.tableDefHeader += "import org.tiny.gear.model.Attribute \n";
 
     }
 

@@ -9,12 +9,12 @@
         <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     </head>
     <body>
-        <wicket:panel name="dataControl">
+        <wicket:panel>
             <!-- DataControl.html -->
-            <div class="field caption" wicket:id="columnCaption" />
-            <input type="text" class="field edit" wicket:id="columnValueTextField" />
-            <textarea id="ace_editor" class="field edit textarea" wicket:id="columnValueTextArea" ></textarea>
-            <lavel class="field edit" wicket:id="columnValueLabel" />
+            <div class="dataControl">
+                <div wicket:id="columnCaption" class="field caption" />
+                <div wicket:id="columnValuePanel" class="field edit" />
+            </div>
         </wicket:panel>
     </body>
 </html>

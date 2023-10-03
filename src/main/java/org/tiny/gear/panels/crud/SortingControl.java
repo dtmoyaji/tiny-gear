@@ -26,6 +26,8 @@ public class SortingControl extends Panel{
     public SortingControl(String id, Column column) {
         super(id);
         
+        this.column = column;
+        
         this.form = new Form("sortingControlForm");
         this.add(this.form);
         

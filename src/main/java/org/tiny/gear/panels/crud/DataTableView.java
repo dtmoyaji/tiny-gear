@@ -10,6 +10,7 @@ import java.util.logging.Logger;
 import org.apache.wicket.ajax.AjaxEventBehavior;
 import org.apache.wicket.ajax.AjaxRequestTarget;
 import org.apache.wicket.ajax.markup.html.form.AjaxButton;
+import org.apache.wicket.markup.html.WebMarkupContainer;
 import org.apache.wicket.markup.html.basic.Label;
 import org.apache.wicket.markup.html.form.Form;
 import org.apache.wicket.markup.html.list.ListItem;
@@ -47,17 +48,17 @@ public abstract class DataTableView extends DataTableInfoPanel {
     /**
      * 外部から与えられるフィルタ条件
      */
-    private Condition[] conditions = new Condition[]{};
+    private ArrayList<Condition> conditionsForFilter = new ArrayList<>();
 
     /**
      * ページ範囲を含むフィルタ条件
      */
-    private Condition[] consditonsForPage = new Condition[]{};
+    private ArrayList<Condition> conditionsForPage = new ArrayList();
 
     /**
      * 並べ替え条件
      */
-    private Condition[] conditionsForOrdinal = new Condition[]{};
+    private ArrayList<Condition> conditionsForOrdinal = new ArrayList();
 
     private ListView<Column> tableHeader;
 
@@ -66,6 +67,7 @@ public abstract class DataTableView extends DataTableInfoPanel {
     private HashMap<String, Table> subTable = new HashMap<>();
 
     private ListView<KeyValueList> tableRows;
+    private WebMarkupContainer tableBody;
 
     private ArrayList<Column> visibleHeader;
     private HashMap<String, SortingControl> sortingControls;
@@ -95,6 +97,9 @@ public abstract class DataTableView extends DataTableInfoPanel {
 
         this.lblRecordCount = new Label("lblRecordCount", Model.of(-1));
         this.curdTableView.add(this.lblRecordCount);
+        
+        this.tableBody = new WebMarkupContainer("tableBody");
+        this.curdTableView.add(this.tableBody);
 
         // 格納したデータを描画する。
         // テーブルの行
@@ -139,7 +144,8 @@ public abstract class DataTableView extends DataTableInfoPanel {
             }
         };
         this.tableRows.setOutputMarkupId(true);
-        this.curdTableView.add(this.tableRows);
+        this.tableBody.add(this.tableRows);
+        this.tableBody.setOutputMarkupId(true);
 
         this.pageNext = new AjaxButton("pageNext") {
             @Override
@@ -188,6 +194,7 @@ public abstract class DataTableView extends DataTableInfoPanel {
                         sortingControl = new SortingControl("sortingControl", column) {
                             @Override
                             public void onClick(AjaxRequestTarget target) {
+                                super.onClick(target);
                                 DataTableView.this.sortOrderChanged(target);
                             }
                         };
@@ -226,18 +233,39 @@ public abstract class DataTableView extends DataTableInfoPanel {
     }
 
     public void sortOrderChanged(AjaxRequestTarget target) {
-        this.conditionsForOrdinal = new Condition[]{};
+        this.conditionsForOrdinal.clear();
         Set<String> keys = this.sortingControls.keySet();
         for (String key : keys) {
             SortingControl scontrol = this.sortingControls.get(key);
-            if (scontrol.getOrder() != null) {
-                this.conditionsForOrdinal
-                        = this.addCondition(
-                                this.conditionsForOrdinal,
-                                scontrol.getOrder()
-                        );
+            if (scontrol.getOrder() != null && scontrol.getOrder().getColumn()!=null) {
+                this.conditionsForOrdinal.add(scontrol.getOrder());
             }
         }
+        this.redraw();
+        target.add(this.tableBody);
+        
+    }
+
+    /**
+     * 絞り込み条件、ソート条件、ページ範囲を結合して1つの配列にする。
+     * @return 
+     */
+    public Condition[] getUnifiedConditions() {
+        ArrayList<Condition> conditionArray = new ArrayList();
+        conditionArray.addAll(this.conditionsForFilter);
+        conditionArray.addAll(this.conditionsForOrdinal);
+        conditionArray.addAll(this.conditionsForPage);
+        ArrayList<Condition> buf = new ArrayList();
+/*        for(Condition condition: conditionArray){
+            if( !(condition instanceof ConditionForOrder)
+                    && condition.getColumn()==null){
+                buf.add(condition);
+            }
+        }
+        for(Condition cnd: buf){
+            conditionArray.remove(cnd);
+        }*/
+        return this.ConditionsToArray(conditionArray);
     }
 
     public void treatButtonClickable() {
@@ -270,42 +298,62 @@ public abstract class DataTableView extends DataTableInfoPanel {
     }
 
     public Condition[] margeConditions(Condition[] src, Condition[] additive) {
-        Condition[] rvalue = new Condition[src.length + additive.length + 1];
-        System.arraycopy(src, 0, rvalue, 0, src.length);
-        System.arraycopy(additive, 0, rvalue, src.length, additive.length);
+        Condition[] rvalue;
+        if (src.length < 1) {
+            rvalue = additive;
+        } else {
+            rvalue = new Condition[src.length + additive.length];
+            System.arraycopy(src, 0, rvalue, 0, src.length);
+            System.arraycopy(additive, 0, rvalue, src.length, additive.length);
+        }
         return rvalue;
     }
 
-    public ResultSet redraw(Condition... conditions) {
+    public ArrayList<Condition> getConditionsForFilter() {
+        return this.conditionsForFilter;
+    }
+
+    public ArrayList<Condition> getConditionsForOrdinal() {
+        return this.conditionsForOrdinal;
+    }
+
+    public ArrayList<Condition> getConditionsForPage() {
+        return this.conditionsForPage;
+    }
+
+    public Condition[] ConditionsToArray(ArrayList<Condition> conditionsList) {
+        Condition[] rvalue = new Condition[conditionsList.size()];
+        for (int i = 0; i < conditionsList.size(); i++) {
+            rvalue[i] = conditionsList.get(i);
+        }
+        return rvalue;
+    }
+
+    public ResultSet redraw() {
 
         this.beforeConstructView(targetTable);
 
         this.lblTableName.setDefaultModelObject(targetTable.getLogicalName());
 
         ResultSet rvalue = null;
-        this.conditions = conditions;
-
         // とくにソート指定がない場合は、主キーを使って並び変える。
-        if (this.conditionsForOrdinal.length < 1) {
+        if (this.conditionsForOrdinal.isEmpty()) {
             for (Column column : this.targetTable) {
                 if (column.isPrimaryKey()) {
-                    this.conditionsForOrdinal
-                            = this.addCondition(this.conditionsForOrdinal, column.asc());
+                    this.conditionsForOrdinal.add(column.asc());
                 }
             }
         }
-        this.conditions = this.margeConditions(
-                this.conditions,
-                this.conditionsForOrdinal
-        );
+
+        Condition[] unifiedConditions = this.getUnifiedConditions();
 
         try {
             // データの描画
             int recordCount = this.getTable().getCount(
-                    this.conditions
+                   this.ConditionsToArray(this.conditionsForFilter)
             );
 
-            this.updateTableRows();
+            this.drawTableRows();
 
             // ヘッダ部分の描画
             this.drawTableHeader();
@@ -327,10 +375,12 @@ public abstract class DataTableView extends DataTableInfoPanel {
     /**
      * テーブルの行を描画する。
      */
-    private void updateTableRows() {
+    private void drawTableRows() {
         try {
             // ページ情報の取得
-            int rc = this.targetTable.getCount(this.conditions);
+            int rc = this.targetTable.getCount(
+                    this.ConditionsToArray(this.conditionsForFilter)
+            );
             this.lblRecordCount.setDefaultModelObject(rc + " レコード");
             this.totalPageCount = rc / this.rowsPerPage;
             if (rc % this.rowsPerPage > 0) {
@@ -339,26 +389,28 @@ public abstract class DataTableView extends DataTableInfoPanel {
 
             // ResultSetを取得してアレイに格納する。
             int offset = (this.currentPage - 1) * this.rowsPerPage;
-            Condition[] newCnd = this.addCondition(conditions, new ConditionForRegion(ConditionForRegion.LIMIT, this.rowsPerPage));
-            newCnd = this.addCondition(newCnd, new ConditionForRegion(ConditionForRegion.OFFSET, offset));
+            this.conditionsForPage.clear();
+            this.conditionsForPage.add(new ConditionForRegion(ConditionForRegion.LIMIT, this.rowsPerPage));
+            this.conditionsForPage.add(new ConditionForRegion(ConditionForRegion.OFFSET, offset));
 
             // 外部テーブルデータをSELECT文に追加
             for (Column col : this.targetTable) {
-                newCnd = this.addCondition(newCnd, col.setSelectable(true));
+                this.conditionsForFilter.add(col.setSelectable(true));
                 if (col.hasRelation()) {
                     RelationInfo rinfo = (RelationInfo) col.get(0);
                     Table subt = this.getGearApplication().getCachedTable(rinfo.getTableClass());
                     for (Column subc : subt) {
                         if (subc.isMatchedRelationType(Column.TARGET_FOR_EXTERNAL_RELATION)) {
-                            newCnd = this.addCondition(newCnd, subc.setSelectable(true));
+                            this.conditionsForFilter.add(subc.setSelectable(true));
                         }
                     }
                 }
             }
-            this.consditonsForPage = newCnd;
 
+            Condition[] conditions = this.getUnifiedConditions();
             //this.targetTable.setDebugMode(true);
-            ResultSet rs = this.targetTable.select(this.consditonsForPage);
+            ResultSet rs = this.targetTable.select(conditions);
+            //this.targetTable.setDebugMode(false);
             this.tableData.clear();
             while (rs.next()) {
                 KeyValueList row = new KeyValueList();
@@ -403,6 +455,14 @@ public abstract class DataTableView extends DataTableInfoPanel {
             Logger.getLogger(DataTableView.class.getName()).log(Level.SEVERE, null, ex);
         }
     }
+    
+    @Override
+    public void setTable(Table table){
+        this.conditionsForFilter.clear();
+        this.conditionsForOrdinal.clear();
+        this.conditionsForPage.clear();
+        super.setTable(table);
+    }
 
     /**
      * テーブルのヘッダを描画する。
@@ -428,15 +488,7 @@ public abstract class DataTableView extends DataTableInfoPanel {
         }
     }
 
-    public Condition[] getConditions() {
-        return this.conditions;
-    }
-
-    public Condition[] getConditionsForPage() {
-        return this.consditonsForPage;
-    }
-
-    public KeyValueList getFirstKeyValueList() {
+     public KeyValueList getFirstKeyValueList() {
         return this.tableData.get(0);
     }
 
