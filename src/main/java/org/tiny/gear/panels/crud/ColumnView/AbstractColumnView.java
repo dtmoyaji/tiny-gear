@@ -3,6 +3,7 @@ package org.tiny.gear.panels.crud.ColumnView;
 import org.apache.wicket.markup.html.panel.Panel;
 import org.apache.wicket.model.IModel;
 import org.tiny.datawrapper.Column;
+import org.tiny.gear.GearApplication;
 
 /**
  * 
@@ -29,5 +30,9 @@ public abstract class AbstractColumnView extends Panel {
      * コントロール上のデータをcolumnValueに格納する。
      */
     public abstract void updateColumnValue();
+    
+    public GearApplication getGearApplication(){
+        return (GearApplication) this.getApplication();
+    }
 
 }

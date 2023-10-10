@@ -12,6 +12,7 @@ import org.tiny.datawrapper.Table;
 import org.tiny.gear.GearApplication;
 import org.tiny.gear.model.Attribute;
 import org.tiny.gear.panels.crud.ColumnView.AbstractColumnView;
+import org.tiny.gear.panels.crud.ColumnView.SimpleRelationSelector;
 import org.tiny.gear.panels.crud.ColumnView.VisibleTypeLabel;
 import org.tiny.gear.panels.crud.ColumnView.VisibleTypeText;
 import org.tiny.gear.panels.crud.ColumnView.VisibleTypeTextArea;
@@ -67,10 +68,12 @@ public class DataControl extends Panel {
                         RelationInfo rinfo = (RelationInfo) this.targetColumn.get(0);
                         Table relTable = ((GearApplication) this.getApplication()).getCachedTable(rinfo.getTableClass());
                         for (Column relcol : relTable) {
-                            if (relcol.getAttributes().containsKey(Attribute.CAPTION_FOR_SELECTION)) {
+                            if (relcol.getAttributes().containsKey(Attribute.COLUMN_FOR_SEARCH)) {
                                 System.out.println(relTable.getClass().getSimpleName() + " - " + relcol.getJavaName());
                             }
                         }
+                        this.colView = new SimpleRelationSelector("columnValuePanel", new Model(this.targetColumn));
+                        defaultControl = false;
                     }
                 }
                 if (defaultControl) {
@@ -84,7 +87,7 @@ public class DataControl extends Panel {
                         RelationInfo rinfo = (RelationInfo) this.targetColumn.get(0);
                         Table relTable = ((GearApplication) this.getApplication()).getCachedTable(rinfo.getTableClass());
                         for (Column relcol : relTable) {
-                            if (relcol.getAttributes().containsKey(Attribute.CAPTION_FOR_SELECTION)) {
+                            if (relcol.getAttributes().containsKey(Attribute.COLUMN_FOR_SEARCH)) {
                                 System.out.println(relTable.getClass().getSimpleName() + " - " + relcol.getJavaName());
                             }
                         }

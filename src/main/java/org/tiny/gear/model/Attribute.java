@@ -13,6 +13,6 @@ public class Attribute {
     /**
      * セレクタの表示に使用する差異に割り当てる。
      */
-    public static final String CAPTION_FOR_SELECTION = "CAPTION_FOR_SELECTION";
+    public static final String COLUMN_FOR_SEARCH = "COLUMN_FOR_SEARCH";
 
 }

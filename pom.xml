@@ -103,6 +103,11 @@
             <artifactId>wicket-datetime</artifactId>
             <version>9.13.0</version>
         </dependency>
+        <dependency>
+            <groupId>org.wicketstuff</groupId>
+            <artifactId>wicketstuff-select2</artifactId>
+            <version>9.13.0</version>
+        </dependency>
     </dependencies>
     
     <build>
