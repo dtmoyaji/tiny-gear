@@ -1,4 +1,3 @@
-
 package org.tiny.gear.panels.crud.ColumnView;
 
 import org.apache.wicket.markup.html.form.Form;
@@ -11,33 +10,37 @@ import org.tiny.datawrapper.Column;
  *
  * @author dtmoyaji
  */
-public class VisibleTypeTextArea extends AbstractColumnView{
-    
-    private Form columnValueForm;
-    private TextArea columnValue;
-    
+public class VisibleTypeTextArea extends AbstractColumnView {
+
+    private Form controlValueForm;
+    private TextArea controlValue;
+
     public VisibleTypeTextArea(String id, IModel<Column> column) {
         super(id, column);
 
-        this.columnValueForm = new Form("columnValueForm");
-        this.columnValueForm.setOutputMarkupId(true);
-        this.add(this.columnValueForm);
+        this.controlValueForm = new Form("controlValueForm");
+        this.controlValueForm.setOutputMarkupId(true);
+        this.add(this.controlValueForm);
 
         String colvalue = "";
         if (column.getObject().getValue() != null) {
             colvalue = column.getObject().getValue().toString();
         }
-        this.columnValue = new TextArea("columnValue", Model.of(colvalue));
-        this.columnValue.setEscapeModelStrings(false);
-        this.columnValue.setOutputMarkupId(true);
-        this.columnValueForm.add(this.columnValue);
+        this.controlValue = new TextArea("controlValue", Model.of(colvalue));
+        this.controlValue.setEscapeModelStrings(false);
+        this.controlValue.setOutputMarkupId(true);
+        this.controlValueForm.add(this.controlValue);
     }
-    
+
     @Override
-    public void updateColumnValue() {
+    public void copyControlValueToColumn() {
         Column col = (Column) this.getDefaultModelObject();
-        String colValue = this.columnValue.getDefaultModelObjectAsString();
+        String colValue = this.controlValue.getDefaultModelObjectAsString();
         col.setValue(colValue);
     }
-    
+
+    @Override
+    public void copyColumnValueToConrtol() {
+        this.controlValue.setDefaultModelObject(this.getColumn().getValue());
+    }
 }

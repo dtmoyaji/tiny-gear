@@ -1,6 +1,7 @@
 package org.tiny.gear.panels.crud.ColumnView;
 
 import org.apache.wicket.markup.html.basic.Label;
+import org.apache.wicket.markup.html.form.Form;
 import org.apache.wicket.model.IModel;
 import org.apache.wicket.model.Model;
 import org.tiny.datawrapper.Column;
@@ -11,24 +12,34 @@ import org.tiny.datawrapper.Column;
  */
 public class VisibleTypeLabel extends AbstractColumnView {
 
-    private Label columnValue;
+    private Form controlValueForm;
+    private Label controlValue;
 
     public VisibleTypeLabel(String id, IModel<Column> column) {
         super(id, column);
+
+        this.controlValueForm = new Form("controlValueForm");
+        this.add(this.controlValueForm);
 
         String colvalue = "";
         if (column.getObject().getValue() != null) {
             colvalue = column.getObject().getValue().toString();
         }
-        this.columnValue = new Label("columnValue", Model.of(colvalue));
-        this.columnValue.setOutputMarkupId(true);
-        this.add(this.columnValue);
+        this.controlValue = new Label("controlValue", Model.of(colvalue));
+        this.controlValue.setOutputMarkupId(true);
+        this.controlValueForm.add(this.controlValue);
     }
 
     @Override
-    public void updateColumnValue() {
-        Column col = (Column) this.getDefaultModelObject();
-        col.setValue(this.columnValue.getDefaultModelObjectAsString());
+    public void copyControlValueToColumn() {
+        this.getColumn().setValue(this.controlValue.getDefaultModelObjectAsString());
+    }
+
+    @Override
+    public void copyColumnValueToConrtol() {
+        this.controlValue.setDefaultModelObject(
+                this.getColumn().getValue()
+        );
     }
 
 }

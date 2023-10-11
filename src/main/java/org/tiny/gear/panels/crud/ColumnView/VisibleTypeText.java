@@ -1,4 +1,3 @@
-
 package org.tiny.gear.panels.crud.ColumnView;
 
 import org.apache.wicket.markup.html.form.Form;
@@ -11,31 +10,40 @@ import org.tiny.datawrapper.Column;
  *
  * @author dtmoyaji
  */
-public class VisibleTypeText extends AbstractColumnView{
-    
-    private Form columnValueForm;
-    private TextField columnValue;
-    
+public class VisibleTypeText extends AbstractColumnView {
+
+    private Form controlValueForm;
+    private TextField controlValue;
+
     public VisibleTypeText(String id, IModel<Column> column) {
         super(id, column);
+    }
 
-        this.columnValueForm = new Form("columnValueForm");
-        this.columnValueForm.setOutputMarkupId(true);
-        this.add(this.columnValueForm);
+    @Override
+    public void onInitialize() {
+        super.onInitialize();
+
+        this.controlValueForm = new Form("controlValueForm");
+        this.controlValueForm.setOutputMarkupId(true);
+        this.add(this.controlValueForm);
 
         String colvalue = "";
-        if (column.getObject().getValue() != null) {
-            colvalue = column.getObject().getValue().toString();
+        if (this.getColumn().getValue() != null) {
+            colvalue = this.getColumn().getValue().toString();
         }
-        this.columnValue = new TextField("columnValue", Model.of(colvalue));
-        this.columnValue.setOutputMarkupId(true);
-        this.columnValueForm.add(this.columnValue);
+        this.controlValue = new TextField("controlValue", Model.of(colvalue));
+        this.controlValue.setOutputMarkupId(true);
+        this.controlValueForm.add(this.controlValue);
     }
-    
+
     @Override
-    public void updateColumnValue() {
+    public void copyControlValueToColumn() {
         Column col = (Column) this.getDefaultModelObject();
-        col.setValue(this.columnValue.getDefaultModelObjectAsString());
+        col.setValue(this.controlValue.getDefaultModelObjectAsString());
     }
-    
+
+    @Override
+    public void copyColumnValueToConrtol() {
+        this.controlValue.setDefaultModelObject(this.getColumn().getValue());
+    }
 }

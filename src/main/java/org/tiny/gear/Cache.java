@@ -28,6 +28,14 @@ public abstract class Cache<T> extends HashMap<String, T> {
         super();
     }
 
+    public void initCache(GearApplication app, String cacheType) {
+        this.clear();
+        this.app = app;
+        this.cachType = cachType;
+        this.objectCachInfo = new ObjectCacheInfo();
+        this.objectCachInfo.alterOrCreateTable(this.app.getJdbc());
+    }
+
     /**
      * アプリ起動時にデータベースからキャッシュ情報を読み込んで、オブジェクトを復元格納する。
      *
@@ -36,11 +44,7 @@ public abstract class Cache<T> extends HashMap<String, T> {
      * @param constParam オブジェクトのコンストラクタ引数で使われるクラス
      */
     public void sync(GearApplication app, String cachType, Class... constParam) {
-        this.clear();
-        this.app = app;
-        this.cachType = cachType;
-        this.objectCachInfo = new ObjectCacheInfo();
-        this.objectCachInfo.alterOrCreateTable(this.app.getJdbc());
+        this.initCache(app, cachType);
         this.constParam = constParam;
 
         HashMap<String, Short> instanceResult = new HashMap<>();
@@ -59,7 +63,7 @@ public abstract class Cache<T> extends HashMap<String, T> {
             }
         } catch (SQLException | SecurityException ex) {
             instanceResult.put(key, (short) 1);
-        } 
+        }
 
         ObjectCacheInfo oci = new ObjectCacheInfo();
         oci.setJdbc(this.app.getJdbc());
@@ -83,6 +87,10 @@ public abstract class Cache<T> extends HashMap<String, T> {
     @Override
     public T put(String key, T data) {
         T rvalue = super.put(key, data);
+        
+        if(key.equals(this.objectCachInfo.getClass().getName())){
+            return rvalue;
+        }
 
         this.objectCachInfo.clearValues();
         this.objectCachInfo.merge(
@@ -98,5 +106,5 @@ public abstract class Cache<T> extends HashMap<String, T> {
     }
 
     protected abstract T onNewInstance(Constructor constructor);
-    
+
 }

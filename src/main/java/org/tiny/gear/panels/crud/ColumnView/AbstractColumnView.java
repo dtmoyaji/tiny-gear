@@ -6,7 +6,7 @@ import org.tiny.datawrapper.Column;
 import org.tiny.gear.GearApplication;
 
 /**
- * 
+ *
  * @author dtmoyaji
  */
 public abstract class AbstractColumnView extends Panel {
@@ -18,20 +18,30 @@ public abstract class AbstractColumnView extends Panel {
     public void setColumnValue(String value) {
         Column col = (Column) this.getDefaultModelObject();
         col.setValue(value);
+        this.copyColumnValueToConrtol();
     }
 
     public String getColumnValue() {
-        this.updateColumnValue();
+        this.copyControlValueToColumn();
         Column col = (Column) this.getDefaultModelObject();
         return String.valueOf(col.getValue());
     }
 
-    /**
-     * コントロール上のデータをcolumnValueに格納する。
-     */
-    public abstract void updateColumnValue();
+    public Column getColumn() {
+        return (Column) this.getDefaultModelObject();
+    }
     
-    public GearApplication getGearApplication(){
+    /**
+     * カラムのデータをコントロールにコピーする。
+     */
+    public abstract void copyColumnValueToConrtol();
+
+    /**
+     * コントロール上のデータをcolumnに格納する。
+     */
+    public abstract void copyControlValueToColumn();
+
+    public GearApplication getGearApplication() {
         return (GearApplication) this.getApplication();
     }
 

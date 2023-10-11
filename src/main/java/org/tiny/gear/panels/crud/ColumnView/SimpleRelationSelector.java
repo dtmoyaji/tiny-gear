@@ -57,10 +57,7 @@ public class SimpleRelationSelector extends AbstractColumnView {
         this.select2Choice.add(new AjaxFormComponentUpdatingBehavior("change") {
             @Override
             protected void onUpdate(AjaxRequestTarget art) {
-                KeyValueContainer kvc = select2Choice.getModelObject();
-                recordId.setDefaultModelObject(kvc.getKey());
-                art.add(select2Choice);
-                art.add(recordId);
+                SimpleRelationSelector.this.onControlChanged(art);
             }
 
         });
@@ -90,10 +87,23 @@ public class SimpleRelationSelector extends AbstractColumnView {
 
     }
 
+    private void onControlChanged(AjaxRequestTarget target) {
+        KeyValueContainer kvc = select2Choice.getModelObject();
+        recordId.setDefaultModelObject(kvc.getKey());
+        this.copyControlValueToColumn();
+        target.add(select2Choice);
+        target.add(recordId);
+    }
+
     @Override
-    public void updateColumnValue() {
+    public void copyControlValueToColumn() {
         Column col = (Column) this.getDefaultModelObject();
         col.setValue(String.valueOf(this.recordId.getDefaultModelObject()));
+    }
+
+    @Override
+    public void copyColumnValueToConrtol() {
+        this.recordId.setDefaultModelObject((Integer) this.getColumn().getValue());
     }
 
 }

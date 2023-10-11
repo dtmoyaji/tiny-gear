@@ -153,7 +153,7 @@ public class GearApplication extends SamlWicketApplication implements IJdbcSuppl
                 }
 
             };
-            this.tableCache.sync(this, ObjectCacheInfo.TYPE_TALBE);
+            this.tableCache.initCache(this, ObjectCacheInfo.TYPE_TALBE);
             Logger.getLogger(this.getClass().getName()).log(Level.INFO, "Table cached.");
         }
 

@@ -13,6 +13,7 @@ import org.tiny.gear.GearApplication;
 import org.tiny.gear.model.Attribute;
 import org.tiny.gear.panels.crud.ColumnView.AbstractColumnView;
 import org.tiny.gear.panels.crud.ColumnView.SimpleRelationSelector;
+import org.tiny.gear.panels.crud.ColumnView.VisibleTypeDate;
 import org.tiny.gear.panels.crud.ColumnView.VisibleTypeLabel;
 import org.tiny.gear.panels.crud.ColumnView.VisibleTypeText;
 import org.tiny.gear.panels.crud.ColumnView.VisibleTypeTextArea;
@@ -37,7 +38,7 @@ public class DataControl extends Panel {
 //    private Label columnValueLabel;
     private DateTextField columnDateTextField;
 
-    private Component visibleComponent;
+    private Component component;
     private Model<String> fieldData;
 
     private AbstractColumnView colView;
@@ -47,6 +48,7 @@ public class DataControl extends Panel {
     public DataControl(String id, Column column) {
         super(id);
 
+        this.setOutputMarkupId(true);
         this.targetColumn = column;
         //System.out.println("SERVER_TYPE: " + column.getTable().getServerType());
 
@@ -60,6 +62,9 @@ public class DataControl extends Panel {
         switch (this.targetColumn.getVisibleType()) {
             case Column.VISIBLE_TYPE_LABEL:
                 this.colView = new VisibleTypeLabel("columnValuePanel", new Model(this.targetColumn));
+                break;
+            case Column.VISIBLE_TYPE_DATE:
+                this.colView = new VisibleTypeDate("columnValuePanel", new Model(this.targetColumn));
                 break;
             case Column.VISIBLE_TYPE_TEXT:
                 defaultControl = true;
@@ -108,11 +113,11 @@ public class DataControl extends Panel {
         if (this.targetColumn.getValue() != null) {
             this.fieldData = new Model(this.targetColumn.getValue().toString());
         }
-        if (this.visibleComponent == null) {
-            this.visibleComponent = this.colView;
+        if (this.component == null) {
+            this.component = this.colView;
         }
-        this.visibleComponent.setVisible(true);
-        this.visibleComponent.setOutputMarkupId(true);
+        this.component.setVisible(true);
+        this.component.setOutputMarkupId(true);
     }
 
     public Column getColumn() {
@@ -120,35 +125,32 @@ public class DataControl extends Panel {
     }
 
     public void setValue(String value) {
-        if (this.visibleComponent instanceof AbstractColumnView) {
-            AbstractColumnView cview = (AbstractColumnView) this.visibleComponent;
+        if (this.component instanceof AbstractColumnView) {
+            AbstractColumnView cview = (AbstractColumnView) this.component;
             cview.setColumnValue(value);
         } else {
-            this.visibleComponent.setDefaultModelObject(value);
+            this.component.setDefaultModelObject(value);
         }
     }
 
     public String getValue(int escaping) {
         String rvalue = null;
 
-        if (this.visibleComponent instanceof AbstractColumnView) {
-            AbstractColumnView cview = (AbstractColumnView) this.visibleComponent;
+        if (this.component instanceof AbstractColumnView) {
+            AbstractColumnView cview = (AbstractColumnView) this.component;
             rvalue = cview.getColumnValue();
-            if(rvalue.contains("&")){
-                System.out.println("ABYOH");
-            }
         } else {
             switch (escaping) {
                 case DataControl.ESCAPE:
-                    this.visibleComponent.setEscapeModelStrings(true);
-                    rvalue = this.visibleComponent.getDefaultModelObjectAsString();
+                    this.component.setEscapeModelStrings(true);
+                    rvalue = this.component.getDefaultModelObjectAsString();
                     break;
                 case DataControl.UNESCAPE:
-                    this.visibleComponent.setEscapeModelStrings(false);
-                    rvalue = this.visibleComponent.getDefaultModelObjectAsString();
+                    this.component.setEscapeModelStrings(false);
+                    rvalue = this.component.getDefaultModelObjectAsString();
                     break;
             }
-            this.visibleComponent.setEscapeModelStrings(false);
+            this.component.setEscapeModelStrings(false);
         }
         return rvalue;
     }
@@ -158,7 +160,7 @@ public class DataControl extends Panel {
     }
 
     public Component getVisibleComponent() {
-        return this.visibleComponent;
+        return this.component;
     }
 
 }

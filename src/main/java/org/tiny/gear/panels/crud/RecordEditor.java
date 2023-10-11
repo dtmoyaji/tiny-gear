@@ -50,7 +50,7 @@ public abstract class RecordEditor extends DataTableInfoPanel {
     private AjaxButton delete;
 
     private Form editorForm;
-
+    
     private AbstractView parentView;
 
     public RecordEditor(String id) {
@@ -77,7 +77,7 @@ public abstract class RecordEditor extends DataTableInfoPanel {
 
         this.editorForm = new Form("editorForm");
         this.add(this.editorForm);
-
+        
         this.controls = new ListView<Column>("controls", this.targetTable) {
 
             @Override
@@ -182,11 +182,13 @@ public abstract class RecordEditor extends DataTableInfoPanel {
                     targetTable.get(control.getColumn().getName()).setValue(null);
                 } else {
                     data = control.getValue();
-                    targetTable.get(control.getColumn().getName()).setValue(data);
+                    String targetColumnName = control.getColumn().getName();
+                    targetTable.get(targetColumnName).setValue(data);
                 }
+                target.add(control);
             }
 
-            targetTable.setDebugMode(false);
+            targetTable.setDebugMode(true);
             if (insert) {
                 if (!targetTable.insert()) {
                     System.out.println("INSERT ERROR");
