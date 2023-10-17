@@ -460,6 +460,7 @@ p{
 }
 
 .crud.recordeditor .row{
+    display: block;
     width: 100%;
     vertical-align: middle;
     min-height: 2em;
@@ -473,8 +474,17 @@ p{
     width: 25%;
 }
 
-.crud.recordeditor .field.edit{
-    display: inline-table;
+.crud.recordeditor .dataControl .textfield{
+    min-height: 2em;
+    display: inline;
+}
+
+.crud.recordeditor .dataholder.relationSelector{
+    min-height: 4em;   
+}
+
+.crud.recordeditor .dataControl .field.edit{
+    display: inline-block;
     vertical-align: middle;
     min-width: 50%;
     min-height: 2em;
@@ -482,13 +492,20 @@ p{
     padding-right: 3pt;
 }
 
-.crud.recordeditor .dataholder {
+.crud.recordeditor .dataholder .recordId{
+    display: inline-block;
     width: 100%;
-    min-height: 2em;
 }
+
+.crud.recordeditor .dataholder.textfield {
+    display: inline-block;
+    width: 100%;
+}
+
 
 .crud.recordeditor .dataholder.textarea{
     height: 8em;
+    width: 100%;
     left: 0;
 }
 
@@ -524,7 +541,7 @@ p{
     border-style:none;
 }
 
-.curd.recordeditor .row div div{
+.crud.recordeditor .row div div{
     width: inherit;
 }
 

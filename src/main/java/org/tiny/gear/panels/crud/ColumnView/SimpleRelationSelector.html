@@ -9,9 +9,13 @@
     </head>
     <body>
         <wicket:panel class="dataholderForm">
-            <form wicket:id="columnValueForm" >
-                <label wicket:id ="recordId" />
-                <select wicket:id="columnValue" class="dataholder textfield"/>
+            <form wicket:id="columnValueForm" class="columnValueForm">
+                <div class="dataholder relationSelector">
+                    <label wicket:id ="recordId" class="recordId"/>
+                    <div class ="dataholder select2">
+                        <select wicket:id="columnValue" class="dataholder textfield"/>
+                    </div>
+                </div>
             </form>
         </wicket:panel>
     </body>

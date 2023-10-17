@@ -46,6 +46,8 @@ public abstract class NavigationPanel extends Panel {
 
     private Index parent;
 
+    private HumbergerIcon humbergerIcon;
+
     public NavigationPanel(String id, Index index) {
         super(id);
 
@@ -82,10 +84,10 @@ public abstract class NavigationPanel extends Panel {
                         MenuItem overrayItem = null;
                         if (items.size() > 0) {
                             for (int i = 0; i < items.size(); i++) {
-                                if(i==0){
+                                if (i == 0) {
                                     items.get(i).setPrimary(true);
                                     overrayItem = items.get(i);
-                                }else{
+                                } else {
                                     items.get(i).setPrimary(false);
                                 }
                             }
@@ -138,6 +140,14 @@ public abstract class NavigationPanel extends Panel {
                                     } else {
                                         item.setPrimary(false);
                                     }
+
+                                    if (humbergerIcon != null) {
+                                        target.appendJavaScript(
+                                                "const nav = document.getElementById('"
+                                                + humbergerIcon.getTargetElementId() + "');\n"
+                                                + "nav.setAttribute(\"opened\", nav.getAttribute(\"opened\") ? '' : \"true\");"
+                                        );
+                                    }
                                 }
                             }
 
@@ -178,6 +188,10 @@ public abstract class NavigationPanel extends Panel {
 
         this.add(this.sceneNameList);
 
+    }
+    
+    public void setHumbergerIcon(HumbergerIcon humbergerIcon){
+        this.humbergerIcon = humbergerIcon;
     }
 
     public final void resolve(Index index) {

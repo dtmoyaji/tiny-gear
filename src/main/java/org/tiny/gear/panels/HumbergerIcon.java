@@ -20,17 +20,20 @@ public class HumbergerIcon extends Panel {
 
     public HumbergerIcon(String id, String targetElementId) {
         super(id);
-        
+
         this.targetElementId = targetElementId;
 
         this.humberger = new AjaxButton("humbergerPanel") {
             public static final long serialVersionUID = -1L;
+
             @Override
             public void onSubmit(AjaxRequestTarget target) {
                 target.appendJavaScript(
-                        "const nav = document.getElementById('"+
-                        HumbergerIcon.this.targetElementId+"');\n"
-                        + "nav.setAttribute(\"opened\", nav.getAttribute(\"opened\") ? '' : \"true\");");
+                        "const nav = document.getElementById('"
+                        + HumbergerIcon.this.targetElementId
+                        + "');\n"
+                        + "nav.setAttribute(\"opened\", nav.getAttribute(\"opened\") ? '' : \"true\");"
+                );
             }
         };
 
@@ -38,6 +41,10 @@ public class HumbergerIcon extends Panel {
         this.humbergerForm.add(this.humberger);
 
         this.add(this.humbergerForm);
+    }
+
+    public String getTargetElementId() {
+        return this.targetElementId;
     }
 
 }

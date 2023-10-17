@@ -17,7 +17,7 @@ import org.tiny.gear.model.ObjectCacheInfo;
  */
 public abstract class Cache<T> extends HashMap<String, T> {
 
-    private String cachType;
+    private String cacheType;
 
     private GearApplication app;
     private ObjectCacheInfo objectCachInfo;
@@ -31,11 +31,11 @@ public abstract class Cache<T> extends HashMap<String, T> {
     public void initCache(GearApplication app, String cacheType) {
         this.clear();
         this.app = app;
-        this.cachType = cachType;
+        this.cacheType = cacheType;
         this.objectCachInfo = new ObjectCacheInfo();
         this.objectCachInfo.alterOrCreateTable(this.app.getJdbc());
     }
-
+    
     /**
      * アプリ起動時にデータベースからキャッシュ情報を読み込んで、オブジェクトを復元格納する。
      *
@@ -50,7 +50,7 @@ public abstract class Cache<T> extends HashMap<String, T> {
         HashMap<String, Short> instanceResult = new HashMap<>();
 
         String key = "";
-        try (ResultSet rs = this.objectCachInfo.getTypeOf(this.cachType)) {
+        try (ResultSet rs = this.objectCachInfo.getTypeOf(this.cacheType)) {
             while (rs.next()) {
                 key = this.objectCachInfo.ObjectName.of(rs);
                 T data = this.initializeObject(key, this.constParam);
@@ -95,7 +95,7 @@ public abstract class Cache<T> extends HashMap<String, T> {
         this.objectCachInfo.clearValues();
         this.objectCachInfo.merge(
                 this.objectCachInfo.ObjectName.setValue(key),
-                this.objectCachInfo.ObjectType.setValue(this.cachType)
+                this.objectCachInfo.ObjectType.setValue(this.cacheType)
         );
 
         return rvalue;

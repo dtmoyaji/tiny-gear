@@ -74,6 +74,7 @@ public class Index extends SamlMainPage implements IJdbcSupplier {
         this.add(this.nav);
 
         this.humbergerIcon = new HumbergerIcon("humbergerIcon", "humbergerTarget");
+        this.nav.setHumbergerIcon(humbergerIcon);
         this.add(this.humbergerIcon);
 
         this.currentView.setOutputMarkupId(true);
