@@ -93,11 +93,12 @@ public abstract class Cache<T> extends HashMap<String, T> {
         }
 
         this.objectCachInfo.clearValues();
+        this.objectCachInfo.setDebugMode(true);
         this.objectCachInfo.merge(
                 this.objectCachInfo.ObjectName.setValue(key),
                 this.objectCachInfo.ObjectType.setValue(this.cacheType)
         );
-
+        this.objectCachInfo.setDebugMode(false);
         return rvalue;
     }
 
