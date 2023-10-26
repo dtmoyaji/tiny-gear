@@ -22,7 +22,6 @@ import org.tiny.datawrapper.Condition;
 import org.tiny.datawrapper.ConditionForRegion;
 import org.tiny.datawrapper.RelationInfo;
 import org.tiny.datawrapper.Table;
-import org.tiny.datawrapper.TinyDatabaseException;
 
 /**
  * テーブルのデータを表示するパネル
@@ -97,7 +96,7 @@ public abstract class DataTableView extends DataTableInfoPanel {
 
         this.lblRecordCount = new Label("lblRecordCount", Model.of(-1));
         this.curdTableView.add(this.lblRecordCount);
-        
+
         this.tableBody = new WebMarkupContainer("tableBody");
         this.curdTableView.add(this.tableBody);
 
@@ -237,18 +236,19 @@ public abstract class DataTableView extends DataTableInfoPanel {
         Set<String> keys = this.sortingControls.keySet();
         for (String key : keys) {
             SortingControl scontrol = this.sortingControls.get(key);
-            if (scontrol.getOrder() != null && scontrol.getOrder().getColumn()!=null) {
+            if (scontrol.getOrder() != null && scontrol.getOrder().getColumn() != null) {
                 this.conditionsForOrdinal.add(scontrol.getOrder());
             }
         }
         this.redraw();
         target.add(this.tableBody);
-        
+
     }
 
     /**
      * 絞り込み条件、ソート条件、ページ範囲を結合して1つの配列にする。
-     * @return 
+     *
+     * @return
      */
     public Condition[] getUnifiedConditions() {
         ArrayList<Condition> conditionArray = new ArrayList();
@@ -256,7 +256,7 @@ public abstract class DataTableView extends DataTableInfoPanel {
         conditionArray.addAll(this.conditionsForOrdinal);
         conditionArray.addAll(this.conditionsForPage);
         ArrayList<Condition> buf = new ArrayList();
-/*        for(Condition condition: conditionArray){
+        /*        for(Condition condition: conditionArray){
             if( !(condition instanceof ConditionForOrder)
                     && condition.getColumn()==null){
                 buf.add(condition);
@@ -347,26 +347,18 @@ public abstract class DataTableView extends DataTableInfoPanel {
 
         Condition[] unifiedConditions = this.getUnifiedConditions();
 
-        try {
-            // データの描画
-            int recordCount = this.getTable().getCount(
-                   this.ConditionsToArray(this.conditionsForFilter)
-            );
-
-            this.drawTableRows();
-
-            // ヘッダ部分の描画
-            this.drawTableHeader();
-
-            DataTableView.this.treatButtonClickable();
-            DataTableView.this.lblCurPageNum.setDefaultModelObject(
-                    DataTableView.this.currentPage
-            );
-            this.lblPageCount.setDefaultModelObject(this.totalPageCount);
-
-        } catch (TinyDatabaseException ex) {
-            Logger.getLogger(DataTableView.class.getName()).log(Level.SEVERE, null, ex);
-        }
+        // データの描画
+        int recordCount = this.getTable().getCount(
+                this.ConditionsToArray(this.conditionsForFilter)
+        );
+        this.drawTableRows();
+        // ヘッダ部分の描画
+        this.drawTableHeader();
+        DataTableView.this.treatButtonClickable();
+        DataTableView.this.lblCurPageNum.setDefaultModelObject(
+                DataTableView.this.currentPage
+        );
+        this.lblPageCount.setDefaultModelObject(this.totalPageCount);
 
         this.afterConstructView(targetTable);
         return rvalue;
@@ -451,13 +443,13 @@ public abstract class DataTableView extends DataTableInfoPanel {
             }
             rs.close();
 
-        } catch (SQLException | TinyDatabaseException ex) {
+        } catch (SQLException ex) {
             Logger.getLogger(DataTableView.class.getName()).log(Level.SEVERE, null, ex);
         }
     }
-    
+
     @Override
-    public void setTable(Table table){
+    public void setTable(Table table) {
         this.conditionsForFilter.clear();
         this.conditionsForOrdinal.clear();
         this.conditionsForPage.clear();
@@ -488,7 +480,7 @@ public abstract class DataTableView extends DataTableInfoPanel {
         }
     }
 
-     public KeyValueList getFirstKeyValueList() {
+    public KeyValueList getFirstKeyValueList() {
         return this.tableData.get(0);
     }
 

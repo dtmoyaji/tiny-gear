@@ -18,7 +18,6 @@ import org.apache.wicket.resource.FileSystemResource;
 import org.tiny.datawrapper.IJdbcSupplier;
 import org.tiny.datawrapper.Jdbc;
 import org.tiny.datawrapper.Table;
-import org.tiny.datawrapper.TinyDatabaseException;
 import org.tiny.gear.model.ObjectCacheInfo;
 import org.tiny.gear.model.SystemVariables;
 import org.tiny.gear.scenes.AbstractScene;
@@ -483,7 +482,7 @@ public class GearApplication extends SamlWicketApplication implements IJdbcSuppl
                         }
                     }
                 }
-            } catch (TinyDatabaseException | SQLException ex) {
+            } catch (SQLException ex) {
                 Logger.getLogger(GearApplication.class
                         .getName()).log(Level.SEVERE, null, ex);
             }
