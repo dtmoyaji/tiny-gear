@@ -20,7 +20,7 @@ public class ObjectCacheInfo extends Table {
     public static final String TYPE_VIEW = "view";
 
     @LogicalName("オブジェクト名")
-    public Column<String> ObjectName;
+    public Column<String> ObjectName = null;
 
     @LogicalName("オブジェクト種別")
     public Column<String> ObjectType;
